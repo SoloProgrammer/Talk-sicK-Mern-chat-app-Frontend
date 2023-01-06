@@ -1,0 +1,41 @@
+import { createContext, useState, useContext } from 'react'
+import { useToast } from '@chakra-ui/react'
+const ChatContext = createContext();
+
+const ChatProvider = ({ children }) => {
+
+    const toast = useToast();
+    function showTost(title, msg, status, time) {
+        toast({
+            title: title,
+            description: msg,
+            status: status,
+            duration: time,
+            isClosable: true,
+        });
+    }
+
+    const [user, setUser] = useState(null);
+
+    const getUser = async () => {
+        const config = {
+            headers: {
+                'token': localStorage.getItem('token')
+            }
+        }
+        const res = await fetch(`/api/user/getuser`, config);
+        return res.json()
+    }
+
+    return (
+        <ChatContext.Provider value={{ user, showTost, setUser, getUser }}>
+            {children}
+        </ChatContext.Provider>
+    )
+}
+
+export const ChatState = () => {
+    return useContext(ChatContext);
+};
+
+export default ChatProvider;
