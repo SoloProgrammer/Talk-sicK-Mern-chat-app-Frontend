@@ -5,13 +5,14 @@ const ChatContext = createContext();
 const ChatProvider = ({ children }) => {
 
     const toast = useToast();
-    function showTost(title, msg, status, time) {
+    function showToast(title, msg, status, time,pos="bottom-center") {
         toast({
             title: title,
             description: msg,
             status: status,
             duration: time,
             isClosable: true,
+            position: pos
         });
     }
 
@@ -28,7 +29,7 @@ const ChatProvider = ({ children }) => {
     }
 
     return (
-        <ChatContext.Provider value={{ user, showTost, setUser, getUser }}>
+        <ChatContext.Provider value={{ user, showToast, setUser, getUser }}>
             {children}
         </ChatContext.Provider>
     )

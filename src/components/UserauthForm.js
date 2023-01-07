@@ -7,7 +7,7 @@ function Login({ value, inputValues, setInputValues }) {
 
   const navigate = useNavigate();
 
-  const { showTost } = ChatState();
+  const { showToast } = ChatState();
 
   const handleChange = (e) => {
     setInputValues({ ...inputValues, [e.target.name]: e.target.value })
@@ -23,7 +23,7 @@ function Login({ value, inputValues, setInputValues }) {
 
     if (pics === undefined) {
       setPic(null)
-      return showTost("Not Selected", "Please select an Image file", "warning", 3000)
+      return showToast("Not Selected", "Please select an Image file", "warning", 3000)
     }
     if (pics.type === 'image/jpeg' || pics.type === 'image/png' || pics.type === 'image/jpg') {
       setLoading(true)
@@ -44,11 +44,11 @@ function Login({ value, inputValues, setInputValues }) {
         setLoading(false)
       } catch (error) {
         setLoading(false)
-        return showTost("Seems some suspicious*", "Some error occured try again later", "error", 3000)
+        return showToast("Seems some suspicious*", "Some error occured try again later", "error", 3000)
       }
     }
     else {
-      return showTost("*Not accepted", "Please select an Image file", "warning", 3000)
+      return showToast("*Not accepted", "Please select an Image file", "warning", 3000)
     }
     if (pics && pics[0]) {
       setLoading(true)
@@ -59,12 +59,12 @@ function Login({ value, inputValues, setInputValues }) {
     const { name, email, password, confpass } = inputValues
 
     if ((value !== "login" && (!name || !confpass)) || !email || !password) {
-      return showTost("*Required", "Please fill all the fields marked with *", "error", 3000)
+      return showToast("*Required", "Please fill all the fields marked with *", "error", 3000)
     }
-    if (!email.includes("@gmail.com")) return showTost("*Invalid", "Email must be valid!", "error", 3000)
+    if (!email.includes("@gmail.com")) return showToast("*Invalid", "Email must be valid!", "error", 3000)
 
     if (value !== "login" && (password !== confpass)) {
-      return showTost("*Missmathched", "Password and ConfirmPassword must be same.", "error", 3000)
+      return showToast("*Missmathched", "Password and ConfirmPassword must be same.", "error", 3000)
     }
 
     try {
@@ -82,18 +82,18 @@ function Login({ value, inputValues, setInputValues }) {
       let json = await res.json();
 
       if (!json.status) {
-        showTost("Alert!", json.message, "error", 4000)
+        showToast("Alert!", json.message, "error", 4000)
       } else {
         value !== "login" ?
-          showTost("Whooho!", "We've created an account for your welcome to [Talk-o-Meter]", "success", 4000)
-          : showTost("Welcome", json.message, "success", 4000)
+          showToast("Whooho!", "We've created an account for your welcome to [Talk-o-Meter]", "success", 4000)
+          : showToast("Welcome", json.message, "success", 4000)
         localStorage.setItem('token', json.token)
         navigate('/chats')
       }
 
       setLoading(false)
     } catch (error) {
-      showTost("Seems some suspicious*", "Some error occured try again later", "error", 3000)
+      showToast("Seems some suspicious*", "Some error occured try again later", "error", 3000)
       setLoading(false)
     }
 

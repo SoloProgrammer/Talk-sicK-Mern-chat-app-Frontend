@@ -36,7 +36,6 @@
     margin: auto;
     width: 100%;
     position: relative;
-    padding: 1.5rem 0 0 1rem;
     font-size: 1.6rem;
     color: rgb(14, 34, 34);
     font-weight: 400;
@@ -44,15 +43,16 @@
     width: fit-content;
 }
 .brand_logo .brandpic{
+ 
     overflow: hidden;
     width: 35px;
     height: 35px;
     position: absolute;
-    top: 2px;
-    padding: .3rem;
+    top: -19px;
+    padding: 0.3rem;
     border-radius: 50%;
-    box-shadow: 0 0 2px rgba(0,0,0,.2);
-    left: -8px;
+    box-shadow: 0 0 2px rgb(0 0 0 / 20%);
+    left: -27px;
 }
 .brand_logo .brandpic img{
     z-index: 2;
@@ -66,6 +66,17 @@
 @media (max-width:650px){
 .App{
     background-size: contain;
+}
+.brand_logo .brandpic{
+    overflow: hidden;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: -17px;
+    padding: 0.3rem;
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgb(0 0 0 / 20%);
+    left: -21px;
 }
 }
 

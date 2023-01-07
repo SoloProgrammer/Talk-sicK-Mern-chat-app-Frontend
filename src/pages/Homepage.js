@@ -14,7 +14,7 @@ function Homepage() {
     const [inputValues, setInputValues] = useState({})
     return (
         <Container maxW="md" pos={"fixed"} right={0} minH={{ base: "fit-content", md: "100vh" }} bg="white" boxShadow={"0 0 10px rgba(0,0,0,.2)"}>
-            <Box p={".5rem 0 1rem 0"} w="100%" margin={"auto"}>
+            <Box p={"2rem 0 1rem 0"} w="100%" margin={"auto"}>
                 <BrandLogo />
             </Box>
             <Box bg={"white"} >
