@@ -19,7 +19,7 @@ import SearchLoading from '../../utils/SearchLoading'
 
 function SideDrawer({ isOpen, onClose }) {
 
-    const { showToast } = ChatState();
+    const { showToast,setIsfetchChats } = ChatState();
 
     const [search, setSearch] = useState("")
     const [loading, setLoading] = useState(false)
@@ -65,10 +65,10 @@ function SideDrawer({ isOpen, onClose }) {
             let json = await res.json();
 
             if (json.createdChat) {
+                setIsfetchChats(true)
                 return showToast("Talk-o-Meter reading", json.message, "success", 3000)
             }
 
-            console.log(json)
         } catch (error) {
             return showToast('Error', error.message, "error", 3000)
         }
@@ -102,7 +102,7 @@ function SideDrawer({ isOpen, onClose }) {
                                 !loading && results?.length === 0
                                 && <Box m={3} display="flex" justifyContent={'center'} flexDir="column" alignItems={"center"} gap="1rem">
                                     <Image size="xs" src="https://t4.ftcdn.net/jpg/04/26/08/51/240_F_426085199_q6YtlZR7McMNekrghgyetyoPZKTro0WV.jpg"></Image>
-                                    <Text fontWeight={"bold"} fontSize={"xs"} textAlign={"center"}>No results found try with anaother word</Text>
+                                    <Text fontWeight={"bold"} fontSize={"xs"} textAlign={"center"}>No results found try with another word</Text>
                                 </Box>
 
 

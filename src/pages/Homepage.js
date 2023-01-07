@@ -14,8 +14,10 @@ function Homepage() {
         setTimeout(() => document.querySelector('.userForm').classList.remove('hide'), 0);
     }, [navigate])
     const [inputValues, setInputValues] = useState({})
+    
     return (
-        <Container className='userForm hide' transition={".5s"} maxW="md" pos={"fixed"} right={0} minH={{ base: "fit-content", md: "100vh" }} bg="white" boxShadow={"0 0 10px rgba(0,0,0,.2)"}>
+        
+        <Container className={`userForm  hide`} transition={".5s"} maxW="md" pos={"fixed"} right={0} minH={{ base: "fit-content", md: "100vh" }} bg="white" boxShadow={"0 0 10px rgba(0,0,0,.2)"}>
             <Box p={"2rem 0 1rem 0"} w="100%" margin={"auto"} display="flex" justifyContent={"center"}>
                 <BrandLogo />
             </Box>

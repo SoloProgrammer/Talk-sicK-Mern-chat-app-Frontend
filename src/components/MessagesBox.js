@@ -1,13 +1,18 @@
-import { Box, Image, Text } from '@chakra-ui/react'
+import { PhoneIcon } from '@chakra-ui/icons'
+import { Box, Button, Image, Input, InputGroup, InputLeftElement, InputRightElement, Text } from '@chakra-ui/react'
 import React from 'react'
+import { getSender } from '../configs/userConfigs'
 import { ChatState } from '../Context/ChatProvider'
 import BrandLogo from '../utils/BrandLogo'
+import MessagesBoxTopbar from './Materials/MessagesBoxTopbar'
+import MessageBox from './MessageBox'
 
 function MessagesBox() {
 
-  const { selectedChat } = ChatState()
+  const { selectedChat, user } = ChatState()
+
   return (
-    <Box display={{ base: "none", md: "flex" }} className='messagesBox' width={{ base: "100%", md: "60%", lg: "64%" }}>
+    <Box display={{ base: selectedChat ? "flex" : "none", md: "flex" }} className='messagesBox' width={{ base: "100%", md: "60%", lg: "64%" }}>
       {
         !selectedChat ?
           <Box zIndex={1}
@@ -21,7 +26,7 @@ function MessagesBox() {
             <Image opacity={".5"} width={{ base: "250px", md: "300px" }} src="https://cdn-icons-png.flaticon.com/512/3964/3964329.png"></Image>
             <Box className='messagesBoxText'>
               <Text
-                fontWeight={"semibold"}
+                fontWeight={"normal"}
                 letterSpacing="0.05rem"
                 textAlign={"center"}
                 color="black"
@@ -39,8 +44,18 @@ function MessagesBox() {
               </Text>
             </Box>
           </Box> :
-          <Box>
-
+          <Box width={"100%"} pos="relative">
+            <MessagesBoxTopbar />
+            <MessageBox />
+            <Box pos={"absolute"} bottom="0.5" width={"100%"}>
+              <InputGroup>
+                <InputLeftElement
+                  pointerEvents='none'
+                  children={<PhoneIcon color='gray.300' />}
+                />
+                <Input variant={"filled"} type='tel' placeholder='Your message...' />
+              </InputGroup>
+            </Box>
           </Box>
       }
     </Box>

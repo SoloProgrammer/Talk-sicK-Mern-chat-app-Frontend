@@ -2,7 +2,6 @@ import { Avatar, Box, Button, Image, Menu, MenuButton, MenuItem, MenuList, Text,
 import React from 'react'
 import { ChatState } from '../../Context/ChatProvider'
 import { BellIcon, ChevronDownIcon, SearchIcon } from '@chakra-ui/icons'
-import { useNavigate } from 'react-router-dom';
 import SideDrawer from './SideDrawer';
 import BrandLogo from '../../utils/BrandLogo';
 
@@ -10,13 +9,10 @@ function ChatsTopBar() {
 
     const { user } = ChatState();
 
-    const navigate = useNavigate()
-
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        // navigate('/')
         window.location.reload(0)
     }
 
