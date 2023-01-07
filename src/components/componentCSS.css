@@ -10,6 +10,9 @@
     padding: .5rem;
     animation: float 3s ease-in-out  infinite;
 }
+.chakra-slide{
+    max-width: 355px !important;
+}
 @keyframes float {
 
     0%{
@@ -31,4 +34,7 @@
 
 .chakra-tabs__tab[aria-selected=true]{
     background: aliceblue !important;
+}
+.messagesBoxText{
+    transform: translateY(-140px);
 }

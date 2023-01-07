@@ -12,6 +12,16 @@
 .bg_red{
     background-color: red;
 }
+.hide{
+    transform: translateX(200px);
+}
+.hideleft{
+    transform: translateX(-300px);
+    opacity: 0;
+}
+.hidetop{
+    transform: translateY(-200px);
+}
 .chaticon{
     width: 60px;
     height: 60px;

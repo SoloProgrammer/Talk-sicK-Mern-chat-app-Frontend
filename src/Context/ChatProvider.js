@@ -5,7 +5,7 @@ const ChatContext = createContext();
 const ChatProvider = ({ children }) => {
 
     const toast = useToast();
-    function showToast(title, msg, status, time,pos="bottom-center") {
+    function showToast(title, msg, status, time, pos = "bottom-center") {
         toast({
             title: title,
             description: msg,
@@ -28,8 +28,10 @@ const ChatProvider = ({ children }) => {
         return res.json()
     }
 
+    const [selectedChat, setSelectedChat] = useState(null)
+
     return (
-        <ChatContext.Provider value={{ user, showToast, setUser, getUser }}>
+        <ChatContext.Provider value={{ user, showToast, setUser, getUser, selectedChat, setSelectedChat }}>
             {children}
         </ChatContext.Provider>
     )
