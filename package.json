@@ -8,6 +8,7 @@
     "@chakra-ui/react": "^2.4.6",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "emoji-picker-react": "^4.4.7",
     "react-router-dom": "^6.6.1",
     "react-scripts": "^5.0.1"
   },

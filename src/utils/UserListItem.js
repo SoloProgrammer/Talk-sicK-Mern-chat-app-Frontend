@@ -12,7 +12,9 @@ function UserListItem({ user, handleFunc }) {
       borderRadius=".3rem"
       onClick={()=> handleFunc(user)}
       _hover={{ bg: "#24baaf", color: "white" }}
+      width="full"
       alignItems="center">
+      
       <Avatar name={user.name} src={user.avatar} size="sm" />{' '}
       <Box>
         <b>{user.name}</b>

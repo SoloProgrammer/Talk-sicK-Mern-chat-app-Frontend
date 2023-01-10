@@ -32,9 +32,11 @@ const ChatProvider = ({ children }) => {
 
     const [isfetchChats, setIsfetchChats] = useState(null);
 
+    const [profile, setProfile] = useState(null)
+
 
     return (
-        <ChatContext.Provider value={{ user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats }}>
+        <ChatContext.Provider value={{ profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats }}>
             {children}
         </ChatContext.Provider>
     )

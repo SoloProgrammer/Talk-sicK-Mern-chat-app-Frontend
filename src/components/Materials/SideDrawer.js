@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Drawer,
     DrawerBody,
@@ -9,13 +9,13 @@ import {
     Button,
     Input,
     Box,
-    Image,
-    Text
+    Image
 } from '@chakra-ui/react'
 import { SearchIcon } from '@chakra-ui/icons'
 import { ChatState } from '../../Context/ChatProvider'
 import UserListItem from '../../utils/UserListItem'
 import SearchLoading from '../../utils/SearchLoading'
+import EmptySearch from '../EmptySearch'
 
 function SideDrawer({ isOpen, onClose }) {
 
@@ -29,6 +29,10 @@ function SideDrawer({ isOpen, onClose }) {
         setResults(null)
         setSearch(e.target.value);
     }
+    useEffect(() => {
+        setResults(null)
+        setSearch("")
+    }, [isOpen])
 
     const handleSearch = async () => {
         if (search === "") return showToast("*Required", "Please Enter Something to Search", "error", 3000, "top-left");
@@ -42,6 +46,11 @@ function SideDrawer({ isOpen, onClose }) {
             }
             const res = await fetch(`/api/user/searchuser?search=${search}`, config)
             const json = await res.json()
+            if(!json.status){
+                localStorage.removeItem('token')
+                window.location.reload(0)
+                return
+            }
             setResults(json.searchResults)
             setLoading(false)
         } catch (error) {
@@ -98,15 +107,11 @@ function SideDrawer({ isOpen, onClose }) {
                                 loading ? <SearchLoading /> : results?.map(u => {
                                     return <UserListItem key={u._id} user={u} handleFunc={handleAccesschat} />
                                 })
-                            }{
-                                !loading && results?.length === 0
-                                && <Box m={3} display="flex" justifyContent={'center'} flexDir="column" alignItems={"center"} gap="1rem">
-                                    <Image size="xs" src="https://t4.ftcdn.net/jpg/04/26/08/51/240_F_426085199_q6YtlZR7McMNekrghgyetyoPZKTro0WV.jpg"></Image>
-                                    <Text fontWeight={"bold"} fontSize={"xs"} textAlign={"center"}>No results found try with another word</Text>
-                                </Box>
+                            }
 
+                            { (!loading && results?.length === 0) && <EmptySearch size={"12rem"}/>}
 
-                            }{
+                            {
                                 !loading && !results
                                 && <Box m={3} display="flex" justifyContent={'center'} flexDir="column" alignItems={"center"} gap="1rem">
                                     <Image width={"140px"} src="https://cdn-icons-png.flaticon.com/512/190/190798.png"></Image>

@@ -7,7 +7,7 @@ import MessagesBox from '../components/MessagesBox';
 
 
 function Chatpage() {
-  const { getUser, setUser, showToast, isfetchChats, setIsfetchChats, user, selectedChat, setSelectedChat } = ChatState()
+  const { getUser, setUser, showToast, isfetchChats, setIsfetchChats, user, selectedChat, setSelectedChat, setProfile, profile } = ChatState()
   const navigate = useNavigate();
   const [chatsLoading, setChatsLoading] = useState(false)
 
@@ -26,12 +26,13 @@ function Chatpage() {
     if (!token) navigate('/')
     else GetuserInfo()
 
-    setTimeout(() => {
-      document.querySelector('.mainChatBox')?.classList.remove('hideleft')
-    }
-      , 0);
+    setTimeout(() => document.querySelector('.mainChatBox')?.classList.remove('hideleft'), 0);
     // eslint-disable-next-line
   }, [navigate])
+
+  useEffect(() => {
+    setTimeout(() => document.querySelector('.profileDrawer')?.classList.remove('translateXFull-'), 0);
+  }, [profile])
 
   const [chats, setChats] = useState(null)
 
@@ -48,12 +49,10 @@ function Chatpage() {
 
       if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-      if (json.chats.length > 0) {
-        setChats(json.chats);
-        setIsfetchChats(false);
-        setChatsLoading(false);
-        setTimeout(() => document.querySelector('.allchats')?.classList.remove('hidetop'), 10)
-      }
+      setChats(json.chats);
+      setIsfetchChats(false);
+      setChatsLoading(false);
+      setTimeout(() => document.querySelector('.allchats')?.classList.remove('hidetop'), 10)
 
     } catch (error) {
       return showToast("Error", error.message, "error", 3000)
@@ -62,13 +61,14 @@ function Chatpage() {
 
   useEffect(() => {
     localStorage.getItem('token') && fetchallchats()
+    // eslint-disable-next-line
   }, [isfetchChats])
 
   return (
     <Box className={`mainChatBox hideleft`} width="100%" display="flex" justifyContent={"center"} alignItems="center" transition={".5s"}>
       <Box width={{ base: "95%", md: "95%" }} height={{ base: "98%", md: "97%" }} background={"white"} display="flex" overflow={"hidden"}>
-        <ChatsBox chats={chats} chatsLoading={chatsLoading} user={user} selectedChat={selectedChat} setSelectedChat={setSelectedChat} />
-        <MessagesBox/>
+        <ChatsBox profile={profile} setProfile={setProfile} chats={chats} chatsLoading={chatsLoading} user={user} selectedChat={selectedChat} setSelectedChat={setSelectedChat} />
+        <MessagesBox />
       </Box>
     </Box>
   )

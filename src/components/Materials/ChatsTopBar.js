@@ -4,11 +4,12 @@ import { ChatState } from '../../Context/ChatProvider'
 import { BellIcon, ChevronDownIcon, SearchIcon } from '@chakra-ui/icons'
 import SideDrawer from './SideDrawer';
 import BrandLogo from '../../utils/BrandLogo';
+import CreateGroupChat from './CreateGroupChat';
 
 function ChatsTopBar() {
-
-    const { user } = ChatState();
-
+    
+    const { user, setProfile } = ChatState();
+    
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const handleLogout = () => {
@@ -22,11 +23,11 @@ function ChatsTopBar() {
                 display={"flex"} justifyContent="space-between" alignItems={"center"} padding="0 .3rem">
                 <Box>
                     <Menu>
-                        <MenuButton height="fit-content" as={Button} rightIcon={<ChevronDownIcon />} background="transperent'">
-                            <Avatar size={"md"} name={user?.name} src={user?.avatar} />{' '}
+                        <MenuButton className='userAvatarBtn' height="fit-content" as={Button} rightIcon={<ChevronDownIcon />} background="transperent'">
+                            <Avatar className='userAvatar' transition=".3s" size={"md"} name={user?.name} src={user?.avatar} />{' '}
                         </MenuButton>
                         <MenuList boxShadow={"0 0 3px rgba(0,0,0,.4)"}>
-                            <MenuItem display={"flex"} gap=".5rem" alignItems={"center"}>
+                            <MenuItem display={"flex"} gap=".5rem" alignItems={"center"} onClick={() => setProfile(user)} >
                                 <Avatar size={"xs"} name={user?.name} src={user?.avatar} />{' '}
                                 <span>My profile</span>
                             </MenuItem>
@@ -67,24 +68,15 @@ function ChatsTopBar() {
                                 <BellIcon fontSize={"2xl"} m={1} />
                             </MenuButton>
                         </Tooltip>
-                        <MenuList boxShadow={"0 0 3px rgba(0,0,0,.4)"} position={"left"} >
+                        <MenuList boxShadow={"0 0 3px rgba(0,0,0,.4)"} position={"left"} zIndex="10">
                             <MenuItem>No messages</MenuItem>
                         </MenuList>
                     </Menu>
                 </Box>
-                <Box width={"2.3rem"}
-                    cursor="pointer"
-                    position={"absolute"}
-                    borderRadius="full"
-                    padding={".5rem"}
-                    background="aliceblue"
-                    bottom={"-1rem"}
-                    border={"1px solid rgba(0,0,0,.2)"}
-                    right={{ base: "5rem", md: "7rem" }}>
-                    <Tooltip label="New Group Chat" placement='bottom-end' borderRadius={".2rem"}>
-                        <Image width={"100%"} src="https://cdn-icons-png.flaticon.com/512/33/33308.png" ></Image>
-                    </Tooltip>
-                </Box>
+
+                {/* Create Group Chat Button Component */}
+                <CreateGroupChat/> 
+                
             </Box>
             <Box padding={".3rem"} borderBottom="2px solid darkcyan" background={"aliceblue"}>
                 <Text textAlign={"center"} textTransform="uppercase" fontStyle={"italic"} fontWeight="hairline">My chats</Text>
