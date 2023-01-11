@@ -16,6 +16,7 @@ import { ChatState } from '../../Context/ChatProvider'
 import UserListItem from '../../utils/UserListItem'
 import SearchLoading from '../../utils/SearchLoading'
 import EmptySearch from '../EmptySearch'
+import { server } from '../../configs/serverURl'
 
 function SideDrawer({ isOpen, onClose }) {
 
@@ -44,7 +45,7 @@ function SideDrawer({ isOpen, onClose }) {
                     token: localStorage.getItem('token')
                 }
             }
-            const res = await fetch(`/api/user/searchuser?search=${search}`, config)
+            const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config)
             const json = await res.json()
             if(!json.status){
                 localStorage.removeItem('token')
@@ -70,7 +71,7 @@ function SideDrawer({ isOpen, onClose }) {
                 },
                 body: JSON.stringify({ userId: user._id })
             }
-            let res = await fetch(`/api/chat`, config)
+            let res = await fetch(`${server.URL.production}/api/chat`, config)
             let json = await res.json();
 
             if (json.createdChat) {

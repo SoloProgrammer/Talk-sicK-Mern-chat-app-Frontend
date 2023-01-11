@@ -8,13 +8,13 @@ import CreateGroupChat from './CreateGroupChat';
 
 function ChatsTopBar() {
     
-    const { user, setProfile } = ChatState();
+    const { user, setProfile, profile } = ChatState();
     
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        window.location.reload(0)
+        window.location.href = '/'
     }
 
     return (
@@ -23,7 +23,7 @@ function ChatsTopBar() {
                 display={"flex"} justifyContent="space-between" alignItems={"center"} padding="0 .3rem">
                 <Box>
                     <Menu>
-                        <MenuButton className='userAvatarBtn' height="fit-content" as={Button} rightIcon={<ChevronDownIcon />} background="transperent'">
+                        <MenuButton onClick={() => profile?._id === user?._id && setProfile(null)} className='userAvatarBtn' height="fit-content" as={Button} rightIcon={<ChevronDownIcon />} background="transperent'">
                             <Avatar className='userAvatar' transition=".3s" size={"md"} name={user?.name} src={user?.avatar} />{' '}
                         </MenuButton>
                         <MenuList boxShadow={"0 0 3px rgba(0,0,0,.4)"}>

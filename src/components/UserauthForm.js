@@ -2,6 +2,7 @@ import { Box, Input, Stack, Button, Text, InputGroup, InputRightElement, Avatar 
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { ChatState } from '../Context/ChatProvider';
+import { server } from '../configs/serverURl'
 
 function Login({ value, inputValues, setInputValues }) {
 
@@ -78,7 +79,7 @@ function Login({ value, inputValues, setInputValues }) {
         },
         body: payload
       }
-      let res = await fetch(`api/user/${value === "login" ? "login" : "createuser"}`, config);
+      let res = await fetch(`${server.URL.production}/api/user/${value === "login" ? "login" : "createuser"}`, config);
       let json = await res.json();
 
       if (!json.status) {

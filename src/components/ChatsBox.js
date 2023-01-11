@@ -13,7 +13,7 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
   return (
     <Box display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
       <ChatsTopBar />
-      <Box overflow={"hidden"} pos={"relative"} transition={".6s"} height={"calc(100% - 7rem)"} className='allchats hidetop'>
+      <Box overflowY={"auto"} pos={"relative"} transition={".6s"} height={"calc(100vh - 7.3rem)"} className='allchats hidetop'>
         {
           profile && profile._id === user._id &&
           <ProfileDrawer width="full" align="left" />
@@ -29,7 +29,7 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
             </Box>
             :
             !chatsLoading &&
-            <Box height={"100%"} display="flex" flexDir={"column"} gap=".4rem" margin=".5rem 0" >
+            <Box display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" paddingBottom={"1.3rem"} >
               {
                 chats?.map((chat, i) => {
                   return (
@@ -38,14 +38,16 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
                       onClick={() => { setSelectedChat(chat); setProfile(null) }}
                       display={"flex"}
                       width="100%"
-                      bg={selectedChat && selectedChat._id === chat._id ? "#2da89f61" : "#e2e2e29e"}
+                      bg={selectedChat?._id === chat?._id ? "#2da89f61" : "#e2e2e29e"}
+                      boxShadow={selectedChat?._id === chat?._id && "inset 0 0 0 1.1px #2baca1;"}
                       padding={"0.7rem 0.5rem"}
                       gap="1rem"
                       alignItems={"center"}
+                      className="singleChatBox"
                       cursor="pointer"
                       _hover={{ bg: "#2da89f61" }}
                     >
-                      <Box maxWidth={"67px"} marginLeft=".6rem">
+                      <Box maxWidth={"67px"} >
                         {getSender(chat, user)?.avatar === "" ?
                           <Avatar boxShadow={"0 0 0 3px #27aea4"} name={getSender(chat, user)?.name} />
                           : <Avatar boxShadow={"0 0 0 3px #27aea4"} src={getSender(chat, user)?.avatar} />

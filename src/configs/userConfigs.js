@@ -3,7 +3,7 @@ import { ChatState } from '../Context/ChatProvider'
 
 export const getSender = (chat, user) => {
     if (chat?.isGroupchat) return { name: chat.chatName, avatar: chat.groupAvatar }
-    let sender = chat.users.filter(u => u._id !== user._id)[0]
+    let sender = chat?.users.filter(u => u._id !== user?._id)[0]
     return sender
 }
 
@@ -14,7 +14,7 @@ export const GroupMembers = (selectedChat) => {
             <AvatarGroup size='sm' max={3}>
                 {
                     selectedChat.users.map((u, i) => {
-                        return <Avatar key={i} name={u.name} src={u.avatar} />
+                        return u.avatar.length === 0 ? <Avatar key={i} name={u.name} /> : <Avatar key={i} src={u.avatar}/>
                     })
                 }
             </AvatarGroup>

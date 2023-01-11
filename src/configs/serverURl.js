@@ -1,5 +1,5 @@
-const server = {
+export const  server = {
     URL:{
-        production:null,
+        production:"https://expensive-crab-lapel.cyclic.app",
     }
 }

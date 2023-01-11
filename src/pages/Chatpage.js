@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChatState } from '../Context/ChatProvider';
 import ChatsBox from '../components/ChatsBox';
 import MessagesBox from '../components/MessagesBox';
+import { server } from '../configs/serverURl';
 
 
 function Chatpage() {
@@ -44,7 +45,7 @@ function Chatpage() {
           token: localStorage.getItem('token')
         }
       }
-      const res = await fetch('/api/chat/allchats', config);
+      const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
       const json = await res.json();
 
       if (!json.status) return showToast("Error", json.message, "error", 3000)
@@ -66,7 +67,7 @@ function Chatpage() {
 
   return (
     <Box className={`mainChatBox hideleft`} width="100%" display="flex" justifyContent={"center"} alignItems="center" transition={".5s"}>
-      <Box width={{ base: "95%", md: "95%" }} height={{ base: "98%", md: "97%" }} background={"white"} display="flex" overflow={"hidden"}>
+      <Box width={{ base: "95%", md: "95%" }} height={{ base: "98vh", md: "97vh" }} background={"white"} display="flex" overflow={"hidden"}>
         <ChatsBox profile={profile} setProfile={setProfile} chats={chats} chatsLoading={chatsLoading} user={user} selectedChat={selectedChat} setSelectedChat={setSelectedChat} />
         <MessagesBox />
       </Box>

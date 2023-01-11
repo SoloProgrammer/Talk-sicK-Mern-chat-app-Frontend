@@ -19,10 +19,11 @@ import { ChatState } from '../../Context/ChatProvider'
 import UserListItem from '../../utils/UserListItem'
 import EmptySearch from '../EmptySearch'
 import { UserChip } from '../../configs/userConfigs'
+import { server } from '../../configs/serverURl'
 
 function PopupModal({ children, isOpen, onClose }) {
 
-    const { showToast,setIsfetchChats } = ChatState()
+    const { showToast, setIsfetchChats } = ChatState()
 
     const [selectedUsers, setSelectedUsers] = useState([])
     const [searchResults, setSearchResults] = useState(null)
@@ -44,7 +45,7 @@ function PopupModal({ children, isOpen, onClose }) {
                         token: localStorage.getItem('token')
                     }
                 }
-                const res = await fetch(`api/user/searchuser?search=${search}`, config);
+                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config);
                 const json = await res.json();
 
                 setSearchResults(json.searchResults.slice(0, 4))
@@ -62,7 +63,7 @@ function PopupModal({ children, isOpen, onClose }) {
 
         let timeSearch = setTimeout(() => {
             SearchUsers()
-        }, 300);
+        }, 200);
 
         // cleapUp function needed to 300ms delay in search.... 
         return () => { clearTimeout(timeSearch) }
@@ -91,35 +92,35 @@ function PopupModal({ children, isOpen, onClose }) {
         setSelectedUsers(selectedUsers.filter(u => u._id !== user._id))
     }
 
-    const [creategroupLoading,setCreategroupLoading] = useState(false)
+    const [creategroupLoading, setCreategroupLoading] = useState(false)
     const handleCreateGroup = async () => {
         let users = selectedUsers.map(u => u._id)
-        if(groupName === "") return showToast("Required*","Please Provide a groupName!","error",3000)
+        if (groupName === "") return showToast("Required*", "Please Provide a groupName!", "error", 3000)
 
         try {
             setCreategroupLoading(true)
             let config = {
-                method:"POST",
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     token: localStorage.getItem('token')
                 },
-                body: JSON.stringify({ users, groupName,groupAvatar:pic })
+                body: JSON.stringify({ users, groupName, groupAvatar: pic })
             }
-            let res = await fetch(`/api/chat/creategroup`, config)
+            let res = await fetch(`${server.URL.production}/api/chat/creategroup`, config)
 
-            if(res.status === 401){
+            if (res.status === 401) {
                 localStorage.removeItem('token');
                 window.location.reload(0);
             }
 
             const json = await res.json();
-            if(!json.status){
+            if (!json.status) {
                 setCreategroupLoading(false)
-                return showToast("Error",json.message,"error",3000)
+                return showToast("Error", json.message, "error", 3000)
             }
 
-            showToast("Success","New Group Created Sucessfully","success",3000);
+            showToast("Success", "New Group Created Sucessfully", "success", 3000);
             setIsfetchChats(true)
             setCreategroupLoading(false)
 
@@ -241,21 +242,30 @@ function PopupModal({ children, isOpen, onClose }) {
                     {
                         loading && <Loading size={"8rem"} />
                     }
-                    {(!loading && searchResults?.length > 0) && <Box padding={"0 1.4rem"} className='selectedUserschips flex' flexDir={"column"} width="100%" gap=".6rem" >
-                        {
-                            searchResults?.map((u, i) => {
-                                return <UserListItem key={i} user={u} handleFunc={handleAddUsers} />
-                            })
-                        }
-                    </Box>}
+                    
+                    {
+                        (!loading && searchResults?.length > 0) 
+                        && <Box padding={"0 1.4rem"} className='selectedUserschips flex' flexDir={"column"} width="100%" gap=".6rem" >
+                            {
+                                searchResults?.map((u, i) => {
+                                    return <UserListItem key={i} user={u} handleFunc={handleAddUsers} />
+                                })
+                            }
+                        </Box>
+                    }
 
                     {
                         (!loading && searchResults?.length === 0) && <EmptySearch size={"9rem"} />
                     }
-
+                    {
+                        (searchResults?.length > 3  && !loading) && 
+                        <Text margin={".9rem 1.4rem"} marginBottom="0rem" fontSize="0.7rem" fontWeight={'normal'} textTransform="capitalize">
+                            <b>NOTE</b> :- if there are more than 3 searchResults of the same keyword we will display only 4 of them!
+                        </Text>
+                    }
 
                     <ModalFooter>
-                        <Button isLoading={creategroupLoading} disabled={uploadloading} onClick={handleCreateGroup} colorScheme='teal' boxShadow={"0px 0px 2px rgba(0,0,0,.5)"} mr={3}>
+                        <Button isLoading={creategroupLoading} disabled={uploadloading || creategroupLoading} onClick={handleCreateGroup} colorScheme='teal' boxShadow={"0px 0px 2px rgba(0,0,0,.5)"} mr={3}>
                             Create
                         </Button>
                     </ModalFooter>

@@ -1,5 +1,6 @@
 import { createContext, useState, useContext } from 'react'
 import { useToast } from '@chakra-ui/react'
+import { server } from '../configs/serverURl';
 const ChatContext = createContext();
 
 const ChatProvider = ({ children }) => {
@@ -24,7 +25,7 @@ const ChatProvider = ({ children }) => {
                 'token': localStorage.getItem('token')
             }
         }
-        const res = await fetch(`/api/user/getuser`, config);
+        const res = await fetch(`${server.URL.production}/api/user/getuser`, config);
         return res.json()
     }
 

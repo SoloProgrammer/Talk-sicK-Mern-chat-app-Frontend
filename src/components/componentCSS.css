@@ -70,6 +70,14 @@
 .MessagesBox::-webkit-scrollbar{
     display: none;
 }
+.GroupUsersBox::-webkit-scrollbar{
+    width: .5rem;
+    background: transparent;
+}
+.GroupUsersBox::-webkit-scrollbar-thumb{
+    background: #c6c6c6b9;
+    border-radius: 10rem;
+}
 .profileDrawer{
     transition: .3s ease !important;
 }
@@ -84,7 +92,7 @@
     height: 100%;
     background: url('../Images/Bg1.jpg');
     background-position: fixed;
-    background-size: cover;
+    background-size: contain;
     filter: grayscale(1);
 }
 

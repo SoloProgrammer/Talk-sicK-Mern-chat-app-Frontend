@@ -1,5 +1,5 @@
 import { Box, Image, Text } from '@chakra-ui/react'
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 // import { getSender } from '../configs/userConfigs'
 import { ChatState } from '../Context/ChatProvider'
 import BrandLogo from '../utils/BrandLogo'
@@ -25,13 +25,11 @@ function MessagesBox() {
     if(isEmojiPick) setIsEmojiPick(false)
   }
 
-  const inputRef = useRef()
-
   const [isEmojiPick, setIsEmojiPick] = useState(false)
 
   useEffect(() => {
-    inputRef.current?.focus()
     setIsEmojiPick(false)
+    setMessageText("")
   }, [selectedChat])
 
   const handleEmojiClick = (emoji) => {
@@ -98,7 +96,7 @@ function MessagesBox() {
                     onMouseOver={(e) => e.target.src = emojiIconActive} onMouseOut={(e) => e.target.src = !isEmojiPick ? emojiIcon : emojiIconActive} />
                 </Box>
                 <Box height={"3rem"} width={{ base: "84%", md: "90%" }} >
-                  <input ref={inputRef} className='MessageBoxInput' placeholder='Write message here......' id='text' type="text" value={messageText} onChange={handleChange} />
+                  <input className='MessageBoxInput' placeholder='Write message here......' id='text' type="text" value={messageText} onChange={handleChange} />
                 </Box>
                 <Box className='flex' width={{ base: "8%", md: "5%" }}>
                   <Image

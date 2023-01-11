@@ -5,12 +5,25 @@
     background-position: center;
     font-family: Roboto;
 }
+html,body {    
+    height:100%;
+    margin: 0;
+}
 .red{
     color: red;
     font-weight: bold;
 }
 .left0{
     left: 0 !important;
+}
+.allchats::-webkit-scrollbar{
+    width: .7rem;
+    background: transparent;
+    display: none;
+}
+.allchats::-webkit-scrollbar-thumb{
+    background: rgba(209, 209, 209, 0.644);
+    border-radius: 2rem;
 }
 .right0{
     right: 0 !important;
