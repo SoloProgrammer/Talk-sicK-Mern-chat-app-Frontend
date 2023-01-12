@@ -32,9 +32,12 @@ function GroupMembersBox() {
                         return <GroupUser key={u._id} u={u} />
                     })
                 }
-                {groupUsers.length !== selectedChat?.users.length ? <Text width={"fit-content"} onClick={hanldeShowMore} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show more +</Text>
+                {
+                  selectedChat?.users.length > 5 && (
+                    groupUsers.length !== selectedChat?.users.length ? <Text width={"fit-content"} onClick={hanldeShowMore} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show more +</Text>
                     :
                     <Text onClick={hanldeShowLess} width={"fit-content"} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show less -</Text>
+                )
                 }
             </Box>
         </Box>

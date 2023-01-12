@@ -75,7 +75,7 @@ function GroupUser({ u }) {
             <Avatar name={u.name} src={u.avatar} size="sm" />{' '}
             <Box>
                 <b style={{ textTransform: "capitalize" }}>{u.name}</b>
-                <Text wordBreak={"break-word"} fontSize={"sm"}>Email: {u.email}</Text>
+                <Text marginTop={".2rem"} wordBreak={"break-word"} fontSize={"sm"}>Email: {u.email}</Text>
             </Box>
 
             {
