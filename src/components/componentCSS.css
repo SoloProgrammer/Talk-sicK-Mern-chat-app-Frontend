@@ -78,6 +78,10 @@
     background: #c6c6c6b9;
     border-radius: 10rem;
 }
+.GroupUser:hover .Admin{
+    background:#65f9ee94;
+    /* color: white !important; */
+}
 .profileDrawer{
     transition: .3s ease !important;
 }

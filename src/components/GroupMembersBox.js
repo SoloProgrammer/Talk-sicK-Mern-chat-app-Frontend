@@ -29,12 +29,12 @@ function GroupMembersBox() {
             <Box className='GroupUsersBox' height={{ base: 'calc(100vh - 30.5rem)', md: 'calc(100vh - 29rem)' }} width="100%" overflowY="auto" >
                 {
                     groupUsers.map(u => {
-                        return <GroupUser key={u._id} user={u} />
+                        return <GroupUser key={u._id} u={u} />
                     })
                 }
-                {groupUsers.length !== selectedChat?.users.length ? <Text onClick={hanldeShowMore} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show more +</Text>
+                {groupUsers.length !== selectedChat?.users.length ? <Text width={"fit-content"} onClick={hanldeShowMore} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show more +</Text>
                     :
-                    <Text onClick={hanldeShowLess} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show less -</Text>
+                    <Text onClick={hanldeShowLess} width={"fit-content"} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show less -</Text>
                 }
             </Box>
         </Box>

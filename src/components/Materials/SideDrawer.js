@@ -20,7 +20,7 @@ import { server } from '../../configs/serverURl'
 
 function SideDrawer({ isOpen, onClose }) {
 
-    const { showToast,setIsfetchChats } = ChatState();
+    const { showToast,setIsfetchChats,setSelectedChat,setProfile } = ChatState();
 
     const [search, setSearch] = useState("")
     const [loading, setLoading] = useState(false)
@@ -77,6 +77,11 @@ function SideDrawer({ isOpen, onClose }) {
             if (json.createdChat) {
                 setIsfetchChats(true)
                 return showToast("Talk-o-Meter reading", json.message, "success", 3000)
+            }
+            if(json?.isChat){
+                setSelectedChat(json.isChat[0])
+                setProfile(null)
+                // console.log(json.isChat)
             }
 
         } catch (error) {

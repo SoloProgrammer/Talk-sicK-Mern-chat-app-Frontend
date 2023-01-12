@@ -5,6 +5,7 @@ import { ChatState } from '../Context/ChatProvider';
 import ChatsBox from '../components/ChatsBox';
 import MessagesBox from '../components/MessagesBox';
 import { server } from '../configs/serverURl';
+import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
@@ -46,6 +47,9 @@ function Chatpage() {
         }
       }
       const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
+
+      if(res.status === 401) HandleLogout()
+
       const json = await res.json();
 
       if (!json.status) return showToast("Error", json.message, "error", 3000)

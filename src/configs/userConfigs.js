@@ -14,7 +14,7 @@ export const GroupMembers = (selectedChat) => {
             <AvatarGroup size='sm' max={3}>
                 {
                     selectedChat.users.map((u, i) => {
-                        return u.avatar.length === 0 ? <Avatar key={i} name={u.name} /> : <Avatar key={i} src={u.avatar}/>
+                        return u.avatar.length === 0 ? <Avatar key={i} name={u.name} /> : <Avatar key={i} src={u.avatar} />
                     })
                 }
             </AvatarGroup>
@@ -51,4 +51,9 @@ export const UserChip = ({ user, handleFunc }) => {
             </Tooltip>
         </Box>
     )
+}
+
+export const HandleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.reload(0);
 }

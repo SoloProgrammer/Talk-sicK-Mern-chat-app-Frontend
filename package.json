@@ -2,7 +2,7 @@
   "name": "chat-app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://expensive-crab-lapel.cyclic.app",
+  "proxy": "http://localhost:8001",
   "dependencies": {
     "@chakra-ui/icons": "^2.0.15",
     "@chakra-ui/react": "^2.4.6",

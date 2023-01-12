@@ -18,7 +18,7 @@ import Loading from './Loading'
 import { ChatState } from '../../Context/ChatProvider'
 import UserListItem from '../../utils/UserListItem'
 import EmptySearch from '../EmptySearch'
-import { UserChip } from '../../configs/userConfigs'
+import { HandleLogout, UserChip } from '../../configs/userConfigs'
 import { server } from '../../configs/serverURl'
 
 function PopupModal({ children, isOpen, onClose }) {
@@ -109,10 +109,7 @@ function PopupModal({ children, isOpen, onClose }) {
             }
             let res = await fetch(`${server.URL.production}/api/chat/creategroup`, config)
 
-            if (res.status === 401) {
-                localStorage.removeItem('token');
-                window.location.reload(0);
-            }
+            if (res.status === 401) HandleLogout();
 
             const json = await res.json();
             if (!json.status) {
@@ -208,7 +205,7 @@ function PopupModal({ children, isOpen, onClose }) {
                                         <Text fontWeight={'medium'} fontSize="lg">Group Avatar</Text>
 
                                         {uploadloading && <Box zIndex={10} position={"absolute"} right={{ base: "4rem", md: "0rem" }}>
-                                            <Loading size={"5rem"} />
+                                            <Loading size={"5rem"} src={"https://miro.medium.com/max/600/1*beQRWt1uWdnQM_nqCwhJnA.gif"}/>
                                         </Box>}
 
                                     </Box>
@@ -240,7 +237,7 @@ function PopupModal({ children, isOpen, onClose }) {
                     }
 
                     {
-                        loading && <Loading size={"8rem"} />
+                        loading && <Loading size={"8rem"} src={"https://miro.medium.com/max/600/1*beQRWt1uWdnQM_nqCwhJnA.gif"}/>
                     }
                     
                     {
