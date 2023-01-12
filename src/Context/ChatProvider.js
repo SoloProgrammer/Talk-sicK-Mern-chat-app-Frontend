@@ -29,6 +29,8 @@ const ChatProvider = ({ children }) => {
         return res.json()
     }
 
+    const [chats, setChats] = useState(null)
+
     const [selectedChat, setSelectedChat] = useState(null);
 
     const [isfetchChats, setIsfetchChats] = useState(null);
@@ -37,7 +39,7 @@ const ChatProvider = ({ children }) => {
 
 
     return (
-        <ChatContext.Provider value={{ profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats }}>
+        <ChatContext.Provider value={{ chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats }}>
             {children}
         </ChatContext.Provider>
     )

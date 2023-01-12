@@ -9,7 +9,7 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, showToast, isfetchChats, setIsfetchChats, user, selectedChat, setSelectedChat, setProfile, profile } = ChatState()
+  const { getUser, setUser, showToast, chats, setChats, isfetchChats, setIsfetchChats, user, selectedChat, setSelectedChat, setProfile, profile } = ChatState()
   const navigate = useNavigate();
   const [chatsLoading, setChatsLoading] = useState(false)
 
@@ -36,7 +36,6 @@ function Chatpage() {
     setTimeout(() => document.querySelector('.profileDrawer')?.classList.remove('translateXFull-'), 0);
   }, [profile])
 
-  const [chats, setChats] = useState(null)
 
   const fetchallchats = async () => {
     setChatsLoading(true)
@@ -48,7 +47,7 @@ function Chatpage() {
       }
       const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
 
-      if(res.status === 401) HandleLogout()
+      if (res.status === 401) HandleLogout()
 
       const json = await res.json();
 
