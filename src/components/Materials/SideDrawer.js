@@ -17,10 +17,11 @@ import UserListItem from '../../utils/UserListItem'
 import SearchLoading from '../../utils/SearchLoading'
 import EmptySearch from '../EmptySearch'
 import { server } from '../../configs/serverURl'
+import { HandleLogout } from '../../configs/userConfigs'
 
 function SideDrawer({ isOpen, onClose }) {
 
-    const { showToast,setIsfetchChats,setSelectedChat,setProfile } = ChatState();
+    const { showToast,setIsfetchChats,setSelectedChat,setProfile,chats } = ChatState();
 
     const [search, setSearch] = useState("")
     const [loading, setLoading] = useState(false)
@@ -47,21 +48,17 @@ function SideDrawer({ isOpen, onClose }) {
             }
             const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config)
             const json = await res.json()
-            if(!json.status){
-                localStorage.removeItem('token')
-                window.location.reload(0)
-                return
-            }
+
+            if(!json.status) HandleLogout()
+
             setResults(json.searchResults)
             setLoading(false)
         } catch (error) {
-
+            showToast("Error",error.message,"error",3000)
         }
     }
 
-    const handleAccesschat = async (user) => {
-        onClose()
-        if (!user) return showToast("Error", "Something went wrong", "error", 3000)
+    const CreateChat = async (user) =>{
         try {
             let config = {
                 method: 'POST',
@@ -79,14 +76,28 @@ function SideDrawer({ isOpen, onClose }) {
                 return showToast("Talk-o-Meter reading", json.message, "success", 3000)
             }
             if(json?.isChat){
-                setSelectedChat(json.isChat[0])
                 setProfile(null)
-                // console.log(json.isChat)
             }
 
         } catch (error) {
             return showToast('Error', error.message, "error", 3000)
         }
+    }
+
+    const handleAccesschat = async (user) => {
+        onClose()
+        if (!user) return showToast("Error", "Something went wrong", "error", 3000)
+
+        chats?.map((chat,i) =>{
+            if(!(chat.isGroupchat) && chat.users.map(u => u._id).includes(user._id)){
+                setSelectedChat(chat)
+                return false
+            }
+            // if index of map reaches the length of the chats that means the chat has not yet created with the user so we are creating the chat now with that user!
+            if(i === chats.length - 1) CreateChat(user)
+            return 1
+        })
+        
     }
 
     return (
