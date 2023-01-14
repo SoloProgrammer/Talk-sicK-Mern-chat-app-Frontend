@@ -73,7 +73,7 @@ function MessagesBox() {
           <Box width={"100%"} pos="relative">
             <MessagesBoxTopbar />
             <MessageBox />
-            <Box marginLeft={{ base: "0rem", md: ".2rem" }} background={"white"} pos={"absolute"} bottom="0" width={"100%"} boxShadow="0 0 4px rgba(0,0,0,.3)">
+            <Box zIndex={3} marginLeft={{ base: "0rem", md: ".2rem" }} background={"white"} pos={"absolute"} bottom="0" width={"100%"} boxShadow="0 0 4px rgba(0,0,0,.3)">
               <Box pos={"relative"} display="flex" padding={{ base: ".3rem .9rem", md: ".3rem" }}>
                 {
                   isEmojiPick &&
