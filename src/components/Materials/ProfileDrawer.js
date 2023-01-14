@@ -49,7 +49,7 @@ function ProfileDrawer({ width, align = "right" }) {
                         <Tooltip label="About" placement='top'>
                             <Image width={"1.5rem"} opacity=".9" src='https://cdn-icons-png.flaticon.com/512/6583/6583141.png' />
                         </Tooltip>
-                        <i>{profile.about}</i>
+                        <i>{profile?.about}</i>
                     </Text>
                 }
                 {

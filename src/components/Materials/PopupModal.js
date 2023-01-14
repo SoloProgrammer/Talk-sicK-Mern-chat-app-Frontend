@@ -90,10 +90,6 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
         }
     }
 
-    const HandleFunc = () => {
-        handleFunc(selectedUsers)
-    }
-
     const handleRemoveUsers = (user) => {
         setSelectedUsers(selectedUsers.filter(u => u._id !== user._id))
     }
@@ -274,7 +270,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                     }
 
                     {<ModalFooter>
-                        {<Button display={(addMember && selectedUsers.length < 1) > 0 ? "none" : "flex"} isLoading={creategroupLoading || addmemberLoading} disabled={uploadloading || creategroupLoading || addmemberLoading} onClick={addMember ? HandleFunc : handleCreateGroup} colorScheme='teal' boxShadow={"0px 0px 2px rgba(0,0,0,.5)"} mr={3}>
+                        {<Button display={(addMember && selectedUsers.length < 1) > 0 ? "none" : "flex"} isLoading={creategroupLoading || addmemberLoading} disabled={uploadloading || creategroupLoading || addmemberLoading} onClick={()=> addMember ?  handleFunc(selectedUsers) : handleCreateGroup} colorScheme='teal' boxShadow={"0px 0px 2px rgba(0,0,0,.5)"} mr={3}>
                             {!addMember ? "Create" : "Add now"}
                         </Button>}
                     </ModalFooter>}

@@ -20,13 +20,13 @@ function MessageBox() {
   return (
     <Box marginLeft={{ base: "0rem", md: ".2rem" }} className='MessagesBox' display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden">
       {
-        profile && profile._id !== user._id &&
+        profile && profile._id !== user?._id && // profile?._id is same as profile && profile._id but in some instance we need to check the profile first and then the detauils inside it! it opens this profile drawer with profile?._id condition!
         <ProfileDrawer width="50%" />
       }
       <Box display={"flex"} flexDir="column" gap=".4rem" overflowY={"auto"} width="100vh">
           {
             messages.map((m, i) => {
-              return <Text pos="relative" width={"fit-content"} background={"white"} color="black" padding={".3rem"} borderRadius=".2rem">
+              return <Text kay={i} pos="relative" width={"fit-content"} background={"white"} color="black" padding={".3rem"} borderRadius=".2rem">
                 hii how are you?❤️
               </Text>
             })

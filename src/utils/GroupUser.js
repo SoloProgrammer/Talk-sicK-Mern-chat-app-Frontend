@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import { ChatState } from '../Context/ChatProvider'
-import Loading from '../components/Materials/Loading'
 import { HandleLogout } from '../configs/userConfigs'
 import { server } from '../configs/serverURl'
 
@@ -95,7 +94,7 @@ function GroupUser({ u }) {
                                     src="https://cdn-icons-png.flaticon.com/512/9351/9351415.png" />
                             </Tooltip>
                             :
-                            <Spinner color='#2a7695' size="xs" marginLeft=".45rem" />
+                            <Spinner color='#3e97bb' size="xs" marginLeft=".45rem" />
                         )
                     }
                 </Box>
@@ -116,7 +115,7 @@ function GroupUser({ u }) {
                                     src="https://cdn-icons-png.flaticon.com/512/1301/1301464.png" />
                             </Tooltip>
                             :
-                            <Spinner color='#2a7695' />
+                            <Spinner color='#3e97bb' />
                         )
                     }
                 </Box>

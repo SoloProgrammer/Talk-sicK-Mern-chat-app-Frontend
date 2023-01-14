@@ -1,5 +1,5 @@
 import { Box, Image, Text, useDisclosure } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import GroupUser from '../utils/GroupUser'
 import { ChatState } from '../Context/ChatProvider'
 import PopupModal from './Materials/PopupModal'
@@ -17,13 +17,22 @@ function GroupMembersBox() {
     const [groupUsers, setGroupUsers] = useState(selectedChat?.users.slice(0, lastInd))
 
     const hanldeShowMore = () => {
-        setGroupUsers(groupUsers.concat(selectedChat?.users.slice(lastInd)))
+        // console.log(groupUsers.concat(selectedChat?.users.slice(lastInd,lastInd + lastInd)))
+        console.log(lastInd)
+        setGroupUsers(groupUsers.concat(selectedChat?.users.slice(lastInd,lastInd + 5)))
         setLastInd(lastInd + 5)
     }
     const hanldeShowLess = () => {
-        setGroupUsers(groupUsers.slice(0, lastInd - 5))
-        setLastInd(lastInd - 5)
+        setGroupUsers(groupUsers.slice(0, 5))
+        setLastInd(5)
     }
+
+    useEffect(() =>{
+        setGroupUsers(selectedChat?.users.slice(0, 5))
+        // eslint-disable-next-line
+        setLastInd(5)
+    },[selectedChat])
+
     const [loading, setLoading] = useState(false)
     const hanldeAddmember = async (users) => {
         console.log(users)
@@ -56,6 +65,8 @@ function GroupMembersBox() {
             setLoading(false)
         }
     }
+
+    
 
     return (
         <Box width={"90%"} marginLeft=".8rem">
@@ -93,7 +104,7 @@ function GroupMembersBox() {
                 }
                 {
                     selectedChat?.users.length > 5 && (
-                        groupUsers.length !== selectedChat?.users.length ? <Text width={"fit-content"} onClick={hanldeShowMore} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show more +</Text>
+                        (groupUsers.length !== selectedChat?.users.length || groupUsers.length === 5) ? <Text width={"fit-content"} onClick={hanldeShowMore} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show more +</Text>
                             :
                             <Text onClick={hanldeShowLess} width={"fit-content"} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show less -</Text>
                     )
