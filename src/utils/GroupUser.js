@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Avatar, Box, Image, Text, Tooltip } from '@chakra-ui/react'
+import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import { ChatState } from '../Context/ChatProvider'
 import Loading from '../components/Materials/Loading'
 import { HandleLogout } from '../configs/userConfigs'
@@ -80,7 +80,7 @@ function GroupUser({ u }) {
 
             {
                 (selectedChat?.isGroupchat) && selectedChat?.groupAdmin.map(u => u._id).includes(u._id) &&
-                <Box className='flex Admin' justifyContent={"space-between"} pos={"absolute"} right=".3rem" top={".3rem"} padding=".2rem .4rem" borderRadius={".2rem"} background="#48f2e64a">
+                <Box height=".1.46rem" className='flex Admin' justifyContent={"space-between"} pos={"absolute"} right=".3rem" top={".3rem"} padding=".2rem .4rem" borderRadius={".2rem"} background="#48f2e64a">
                     <Text fontSize={".7rem"} color="darkcyan" fontWeight={"medium"}>Admin</Text>
                     {
                         (selectedChat?.groupAdmin.map(u => u._id).includes(user?._id)) &&
@@ -95,9 +95,8 @@ function GroupUser({ u }) {
                                     src="https://cdn-icons-png.flaticon.com/512/9351/9351415.png" />
                             </Tooltip>
                             :
-                            <Box marginLeft={".3rem"}>
-                                <Loading size={".9rem"} src={"https://bbmptax.karnataka.gov.in/images/loader.gif"} />
-                            </Box>)
+                            <Spinner color='#2a7695' size="xs" marginLeft=".45rem" />
+                        )
                     }
                 </Box>
 
@@ -117,7 +116,8 @@ function GroupUser({ u }) {
                                     src="https://cdn-icons-png.flaticon.com/512/1301/1301464.png" />
                             </Tooltip>
                             :
-                            <Loading size={"1.5rem"} src={"https://bbmptax.karnataka.gov.in/images/loader.gif"} />)
+                            <Spinner color='#2a7695' />
+                        )
                     }
                 </Box>
 

@@ -21,9 +21,9 @@ import EmptySearch from '../EmptySearch'
 import { HandleLogout, UserChip } from '../../configs/userConfigs'
 import { server } from '../../configs/serverURl'
 
-function PopupModal({ children, isOpen, onClose }) {
+function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmemberLoading }) {
 
-    const { showToast, setIsfetchChats } = ChatState()
+    const { showToast, setIsfetchChats, selectedChat } = ChatState()
 
     const [selectedUsers, setSelectedUsers] = useState([])
     const [searchResults, setSearchResults] = useState(null)
@@ -48,7 +48,9 @@ function PopupModal({ children, isOpen, onClose }) {
                 const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config);
                 const json = await res.json();
 
-                setSearchResults(json.searchResults.slice(0, 4))
+                // let result = result1.filter(o1 => !result2.some(o2 => o1.id === o2.id));
+
+                setSearchResults(json?.searchResults?.filter(u => !selectedChat?.users.some(U => U._id === u._id)).slice(0, 4))
 
             } catch (error) {
                 showToast("Error", error.message, "error", 3000)
@@ -86,6 +88,10 @@ function PopupModal({ children, isOpen, onClose }) {
         if (!selectedUsers.some(u => u._id === user._id)) {
             setSelectedUsers([user, ...selectedUsers])
         }
+    }
+
+    const HandleFunc = () => {
+        handleFunc(selectedUsers)
     }
 
     const handleRemoveUsers = (user) => {
@@ -181,7 +187,7 @@ function PopupModal({ children, isOpen, onClose }) {
                     <ModalHeader>
                         <Box className='flex' gap={".6rem"} justifyContent="start">
                             <Text textTransform={'capitalize'} fontSize="1.5rem">
-                                Create a Group
+                                {addMember ? "Add a new group member" : "Create a Group"}
                             </Text>
                             <Image width={"2.5rem"} src='https://cdn-icons-png.flaticon.com/512/2990/2990282.png' />
 
@@ -189,7 +195,7 @@ function PopupModal({ children, isOpen, onClose }) {
                     </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Box display={"flex"} gap=".3rem" alignItems={{ base: "normal", md: "center" }} flexDir={{ base: "column", md: "row" }}>
+                        {!addMember && <Box display={"flex"} gap=".3rem" alignItems={{ base: "normal", md: "center" }} flexDir={{ base: "column", md: "row" }}>
                             <Box>
                                 <Box className='flex' gap={"1rem"} justifyContent="start">
                                     <Image width={"2rem"} src='https://cdn-icons-png.flaticon.com/512/1828/1828469.png' />
@@ -205,20 +211,20 @@ function PopupModal({ children, isOpen, onClose }) {
                                         <Text fontWeight={'medium'} fontSize="lg">Group Avatar</Text>
 
                                         {uploadloading && <Box zIndex={10} position={"absolute"} right={{ base: "4rem", md: "0rem" }}>
-                                            <Loading size={"5rem"} src={"https://miro.medium.com/max/600/1*beQRWt1uWdnQM_nqCwhJnA.gif"}/>
+                                            <Loading size={"5rem"} src={"https://miro.medium.com/max/600/1*beQRWt1uWdnQM_nqCwhJnA.gif"} />
                                         </Box>}
 
                                     </Box>
                                     <Avatar name='Group Avatar' width={"2.5rem"} height="2.5rem" src={pic ? pic : defaultPic} />
                                 </Box>
                             </Box>
-                        </Box>
+                        </Box>}
                         {/* /This Text will act like a divider */}
                         <Text marginTop={".9rem"} />
                         <Box>
                             <Box className='flex' gap={"1rem"} justifyContent="start">
                                 <Image width={"1.8rem"} src='https://cdn-icons-png.flaticon.com/512/1531/1531117.png' />
-                                <Text fontWeight={'medium'} fontSize="lg">Group Members</Text>
+                                <Text fontWeight={'medium'} fontSize="lg">Search Member</Text>
                             </Box>
                             <Input value={search} onChange={HandleSearch} variant='flushed' placeholder='Eg :- Rohan, Mohan or Sohan ...' />
                         </Box>
@@ -237,11 +243,11 @@ function PopupModal({ children, isOpen, onClose }) {
                     }
 
                     {
-                        loading && <Loading size={"8rem"} src={"https://miro.medium.com/max/600/1*beQRWt1uWdnQM_nqCwhJnA.gif"}/>
+                        loading && <Loading size={"8rem"} src={"https://miro.medium.com/max/600/1*beQRWt1uWdnQM_nqCwhJnA.gif"} />
                     }
-                    
+
                     {
-                        (!loading && searchResults?.length > 0) 
+                        (!loading && searchResults?.length > 0)
                         && <Box padding={"0 1.4rem"} className='selectedUserschips flex' flexDir={"column"} width="100%" gap=".6rem" >
                             {
                                 searchResults?.map((u, i) => {
@@ -255,17 +261,23 @@ function PopupModal({ children, isOpen, onClose }) {
                         (!loading && searchResults?.length === 0) && <EmptySearch size={"9rem"} />
                     }
                     {
-                        (searchResults?.length > 3  && !loading) && 
+                        (searchResults?.length > 3 && !loading) &&
                         <Text margin={".9rem 1.4rem"} marginBottom="0rem" fontSize="0.7rem" fontWeight={'normal'} textTransform="capitalize">
                             <b>NOTE</b> :- if there are more than 3 searchResults of the same keyword we will display only 4 of them!
                         </Text>
                     }
+                    {
+                        addMember
+                        && <Text margin={".9rem 1.4rem"} marginBottom="0rem" fontSize="0.7rem" fontWeight={'normal'} textTransform="capitalize">
+                            <b>Search NOTE</b> :- The members which are not in the group will be searched!
+                        </Text>
+                    }
 
-                    <ModalFooter>
-                        <Button isLoading={creategroupLoading} disabled={uploadloading || creategroupLoading} onClick={handleCreateGroup} colorScheme='teal' boxShadow={"0px 0px 2px rgba(0,0,0,.5)"} mr={3}>
-                            Create
-                        </Button>
-                    </ModalFooter>
+                    {<ModalFooter>
+                        {<Button display={(addMember && selectedUsers.length < 1) > 0 ? "none" : "flex"} isLoading={creategroupLoading || addmemberLoading} disabled={uploadloading || creategroupLoading || addmemberLoading} onClick={addMember ? HandleFunc : handleCreateGroup} colorScheme='teal' boxShadow={"0px 0px 2px rgba(0,0,0,.5)"} mr={3}>
+                            {!addMember ? "Create" : "Add now"}
+                        </Button>}
+                    </ModalFooter>}
                 </ModalContent>
             </Modal>
         </>

@@ -91,6 +91,7 @@ function SideDrawer({ isOpen, onClose }) {
         chats?.map((chat,i) =>{
             if(!(chat.isGroupchat) && chat.users.map(u => u._id).includes(user._id)){
                 setSelectedChat(chat)
+                setProfile(null)
                 return false
             }
             // if index of map reaches the length of the chats that means the chat has not yet created with the user so we are creating the chat now with that user!

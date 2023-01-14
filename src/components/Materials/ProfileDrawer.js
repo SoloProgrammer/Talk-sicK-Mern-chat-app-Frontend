@@ -12,13 +12,13 @@ function ProfileDrawer({ width, align = "right" }) {
 
     return (
         <Box
-            className={`profileDrawer ${align === "right" ? "right0 translateXFull" : "left0 translateXFull-"}`}
+            className={`profileDrawer ${align === "right" ? "right0 translateXFull maxWidth520" : "left0 translateXFull-"}`}
             marginLeft={{ base: ".2rem", md: "0px" }}
             width={{ base: "full", md: width }}
             height={"100%"}
             pos={"absolute"}
             transition="all .3s"
-            zIndex={user._id === profile._id && "10"}
+            zIndex={"1"}
             background="white">
             <Box className='DrawerInner' display={"flex"} flexDir="column" gap={".5rem"} alignItems="center" width={"full"} height="full" paddingTop={"1rem"} pos="relative">
 

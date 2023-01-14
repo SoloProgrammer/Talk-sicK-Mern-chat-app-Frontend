@@ -7,6 +7,11 @@ export const getSender = (chat, user) => {
     return sender
 }
 
+export const isAdmin = () => {
+    const { selectedChat, user } = ChatState()
+    return selectedChat?.groupAdmin.map(u => u._id).includes(user._id)
+}
+
 export const GroupMembers = (selectedChat) => {
     const { profile } = ChatState()
     return (

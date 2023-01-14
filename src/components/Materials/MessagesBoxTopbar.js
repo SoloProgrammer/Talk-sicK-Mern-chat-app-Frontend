@@ -18,7 +18,7 @@ function MessagesBoxTopbar() {
                 marginLeft=".1rem"
                 boxShadow="0 0 3px rgba(0,0,0,.9)"
                 display={"flex"}
-                zIndex="1"
+                zIndex="2"
                 justifyContent="space-between"
                 alignItems={"center"}
                 padding="0 .9rem">
@@ -50,6 +50,7 @@ function MessagesBoxTopbar() {
             {
                 window.innerWidth < 770 && selectedChat?.isGroupchat &&
                 <Box
+                    zIndex={1}
                     pos={"relative"}
                     height={"2.5rem"}
                     maxWidth="100%"
