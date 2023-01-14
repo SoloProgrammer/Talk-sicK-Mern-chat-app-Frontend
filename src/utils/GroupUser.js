@@ -7,10 +7,11 @@ import { server } from '../configs/serverURl'
 
 function GroupUser({ u }) {
 
-    const { user, selectedChat, showToast, setSelectedChat, setChats } = ChatState()
+    const { user, selectedChat, showToast, setSelectedChat, setChats, setProfile, setIsfetchChats, chats, setChatsLoading } = ChatState()
 
     const [addAdminLoading, setAddAdminLoading] = useState(false)
     const [removeAdminLoading, setRemoveAdminLoading] = useState(false)
+    const [removeUserLoading, setRemoveUserLoading] = useState(false)
 
     const handleFunc = async (userId, action) => {
 
@@ -56,6 +57,88 @@ function GroupUser({ u }) {
             showToast("Error", error.message, "error", 3000)
         }
     }
+    const handleRemoveFromGroup = async (userId) => {
+        setRemoveUserLoading(true)
+        try {
+            let config = {
+                method: 'POST',
+                headers: {
+                    "Content-Type": 'application/json',
+                    token: localStorage.getItem('token')
+                },
+                body: JSON.stringify({ chatId: selectedChat?._id, userId })
+            }
+
+            let res = await fetch(`${server.URL.production}/api/chat/groupremove`, config);
+
+            if (res.status === 401) HandleLogout();
+
+            let json = await res.json();
+
+            setRemoveUserLoading(false)
+
+            if (!json.status) return showToast("Error", json.message, "error", 3000)
+
+            if (!json.chats.map(c => c._id).includes(selectedChat._id)) {
+                setSelectedChat(null)
+                setProfile(null)
+            }
+            else setSelectedChat(json.chat)
+
+            setIsfetchChats(true)
+
+            showToast("Success", json.message, "success", 3000)
+        } catch (error) {
+            return showToast("Error", error.message, "error", 3000)
+        }
+    }
+    const CreateChat = async (userId) => {
+        try {
+            setChatsLoading(true)
+            let config = {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    token: localStorage.getItem('token')
+                },
+                body: JSON.stringify({ userId })
+            }
+
+            let res = await fetch(`${server.URL.production}/api/chat`, config);
+
+            if (res.status === 401) HandleLogout();
+
+            let json = await res.json();
+
+            if (!json.status) return showToast("Error", json.message, "error", 3000)
+
+            setIsfetchChats(true)
+            setSelectedChat(json.fullchat)
+            setProfile(null)
+
+        } catch (error) {
+            showToast("Error", error.message, "error", 3000)
+            setChatsLoading(false)
+        }
+
+    }
+    const handleStartChat = (U) => {
+        let isChat = false
+        if (U._id !== user?._id) {
+            chats.map((c, i) => {
+                if (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(U._id) && !c.isGroupchat) {
+                    setSelectedChat(c);
+                    setProfile(null)
+                    isChat = true
+                }
+                else {
+                    if (i === (chats.length - 1) && !isChat) {
+                        CreateChat(U._id)
+                    }
+                }
+            })
+        }
+    }
 
     return (
         <Box
@@ -71,9 +154,24 @@ function GroupUser({ u }) {
             width="99%"
             alignItems="center">
 
-            <Avatar name={u.name} src={u.avatar} size="sm" />{' '}
+            <Tooltip label={user?._id === u._id ? "You" : "Start a chat"} placement='left'>
+                <Avatar onClick={() => handleStartChat(u)} cursor={"pointer"} _hover={{ boxShadow: "0 0 0 2px white" }} name={u.name} src={u.avatar} size="sm" />
+            </Tooltip>
+
             <Box>
-                <b style={{ textTransform: "capitalize" }}>{u.name}</b>
+                <Box display={"flex"} gap="1rem" alignItems={"center"}>
+                    <b style={{ textTransform: "capitalize" }}>{u?.name}</b>
+                    {
+                        ((selectedChat?.groupAdmin.map(u => u._id).includes(user?._id)) || u?._id === user?._id)
+                        &&
+                        (!removeUserLoading ?
+                            <Tooltip label={u?._id === user._id ? "Left group" : "Remove from group"} placement="top">
+                                <Image onClick={() => handleRemoveFromGroup(u?._id)} cursor={"pointer"} width="1.35rem" height={"1.35rem"} src="https://cdn-icons-png.flaticon.com/512/9404/9404050.png" />
+                            </Tooltip>
+                            :
+                            <Spinner color='#3e97bb' size="sm" />)
+                    }
+                </Box>
                 <Text marginTop={".2rem"} wordBreak={"break-word"} fontSize={"sm"}>Email: {u.email}</Text>
             </Box>
 

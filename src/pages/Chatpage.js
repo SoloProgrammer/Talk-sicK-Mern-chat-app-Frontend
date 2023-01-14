@@ -9,9 +9,8 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, showToast, chats, setChats, isfetchChats, setIsfetchChats, user, selectedChat, setSelectedChat, setProfile, profile } = ChatState()
+  const { getUser, setUser, showToast, chats, chatsLoading, setChatsLoading, setChats, isfetchChats, setIsfetchChats, user, selectedChat, setSelectedChat, setProfile, profile } = ChatState()
   const navigate = useNavigate();
-  const [chatsLoading, setChatsLoading] = useState(false)
 
   const GetuserInfo = async () => {
     let res = await getUser();

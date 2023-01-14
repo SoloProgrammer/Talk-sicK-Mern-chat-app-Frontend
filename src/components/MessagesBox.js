@@ -28,12 +28,12 @@ function MessagesBox() {
   const [isEmojiPick, setIsEmojiPick] = useState(false)
 
   useEffect(() => {
-    setIsEmojiPick(false)
     setMessageText("")
   }, [selectedChat])
 
   const handleEmojiClick = (emoji) => {
     setMessageText(messageText.concat(emoji.emoji))
+    setIsEmojiPick(false)
   }
 
   return (
