@@ -32,7 +32,6 @@ function MessagesBoxTopbar() {
                             getSender(selectedChat, user)?.name
                         }
                     </Text>
-
                 </Box>
                 <Box className='msgrightTop'>
                     {

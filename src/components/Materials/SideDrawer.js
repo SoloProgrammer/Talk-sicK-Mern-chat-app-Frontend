@@ -96,15 +96,16 @@ function SideDrawer({ isOpen, onClose }) {
     const handleAccesschat = async (user) => {
         onClose()
         if (!user) return showToast("Error", "Something went wrong", "error", 3000)
+        let ischat = false
 
         chats?.map((chat, i) => {
             if (!(chat.isGroupchat) && chat.users.map(u => u._id).includes(user._id)) {
                 setSelectedChat(chat)
                 setProfile(null)
-                return false
+                ischat = true
             }
             // if index of map reaches the length of the chats that means the chat has not yet created with the user so we are creating the chat now with that user!
-            if (i === chats.length - 1) CreateChat(user)
+            if (i === chats.length - 1 && !ischat) CreateChat(user)
             return 1
         })
 
