@@ -40,7 +40,7 @@ export const UserChip = ({ user, handleFunc }) => {
             borderRadius="1rem"
             alignItems={"center"}>
 
-            <Avatar size="xs" src={user.avatar ? user.avatar : "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
+            <Avatar size="xs" src={user.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1673770725/iqujmf95b5loz1ohqphc.png"} />
 
             <Text fontWeight={"medium"} fontSize=".9rem">{user.name}</Text>
 
