@@ -21,7 +21,7 @@ import { HandleLogout } from '../../configs/userConfigs'
 
 function SideDrawer({ isOpen, onClose }) {
 
-    const { showToast,setIsfetchChats,setSelectedChat,setProfile,chats } = ChatState();
+    const { showToast, setSelectedChat, setProfile, chats, setChats, setChatsLoading } = ChatState();
 
     const [search, setSearch] = useState("")
     const [loading, setLoading] = useState(false)
@@ -49,16 +49,17 @@ function SideDrawer({ isOpen, onClose }) {
             const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config)
             const json = await res.json()
 
-            if(!json.status) HandleLogout()
+            if (!json.status) HandleLogout()
 
             setResults(json.searchResults)
             setLoading(false)
         } catch (error) {
-            showToast("Error",error.message,"error",3000)
+            showToast("Error", error.message, "error", 3000)
         }
     }
 
-    const CreateChat = async (user) =>{
+    const CreateChat = async (user) => {
+        setChatsLoading(true)
         try {
             let config = {
                 method: 'POST',
@@ -69,13 +70,21 @@ function SideDrawer({ isOpen, onClose }) {
                 body: JSON.stringify({ userId: user._id })
             }
             let res = await fetch(`${server.URL.production}/api/chat`, config)
+
+            if (res.status === 401) HandleLogout();
+
             let json = await res.json();
 
-            if (json.createdChat) {
-                setIsfetchChats(true)
+            if (!json.status) return showToast("Error", json.message, "error", 3000)
+
+            if (json.status) {
+                setChatsLoading(false)
+                setChats(json.chats)
+                setSelectedChat(json.chat)
+                setProfile(null)
                 return showToast("Talk-o-Meter reading", json.message, "success", 3000)
             }
-            if(json?.isChat){
+            if (json?.isChat) {
                 setProfile(null)
             }
 
@@ -88,17 +97,17 @@ function SideDrawer({ isOpen, onClose }) {
         onClose()
         if (!user) return showToast("Error", "Something went wrong", "error", 3000)
 
-        chats?.map((chat,i) =>{
-            if(!(chat.isGroupchat) && chat.users.map(u => u._id).includes(user._id)){
+        chats?.map((chat, i) => {
+            if (!(chat.isGroupchat) && chat.users.map(u => u._id).includes(user._id)) {
                 setSelectedChat(chat)
                 setProfile(null)
                 return false
             }
             // if index of map reaches the length of the chats that means the chat has not yet created with the user so we are creating the chat now with that user!
-            if(i === chats.length - 1) CreateChat(user)
+            if (i === chats.length - 1) CreateChat(user)
             return 1
         })
-        
+
     }
 
     return (
@@ -127,7 +136,7 @@ function SideDrawer({ isOpen, onClose }) {
                                 })
                             }
 
-                            { (!loading && results?.length === 0) && <EmptySearch size={"12rem"}/>}
+                            {(!loading && results?.length === 0) && <EmptySearch size={"12rem"} />}
 
                             {
                                 !loading && !results

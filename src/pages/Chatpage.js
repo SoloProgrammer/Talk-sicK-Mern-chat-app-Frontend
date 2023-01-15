@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { ChatState } from '../Context/ChatProvider';
 import ChatsBox from '../components/ChatsBox';
@@ -37,6 +37,7 @@ function Chatpage() {
 
 
   const fetchallchats = async () => {
+    console.log("...")
     setChatsLoading(true)
     try {
       const config = {

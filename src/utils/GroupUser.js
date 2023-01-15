@@ -112,8 +112,9 @@ function GroupUser({ u }) {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-            setIsfetchChats(true)
-            setSelectedChat(json.fullchat)
+            setChats(json.chats)
+            setChatsLoading(false)
+            setSelectedChat(json.chat)
             setProfile(null)
 
         } catch (error) {
@@ -133,9 +134,14 @@ function GroupUser({ u }) {
                 }
                 else {
                     if (i === (chats.length - 1) && !isChat) {
+
+                        // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
+                        if (window.innerWidth < 770) setSelectedChat(null)
+
                         CreateChat(U._id)
                     }
                 }
+                return 1
             })
         }
     }

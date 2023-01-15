@@ -24,7 +24,7 @@ function MessagesBoxTopbar() {
                 padding="0 .9rem">
 
                 <Box display={"flex"} color="white" gap="1rem" className='msgleftTop' alignItems={"center"}>
-                    <Avatar cursor={"pointer"} onClick={() => setProfile(getSender(selectedChat, user))} boxShadow={"0 0 0 2px #fff"} src={getSender(selectedChat, user)?.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png"} />
+                    <Avatar cursor={"pointer"} onClick={() => setProfile(getSender(selectedChat, user))} boxShadow={"0 0 0 2px #fff"} src={getSender(selectedChat, user)?.avatar || "https://institutional-initiatives.utdallas.edu/institutional-initiatives/files/2022/03/no-profile-picture-icon-15-omqilctwnnaw5c9dnu5i4bvw9ui5vymmtjrwsaz3q0.png"} />
                     <Text fontSize={{ base: "1.3rem", md: "1.5rem" }} fontWeight="normal">
                         {
                             getSender(selectedChat, user)?.name

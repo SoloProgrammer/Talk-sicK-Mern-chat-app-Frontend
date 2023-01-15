@@ -17,8 +17,6 @@ function GroupMembersBox() {
     const [groupUsers, setGroupUsers] = useState(selectedChat?.users.slice(0, lastInd))
 
     const hanldeShowMore = () => {
-        // console.log(groupUsers.concat(selectedChat?.users.slice(lastInd,lastInd + lastInd)))
-        console.log(lastInd)
         setGroupUsers(groupUsers.concat(selectedChat?.users.slice(lastInd,lastInd + 5)))
         setLastInd(lastInd + 5)
     }
