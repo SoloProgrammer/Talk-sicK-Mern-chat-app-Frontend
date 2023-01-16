@@ -61,10 +61,7 @@
 }
 
 .MessagesBox {
-    /* overflow-y: auto; */
     position: relative;
-    height: calc(100% - 8.6rem) !important;
-
 }
 
 .MessagesBox::before {
@@ -114,7 +111,7 @@
 }
 
 
-@media (max-width:700px) {
+@media (max-width:770px) {
     .chakra-modal__content {
         width: 94.9% !important;
     }

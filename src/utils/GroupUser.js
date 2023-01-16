@@ -57,6 +57,7 @@ function GroupUser({ u }) {
             showToast("Error", error.message, "error", 3000)
         }
     }
+    
     const handleRemoveFromGroup = async (userId) => {
         setRemoveUserLoading(true)
         try {

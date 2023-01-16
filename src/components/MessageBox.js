@@ -55,7 +55,13 @@ function MessageBox({ messages, setMessages }) {
   }, [selectedChat?._id])
 
   const handleMessageAvatarClick = (avatarUser) => {
-    if (!(selectedChat?.isGroupchat) || avatarUser._id === user?._id) setProfile(avatarUser)
+    if (!(selectedChat?.isGroupchat)) {
+      // if(avatarUser._id === user?._id){
+      //   // if (window.innerWidth < 770) setSelectedChat(null)
+      //   return
+      // }
+      setProfile(avatarUser)
+    }
     else {
       let isChat = false
       chats.map((c, i) => {
@@ -79,7 +85,7 @@ function MessageBox({ messages, setMessages }) {
   }
 
   return (
-    <Box className='MessagesBox' display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden">
+    <Box className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" padding={".2rem .4rem"}>
       {
         profile && profile._id !== user?._id && // profile?._id is same as profile && profile._id but in some instance we need to check the profile first and then the detauils inside it! it opens this profile drawer with profile?._id condition!
         <ProfileDrawer width="50%" />
@@ -93,14 +99,14 @@ function MessageBox({ messages, setMessages }) {
             </Box>
           </Box>
           :
-          <Box id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".6rem .4rem"}>
+          <Box id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" >
             {
               messages.length > 0 && messages.map((m, i) => {
                 return (
                   <Box key={i} className='flex' width={"100%"} justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}>
-                    <Box flexDir={m.sender._id === user?._id && "row-reverse"} display={"flex"} gap=".5rem" maxW={"75%"}>
+                    <Box flexDir={m.sender._id === user?._id && "row-reverse"} display={"flex"} gap=".5rem" maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
 
-                      {
+                      {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
                         <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
                           <Tooltip hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : "Start a chat") : m.sender.name} placement="top">
                             <Avatar cursor={"pointer"} onClick={() => handleMessageAvatarClick(m.sender)} size={'sm'} name={m.sender.name} src={m.sender.avatar} />
