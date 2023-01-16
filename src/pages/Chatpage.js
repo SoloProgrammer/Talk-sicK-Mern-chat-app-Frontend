@@ -37,7 +37,6 @@ function Chatpage() {
 
 
   const fetchallchats = async () => {
-    console.log("...")
     setChatsLoading(true)
     try {
       const config = {

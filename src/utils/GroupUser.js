@@ -137,7 +137,6 @@ function GroupUser({ u }) {
 
                         // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
                         if (window.innerWidth < 770) setSelectedChat(null)
-
                         CreateChat(U._id)
                     }
                 }
@@ -160,7 +159,7 @@ function GroupUser({ u }) {
             width="99%"
             alignItems="center">
 
-            <Tooltip label={user?._id === u._id ? "You" : "Start a chat"} placement='left'>
+            <Tooltip hasArrow label={user?._id === u._id ? "You" : "Start a chat"} placement='left'>
                 <Avatar onClick={() => handleStartChat(u)} cursor={"pointer"} _hover={{ boxShadow: "0 0 0 2px white" }} name={u.name} src={u.avatar} size="sm" />
             </Tooltip>
 

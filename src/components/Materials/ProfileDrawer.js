@@ -18,7 +18,7 @@ function ProfileDrawer({ width, align = "right" }) {
             height={"100%"}
             pos={"absolute"}
             transition="all .3s"
-            zIndex={"1"}
+            zIndex={"2"}
             background="white">
             <Box className='DrawerInner' display={"flex"} flexDir="column" gap={".5rem"} alignItems="center" width={"full"} height="full" paddingTop={"1rem"} pos="relative">
 
