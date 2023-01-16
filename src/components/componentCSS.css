@@ -37,11 +37,12 @@
     }
 
 }
-.userAvatarBtn:hover{
+
+.userAvatarBtn:hover {
     background: transparent !important;
 }
 
-.userAvatarBtn:hover .userAvatar{
+.userAvatarBtn:hover .userAvatar {
     box-shadow: 0 0 0 2px white !important;
 }
 
@@ -65,6 +66,7 @@
     height: calc(100% - 8.6rem) !important;
 
 }
+
 .MessagesBox::before {
     content: "";
     position: absolute;
@@ -80,31 +82,40 @@
     opacity: .9;
 }
 
-.MessagesBox::-webkit-scrollbar{
+.MessagesBox::-webkit-scrollbar {
     display: none;
 }
-.GroupUsersBox::-webkit-scrollbar{
+
+#messagesDisplay::-webkit-scrollbar {
+    display: none;
+}
+
+.GroupUsersBox::-webkit-scrollbar {
     width: .5rem;
     background: transparent;
 }
-.GroupUsersBox::-webkit-scrollbar-thumb{
+
+.GroupUsersBox::-webkit-scrollbar-thumb {
     background: #c6c6c6b9;
     border-radius: 10rem;
 }
-.GroupUser:hover .Admin{
-    background:#65f9ee94;
+
+.GroupUser:hover .Admin {
+    background: #65f9ee94;
     /* color: white !important; */
 }
-.profileDrawer{
+
+.profileDrawer {
     transition: .3s ease !important;
 }
-.maxWidth520{
- max-width: 520px !important;
+
+.maxWidth520 {
+    max-width: 520px !important;
 }
 
 
 @media (max-width:700px) {
-    .chakra-modal__content{
+    .chakra-modal__content {
         width: 94.9% !important;
     }
 }

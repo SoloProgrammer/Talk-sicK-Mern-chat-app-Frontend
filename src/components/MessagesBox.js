@@ -1,4 +1,4 @@
-import { Box, Image, Text } from '@chakra-ui/react'
+import { Box, FormControl, Image, Spinner, Text } from '@chakra-ui/react'
 import React, { useState, useEffect } from 'react'
 // import { getSender } from '../configs/userConfigs'
 import { ChatState } from '../Context/ChatProvider'
@@ -6,10 +6,12 @@ import BrandLogo from '../utils/BrandLogo'
 import MessagesBoxTopbar from './Materials/MessagesBoxTopbar'
 import MessageBox from './MessageBox'
 import EmojiPicker from 'emoji-picker-react';
+import { server } from '../configs/serverURl'
+import { HandleLogout } from '../configs/userConfigs'
 
 function MessagesBox() {
 
-  const { selectedChat,setProfile,profile  } = ChatState()
+  const { selectedChat, setProfile, profile, showToast } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -21,8 +23,8 @@ function MessagesBox() {
 
   const handleChange = (e) => {
     setMessageText(e.target.value)
-    if(profile) setProfile(null)
-    if(isEmojiPick) setIsEmojiPick(false)
+    if (profile) setProfile(null)
+    if (isEmojiPick) setIsEmojiPick(false)
   }
 
   const [isEmojiPick, setIsEmojiPick] = useState(false)
@@ -35,6 +37,54 @@ function MessagesBox() {
     setMessageText(messageText.concat(emoji.emoji))
     setIsEmojiPick(false)
   }
+
+  const [messages, setMessages] = useState([])
+
+  const [loading, setLoading] = useState(false)
+
+  const sendMessage = async () => {
+    console.log(messageText)
+    if (messageText === "") return
+
+    setMessageText("");
+    setLoading(true)
+
+    try {
+
+      let config = {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+          token: localStorage.getItem('token')
+        },
+        body: JSON.stringify({ chatId: selectedChat?._id, content: { message: messageText } })
+      }
+
+      let res = await fetch(`${server.URL.production}/api/message/sendmessage`, config);
+
+      if (res.status === 401) return HandleLogout()
+
+      let json = await res.json();
+
+      if (!json.status) return showToast("Error", json.message, "error", 3000);
+
+      setMessages(json.allMessages);
+
+      setLoading(false)
+
+    } catch (error) {
+      showToast("Error", error.message, "error", 3000)
+    }
+  }
+
+  const handleKeyDown = (e) => {
+
+    if (e.key === "Enter") {
+      sendMessage()
+    }
+
+  }
+
 
   return (
     <Box overflow={"hidden"} display={{ base: selectedChat ? "flex" : "none", md: "flex" }} className='messagesBox' width={{ base: "100%", md: "60%", lg: "64%" }}>
@@ -71,8 +121,11 @@ function MessagesBox() {
           </Box>
           :
           <Box width={"100%"} pos="relative">
+
             <MessagesBoxTopbar />
-            <MessageBox />
+
+            <MessageBox messages={messages} setMessages={setMessages} />
+
             <Box zIndex={3} marginLeft={{ base: "0rem", md: ".2rem" }} background={"white"} pos={"absolute"} bottom="0" width={"100%"} boxShadow="0 0 4px rgba(0,0,0,.3)">
               <Box pos={"relative"} display="flex" padding={{ base: ".3rem .9rem", md: ".3rem" }}>
                 {
@@ -95,16 +148,23 @@ function MessagesBox() {
                     src={isEmojiPick ? emojiIconActive : emojiIcon}
                     onMouseOver={(e) => e.target.src = emojiIconActive} onMouseOut={(e) => e.target.src = !isEmojiPick ? emojiIcon : emojiIconActive} />
                 </Box>
-                <Box height={"3rem"} width={{ base: "84%", md: "90%" }} >
+                <FormControl onKeyDown={handleKeyDown} height={"3rem"} width={{ base: "84%", md: "90%" }}>
                   <input className='MessageBoxInput' placeholder='Write message here......' id='text' type="text" value={messageText} onChange={handleChange} />
-                </Box>
+                </FormControl>
                 <Box className='flex' width={{ base: "8%", md: "5%" }}>
-                  <Image
-                    opacity={".5"}
-                    cursor={messageText !== "" && "pointer"}
-                    width={"2rem"}
-                    className={`${messageText !== "" && "sentBtn"}`}
-                    src={`${messageText.length !== 0 ? sendBtn : sendBtnActive}`} ></Image>
+                  {
+                    loading
+                      ?
+                      <Spinner size={"md"} color="#39b5ac" />
+                      :
+                      <Image
+                        opacity={".5"}
+                        cursor={messageText !== "" && "pointer"}
+                        width={"2rem"}
+                        onClick={sendMessage}
+                        className={`${messageText !== "" && "sentBtn"}`}
+                        src={`${messageText.length !== 0 ? sendBtn : sendBtnActive}`} ></Image>
+                  }
                 </Box>
               </Box>
             </Box>

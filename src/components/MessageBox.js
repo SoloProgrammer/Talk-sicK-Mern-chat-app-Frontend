@@ -1,16 +1,14 @@
 import { Avatar, Box, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
+import { scrollBottom } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
 import { HandleLogout } from '../configs/userConfigs'
 import { ChatState } from '../Context/ChatProvider'
 import ProfileDrawer from './Materials/ProfileDrawer'
-// import ScrollableFeed from 'react-scrollable-feed'
 
-function MessageBox() {
+function MessageBox({ messages, setMessages }) {
 
-  const { profile, user, selectedChat, showToast, setProfile } = ChatState()
-
-  const [messages, setMessages] = useState([])
+  const { profile, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats } = ChatState()
 
   useEffect(() => {
     setTimeout(() => {
@@ -39,8 +37,8 @@ function MessageBox() {
 
       // setMessages([{[selectedChat?._id]:[json.allmessages]}])
       setMessages(json.allMessages)
-      console.log(json)
       setMessagesLoading(false)
+      // console.log(document.querySelector('.messagesDisplay')?.height)
     } catch (error) {
       showToast("Error", error.message, "error", 3000)
     }
@@ -48,9 +46,37 @@ function MessageBox() {
   }
 
   useEffect(() => {
-    selectedChat && fetchMessages()
-  }, [selectedChat])
+    scrollBottom("messagesDisplay")
+  }, [messages])
 
+  useEffect(() => {
+    selectedChat && fetchMessages()
+    // eslint-disable-next-line
+  }, [selectedChat?._id])
+
+  const handleMessageAvatarClick = (avatarUser) => {
+    if (!(selectedChat?.isGroupchat) || avatarUser._id === user?._id) setProfile(avatarUser)
+    else {
+      let isChat = false
+      chats.map((c, i) => {
+        if (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(avatarUser._id) && !c.isGroupchat) {
+          setSelectedChat(c);
+          setProfile(null)
+          isChat = true
+        }
+        else {
+          if (i === (chats.length - 1) && !isChat) {
+
+            // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
+            if (window.innerWidth < 770) setSelectedChat(null)
+
+            CreateChat(avatarUser._id)
+          }
+        }
+        return 1
+      })
+    }
+  }
 
   return (
     <Box className='MessagesBox' display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden">
@@ -67,17 +93,17 @@ function MessageBox() {
             </Box>
           </Box>
           :
-          <Box zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={"0 .4rem"} paddingBottom=".6rem">
+          <Box id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".6rem .4rem"}>
             {
               messages.length > 0 && messages.map((m, i) => {
                 return (
-                  <Box className='flex' width={"100%"} justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}>
+                  <Box key={i} className='flex' width={"100%"} justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}>
                     <Box flexDir={m.sender._id === user?._id && "row-reverse"} display={"flex"} gap=".5rem" maxW={"75%"}>
 
                       {
                         <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
-                          <Tooltip hasArrow label={m.sender.name} placement="top">
-                            <Avatar cursor={"pointer"} onClick={() => setProfile(m.sender)} size={'sm'} name={m.sender.name} src={m.sender.avatar} />
+                          <Tooltip hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : "Start a chat") : m.sender.name} placement="top">
+                            <Avatar cursor={"pointer"} onClick={() => handleMessageAvatarClick(m.sender)} size={'sm'} name={m.sender.name} src={m.sender.avatar} />
                           </Tooltip>
                         </Box>
                       }
@@ -85,7 +111,9 @@ function MessageBox() {
                       <Text
                         padding=".3rem .5rem"
                         fontSize={"1.1rem"}
-                        backgroundColor={m.sender._id !== user?._id ? "#6ad0c8" : "beige"}
+                        backgroundColor={m.sender._id !== user?._id ? "#56c8c0" : "#f8f8d9"}
+                        // #56c8c0
+                        // #36c2b7
                         key={i} pos="relative"
                         width={"fit-content"}
                         color={m.sender._id === user?._id ? "black" : "ghostwhite"}
@@ -95,7 +123,7 @@ function MessageBox() {
                         borderTopRightRadius=".5rem"
                         borderBottomLeftRadius={".5rem"}
                         borderBottomRightRadius={m.sender._id !== user?._id && ".5rem"}
-                        textShadow={m.sender._id !== user?._id && "2px 2px 3px rgba(0,0,0,.4)"}
+                        textShadow={m.sender._id !== user?._id && "2px 2px 3px rgba(0,0,0,.3)"}
                       >
                         {m.content.message}
                       </Text>
@@ -104,8 +132,6 @@ function MessageBox() {
                 )
               })
             }
-            {/* <ScrollableFeed>
-        </ScrollableFeed> */}
           </Box>
       }
     </Box>

@@ -7,7 +7,7 @@ import { server } from '../configs/serverURl'
 
 function GroupUser({ u }) {
 
-    const { user, selectedChat, showToast, setSelectedChat, setChats, setProfile, setIsfetchChats, chats, setChatsLoading } = ChatState()
+    const { user, selectedChat, showToast, setSelectedChat, setChats, setProfile, setIsfetchChats, chats, CreateChat } = ChatState()
 
     const [addAdminLoading, setAddAdminLoading] = useState(false)
     const [removeAdminLoading, setRemoveAdminLoading] = useState(false)
@@ -92,38 +92,10 @@ function GroupUser({ u }) {
             return showToast("Error", error.message, "error", 3000)
         }
     }
-    const CreateChat = async (userId) => {
-        try {
-            setChatsLoading(true)
-            let config = {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    token: localStorage.getItem('token')
-                },
-                body: JSON.stringify({ userId })
-            }
 
-            let res = await fetch(`${server.URL.production}/api/chat`, config);
-
-            if (res.status === 401) HandleLogout();
-
-            let json = await res.json();
-
-            if (!json.status) return showToast("Error", json.message, "error", 3000)
-
-            setChats(json.chats)
-            setChatsLoading(false)
-            setSelectedChat(json.chat)
-            setProfile(null)
-
-        } catch (error) {
-            showToast("Error", error.message, "error", 3000)
-            setChatsLoading(false)
-        }
-
-    }
     const handleStartChat = (U) => {
+        if (!(selectedChat?.isGroupchat) || U._id === user?._id) return setProfile(U)
+
         let isChat = false
         if (U._id !== user?._id) {
             chats.map((c, i) => {
@@ -159,7 +131,7 @@ function GroupUser({ u }) {
             width="99%"
             alignItems="center">
 
-            <Tooltip hasArrow label={user?._id === u._id ? "You" : "Start a chat"} placement='left'>
+            <Tooltip hasArrow label={user?._id === u._id ? "My Profile" : "Start a chat"} placement='left'>
                 <Avatar onClick={() => handleStartChat(u)} cursor={"pointer"} _hover={{ boxShadow: "0 0 0 2px white" }} name={u.name} src={u.avatar} size="sm" />
             </Tooltip>
 
