@@ -8,6 +8,7 @@ import MessageBox from './MessageBox'
 import EmojiPicker from 'emoji-picker-react';
 import { server } from '../configs/serverURl'
 import { HandleLogout } from '../configs/userConfigs'
+import { scrollBottom } from '../configs/scrollConfigs'
 
 function MessagesBox() {
 
@@ -31,7 +32,7 @@ function MessagesBox() {
 
   useEffect(() => {
     setMessageText("")
-  }, [selectedChat])
+  }, [selectedChat]);
 
   const handleEmojiClick = (emoji) => {
     setMessageText(messageText.concat(emoji.emoji))
@@ -149,7 +150,7 @@ function MessagesBox() {
                     onMouseOver={(e) => e.target.src = emojiIconActive} onMouseOut={(e) => e.target.src = !isEmojiPick ? emojiIcon : emojiIconActive} />
                 </Box>
                 <FormControl onKeyDown={handleKeyDown} height={"3rem"} width={{ base: "84%", md: "90%" }}>
-                  <input className='MessageBoxInput' placeholder='Write message here......' id='text' type="text" value={messageText} onChange={handleChange} />
+                  <input onfocus={()=>scrollBottom('messagesDisplay')} className='MessageBoxInput' placeholder='Write message here......' id='text' type="text" value={messageText} onChange={handleChange} />
                 </FormControl>
                 <Box className='flex' width={{ base: "8%", md: "5%" }}>
                   {

@@ -57,7 +57,7 @@ function MessageBox({ messages, setMessages }) {
   const handleMessageAvatarClick = (avatarUser) => {
     if (!(selectedChat?.isGroupchat) || avatarUser._id === user?._id) {
       setProfile(avatarUser)
-      if (window.innerWidth < 770) setSelectedChat(null)
+      if (window.innerWidth < 770 && avatarUser._id === user._id) setSelectedChat(null)
 
     }
     else {
@@ -70,7 +70,7 @@ function MessageBox({ messages, setMessages }) {
         }
         else {
           if (i === (chats.length - 1) && !isChat) {
-
+            
             // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
             if (window.innerWidth < 770) setSelectedChat(null)
 
@@ -98,44 +98,6 @@ function MessageBox({ messages, setMessages }) {
           </Box>
           :
           <Box id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".2rem .4rem"} >
-            {
-              messages.length > 0 && messages.map((m, i) => {
-                return (
-                  <Box key={i} className='flex' width={"100%"} justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}>
-                    <Box flexDir={m.sender._id === user?._id && "row-reverse"} display={"flex"} gap=".5rem" maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
-
-                      {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
-                        <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
-                          <Tooltip hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : "Start a chat") : m.sender.name} placement="top">
-                            <Avatar cursor={"pointer"} onClick={() => handleMessageAvatarClick(m.sender)} size={'sm'} name={m.sender.name} src={m.sender.avatar} />
-                          </Tooltip>
-                        </Box>
-                      }
-
-                      <Text
-                        padding=".3rem .5rem"
-                        fontSize={"1.1rem"}
-                        backgroundColor={m.sender._id !== user?._id ? "#56c8c0" : "#f8f8d9"}
-                        // #56c8c0
-                        // #36c2b7
-                        key={i} pos="relative"
-                        width={"fit-content"}
-                        color={m.sender._id === user?._id ? "black" : "ghostwhite"}
-                        fontWeight={'medium'}
-                        boxShadow={m.sender._id === user?._id && "0 0 4px rgba(0,0,0,.3)"}
-                        borderTopLeftRadius={m.sender._id === user?._id && ".5rem"}
-                        borderTopRightRadius=".5rem"
-                        borderBottomLeftRadius={".5rem"}
-                        borderBottomRightRadius={m.sender._id !== user?._id && ".5rem"}
-                        textShadow={m.sender._id !== user?._id && "2px 2px 3px rgba(0,0,0,.3)"}
-                      >
-                        {m.content.message}
-                      </Text>
-                    </Box>
-                  </Box>
-                )
-              })
-            }
             {
               messages.length > 0 && messages.map((m, i) => {
                 return (
