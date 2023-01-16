@@ -57,7 +57,7 @@ function GroupUser({ u }) {
             showToast("Error", error.message, "error", 3000)
         }
     }
-    
+
     const handleRemoveFromGroup = async (userId) => {
         setRemoveUserLoading(true)
         try {
@@ -95,7 +95,10 @@ function GroupUser({ u }) {
     }
 
     const handleStartChat = (U) => {
-        if (!(selectedChat?.isGroupchat) || U._id === user?._id) return setProfile(U)
+        if (!(selectedChat?.isGroupchat) || U._id === user?._id) {
+            setProfile(U)
+            if (window.innerWidth < 770) setSelectedChat(null)
+        }
 
         let isChat = false
         if (U._id !== user?._id) {

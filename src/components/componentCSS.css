@@ -115,4 +115,8 @@
     .chakra-modal__content {
         width: 94.9% !important;
     }
+
+    .MessagesBox::before {
+        margin-left: 0rem;
+    }
 }
