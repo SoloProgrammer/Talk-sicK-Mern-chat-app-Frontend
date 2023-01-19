@@ -98,9 +98,12 @@ function GroupUser({ u }) {
     }
 
     const handleStartChat = (U) => {
+
+        // if user click on his own avatar then display his profile other then else start a chat with that user avatar click!
         if (!(selectedChat?.isGroupchat) || U._id === user?._id) {
             setProfile(U)
             if (window.innerWidth < 770) setSelectedChat(null)
+            return
         }
 
         let isChat = false

@@ -76,8 +76,9 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
 
   }
 
-  const handleChatClick = async (chat, i) => {
+  const handleChatClick = async (chat) => {
     setSelectedChat(chat);
+    setProfile(null);
   }
 
   useEffect(() => {
@@ -86,7 +87,6 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
     elem?.classList.contains('unSeen') && elem.classList.remove('unSeen');
 
     selectedChat?.latestMessage && seenMessage(selectedChat.latestMessage._id)
-    setProfile(null);
      // eslint-disable-next-line
   }, [selectedChat])
 
