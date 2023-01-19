@@ -23,7 +23,7 @@ import { server } from '../../configs/serverURl'
 
 function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmemberLoading }) {
 
-    const { showToast, setIsfetchChats, selectedChat } = ChatState()
+    const { showToast, setIsfetchChats, selectedChat, setSelectedChat } = ChatState()
 
     const [selectedUsers, setSelectedUsers] = useState([])
     const [searchResults, setSearchResults] = useState(null)
@@ -50,7 +50,12 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
                 // let result = result1.filter(o1 => !result2.some(o2 => o1.id === o2.id));
 
-                setSearchResults(json?.searchResults?.filter(u => !selectedChat?.users.some(U => U._id === u._id)).slice(0, 4))
+                if (addMember) {
+                    setSearchResults(json?.searchResults?.filter(u => !selectedChat?.users.some(U => U._id === u._id)).slice(0, 4))
+                }
+                else {
+                    setSearchResults(json?.searchResults.slice(0, 4))
+                }
 
             } catch (error) {
                 showToast("Error", error.message, "error", 3000)
@@ -122,6 +127,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
             showToast("Success", "New Group Created Sucessfully", "success", 3000);
             setIsfetchChats(true)
             setCreategroupLoading(false)
+            setSelectedChat(json.Fullgroup)
 
             onClose()
 
@@ -265,12 +271,12 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                     {
                         addMember
                         && <Text margin={".9rem 1.4rem"} marginBottom="0rem" fontSize="0.7rem" fontWeight={'normal'} textTransform="capitalize">
-                            <b>Search NOTE</b> :- The members which are not in the group will be searched!
+                            <b>SEARCH NOTE</b> :- The members which are not in the group will be searched!
                         </Text>
                     }
 
                     {<ModalFooter>
-                        {<Button display={(addMember && selectedUsers.length < 1) > 0 ? "none" : "flex"} isLoading={creategroupLoading || addmemberLoading} disabled={uploadloading || creategroupLoading || addmemberLoading} onClick={()=> addMember ?  handleFunc(selectedUsers) : handleCreateGroup} colorScheme='teal' boxShadow={"0px 0px 2px rgba(0,0,0,.5)"} mr={3}>
+                        {<Button display={(addMember && selectedUsers.length < 1) > 0 ? "none" : "flex"} isLoading={creategroupLoading || addmemberLoading} disabled={uploadloading || creategroupLoading || addmemberLoading} onClick={() => addMember ? handleFunc(selectedUsers) : handleCreateGroup()} colorScheme='teal' boxShadow={"0px 0px 2px rgba(0,0,0,.5)"} mr={3}>
                             {!addMember ? "Create" : "Add now"}
                         </Button>}
                     </ModalFooter>}

@@ -83,6 +83,18 @@
     display: none;
 }
 
+.unSeen {
+    color: #09bba2;
+    color: #4dcbb9;
+    color: #4cc2b1;
+    font-weight: 500 !important;
+    color: #4cc2b1;
+    font-weight: 500 !important;
+    background: white;
+    padding: 0 .3rem;
+    border-radius: 1.3rem;
+}
+
 #messagesDisplay::-webkit-scrollbar {
     display: none;
 }

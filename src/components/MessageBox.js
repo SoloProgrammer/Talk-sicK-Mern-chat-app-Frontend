@@ -70,7 +70,7 @@ function MessageBox({ messages, setMessages }) {
         }
         else {
           if (i === (chats.length - 1) && !isChat) {
-            
+
             // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
             if (window.innerWidth < 770) setSelectedChat(null)
 
@@ -106,7 +106,7 @@ function MessageBox({ messages, setMessages }) {
 
                       {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
                         <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
-                          <Tooltip hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : "Start a chat") : m.sender.name} placement="top">
+                          <Tooltip hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : "Start a chat") : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
                             <Avatar cursor={"pointer"} onClick={() => handleMessageAvatarClick(m.sender)} size={'sm'} name={m.sender.name} src={m.sender.avatar} />
                           </Tooltip>
                         </Box>

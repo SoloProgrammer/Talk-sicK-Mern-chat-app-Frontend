@@ -19,7 +19,7 @@ export const GroupMembers = (selectedChat) => {
             <AvatarGroup size='sm' max={3}>
                 {
                     selectedChat.users.map((u, i) => {
-                        return u.avatar.length === 0 ? <Avatar key={i} name={u.name} /> : <Avatar key={i} src={u.avatar} />
+                        return <Avatar key={i} src={u.avatar ? u.avatar : "https://res.cloudinary.com/dvzjzf36i/image/upload/v1673770725/iqujmf95b5loz1ohqphc.png"} />
                     })
                 }
             </AvatarGroup>

@@ -79,16 +79,19 @@ function GroupUser({ u }) {
             setRemoveUserLoading(false)
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
-
-            if (!json.chats.map(c => c._id).includes(selectedChat._id)) {
+            
+            // checking if the logged in user is not in the return chat from server that means he is from that chat successfully and then to dispaly the change we can refetch the all chats from server!
+            if (!(json.chat.users.map(u => u._id).includes(user?._id))) {
                 setSelectedChat(null)
-                setProfile(null)
+                setProfile(null) // setting profile to null if it is not!
+                showToast("Success", `You left ${json.chat.chatName}`, "success", 3000)
+                setIsfetchChats(true)
             }
-            else setSelectedChat(json.chat)
-
-            setIsfetchChats(true)
-
-            showToast("Success", json.message, "success", 3000)
+            else {
+                setSelectedChat(json.chat);
+                setChats(json.chats)
+                showToast("Success", json.message, "success", 3000)
+            }
         } catch (error) {
             return showToast("Error", error.message, "error", 3000)
         }

@@ -17,7 +17,7 @@ function GroupMembersBox() {
     const [groupUsers, setGroupUsers] = useState(selectedChat?.users.slice(0, lastInd))
 
     const hanldeShowMore = () => {
-        setGroupUsers(groupUsers.concat(selectedChat?.users.slice(lastInd,lastInd + 5)))
+        setGroupUsers(groupUsers.concat(selectedChat?.users.slice(lastInd, lastInd + 5)))
         setLastInd(lastInd + 5)
     }
     const hanldeShowLess = () => {
@@ -25,11 +25,11 @@ function GroupMembersBox() {
         setLastInd(5)
     }
 
-    useEffect(() =>{
+    useEffect(() => {
         setGroupUsers(selectedChat?.users.slice(0, 5))
         // eslint-disable-next-line
         setLastInd(5)
-    },[selectedChat])
+    }, [selectedChat])
 
     const [loading, setLoading] = useState(false)
     const hanldeAddmember = async (users) => {
@@ -59,19 +59,19 @@ function GroupMembersBox() {
             setChats(json.chats)
             onClose()
         } catch (error) {
-            showToast("Error",error.message,"error",3000)
+            showToast("Error", error.message, "error", 3000)
             setLoading(false)
         }
     }
 
-    
+
 
     return (
         <Box width={"90%"} marginLeft=".8rem">
             <Box className='flex' justifyContent={"space-between"} marginBottom=".5rem">
                 <Text fontSize={{ base: "1.2rem", md: "1.4rem" }} fontWeight="hairline" color="slategrey">Group members</Text>
                 {
-                    isAdmin() && <PopupModal isOpen={isOpen} onClose={onClose} addMember="add members" handleFunc={hanldeAddmember} addmemberLoading={loading}>
+                    isAdmin() && <PopupModal isOpen={isOpen} onClose={onClose} addMember={true} handleFunc={hanldeAddmember} addmemberLoading={loading}>
                         <Box
                             padding={".2rem .4rem"}
                             onClick={onOpen}

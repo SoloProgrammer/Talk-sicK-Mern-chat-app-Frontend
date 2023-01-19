@@ -12,7 +12,7 @@ import { scrollBottom } from '../configs/scrollConfigs'
 
 function MessagesBox() {
 
-  const { selectedChat, setProfile, profile, showToast } = ChatState()
+  const { setChats, selectedChat, setProfile, profile, showToast } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -44,7 +44,6 @@ function MessagesBox() {
   const [loading, setLoading] = useState(false)
 
   const sendMessage = async () => {
-    console.log(messageText)
     if (messageText === "") return
 
     setMessageText("");
@@ -70,6 +69,8 @@ function MessagesBox() {
       if (!json.status) return showToast("Error", json.message, "error", 3000);
 
       setMessages(json.allMessages);
+
+      setChats(json.chats)
 
       setLoading(false)
 
@@ -138,7 +139,7 @@ function MessagesBox() {
                       height={"20rem"}
                       className="emojiPicker"
                       lazyLoadEmojis={false}
-                      searchDisabled />
+                      />
                   </Box>
                 }
                 <Box className="emojiPickbtn flex" width={{ base: "8%", md: "5%" }} >
@@ -150,7 +151,7 @@ function MessagesBox() {
                     onMouseOver={(e) => e.target.src = emojiIconActive} onMouseOut={(e) => e.target.src = !isEmojiPick ? emojiIcon : emojiIconActive} />
                 </Box>
                 <FormControl onKeyDown={handleKeyDown} height={"3rem"} width={{ base: "84%", md: "90%" }}>
-                  <input onfocus={()=>scrollBottom('messagesDisplay')} className='MessageBoxInput' placeholder='Write message here......' id='text' type="text" value={messageText} onChange={handleChange} />
+                  <input onFocus={() => scrollBottom('messagesDisplay')} className='MessageBoxInput' placeholder='Write message here......' id='text' type="text" value={messageText} onChange={handleChange} />
                 </FormControl>
                 <Box className='flex' width={{ base: "8%", md: "5%" }}>
                   {

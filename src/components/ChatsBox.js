@@ -1,14 +1,94 @@
 import { Avatar, Box, Image, Text } from '@chakra-ui/react'
-import { getSender } from '../configs/userConfigs'
+import { getFormmatedDate, getFormmatedTime } from '../configs/dateConfigs'
+import { server } from '../configs/serverURl'
+import React, { useEffect } from 'react'
+import { getSender, HandleLogout } from '../configs/userConfigs'
 import ChatsTopBar from './Materials/ChatsTopBar'
 import ProfileDrawer from './Materials/ProfileDrawer'
 
-function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, setProfile, profile }) {
+function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, setProfile, profile, showToast }) {
 
   const Trimlastestmsg = (msg) => {
-    let trimInd = window.innerWidth > 770 ? 55 : 30
-    return msg.slice(0, trimInd).concat(".....")
+    let trimInd = window.innerWidth > 1300 ? 50 : 30
+
+    if (window.innerWidth > 500 && window.innerWidth < 770) {
+      trimInd = 40
+    } else if (window.innerWidth > 770 && window.innerWidth < 1000) {
+      trimInd = 25
+    } else if (window.innerWidth > 1000 && window.innerWidth < 1300) {
+      trimInd = 30
+    } else if (window.innerWidth <= 500) trimInd = 30
+
+    return msg.slice(0, trimInd).length !== trimInd ? msg.slice(0, trimInd) : msg.slice(0, trimInd).concat(".....")
   }
+
+  const getDateTime = (timeStamps) => {
+    let date = new Date(timeStamps)
+    let DateTime;
+
+    let FormattedTime = getFormmatedTime(date)
+
+    let currdate = new Date();
+
+    let FormattedDate = getFormmatedDate(date)
+
+    if (date.getYear() === currdate.getYear() && date.getMonth() === currdate.getMonth()) {
+      if (currdate.getDate() - date.getDate() === 0) {
+        DateTime = FormattedTime
+      } else if (currdate.getDate() - date.getDate() === 1) DateTime = "Yesterday"
+      else DateTime = FormattedDate
+    }
+    else {
+      DateTime = FormattedDate
+    }
+
+    return DateTime
+  }
+
+  const seenMessage = async (msgId) => {
+
+    try {
+
+      let config = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: localStorage.getItem('token')
+        },
+        body: JSON.stringify({ msgId })
+      }
+
+      let res = await fetch(`${server.URL.production}/api/message/seenMessage`, config);
+
+      if (res.status === 401) return HandleLogout();
+
+      let json = await res.json();
+
+      // ToDo gave an appropiatiate msg for the bad res[ponse from the server!
+      if (!json.status) return
+
+    } catch (error) {
+      setSelectedChat(null)
+      setProfile(null)
+      showToast("Error", error.message, "error", 3000)
+      return
+    }
+
+  }
+
+  const handleChatClick = async (chat, i) => {
+    setSelectedChat(chat);
+  }
+
+  useEffect(() => {
+
+    let elem = document.getElementById(`DateTime${selectedChat?._id}`)
+    elem?.classList.contains('unSeen') && elem.classList.remove('unSeen');
+
+    selectedChat?.latestMessage && seenMessage(selectedChat.latestMessage._id)
+    setProfile(null);
+     // eslint-disable-next-line
+  }, [selectedChat])
 
   return (
     <Box display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
@@ -35,7 +115,7 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
                   return (
                     <Box
                       key={i}
-                      onClick={() => { setSelectedChat(chat); setProfile(null) }}
+                      onClick={() => { handleChatClick(chat, i) }}
                       display={"flex"}
                       width="100%"
                       bg={selectedChat?._id === chat?._id ? "#2da89f61" : "#e2e2e29e"}
@@ -56,11 +136,26 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
                       <Box width={{ base: "calc(100% - 15%)", md: "calc(100% - 12%)" }}>
                         <Box display={"flex"} justifyContent="space-between" width={"100%"}>
                           <Text fontSize={"1rem"} fontWeight="semibold">{getSender(chat, user)?.name}</Text>
-                          {/* <Text fontSize={".8rem"} fontWeight="normal"><i>{chat.latestMessage?.createdAt}</i></Text> */}
-                          <Text fontSize={".8rem"} fontWeight="normal"><i>yesterday</i></Text>
+                          {chat.latestMessage &&
+                            <Text
+                              fontSize={".7rem"}
+                              fontWeight="normal"
+                              id={`DateTime${chat._id}`}
+                              padding={".0 .3rem"}
+                              className={`latestMessageDateTime flex ${!(chat.latestMessage.seenBy.includes(user?._id)) && "unSeen"}`}>
+                              <>{getDateTime(chat.latestMessage.createdAt)}</>
+                            </Text>}
+                          {/* color="#35c697" */}
                         </Box>
                         {/* latestmessage */}
-                        <Text>{Trimlastestmsg("Hey hii how are you igidgsidg sdgyf sdfsd fs duydf idgfi dfg fydf yfd??")}</Text>
+                        <Text fontSize={".9rem"} marginTop=".1rem">
+                          <Text fontSize={".8rem"} fontWeight="black" display={"inline"}>
+                            {chat.latestMessage
+                              &&
+                              (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "}
+                          </Text>
+                          {Trimlastestmsg(chat.latestMessage ? chat.latestMessage.content.message : "No message yet!")}
+                        </Text>
                       </Box>
                     </Box>
                   )
