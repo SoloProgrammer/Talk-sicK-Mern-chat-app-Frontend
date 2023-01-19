@@ -88,7 +88,7 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
 
     selectedChat?.latestMessage && seenMessage(selectedChat.latestMessage._id)
      // eslint-disable-next-line
-  }, [selectedChat])
+  }, [selectedChat?._id])
 
   return (
     <Box display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">

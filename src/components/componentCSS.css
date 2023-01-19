@@ -82,19 +82,20 @@
 .MessagesBox::-webkit-scrollbar {
     display: none;
 }
-
-.unSeen {
-    color: #09bba2;
-    color: #4dcbb9;
-    color: #4cc2b1;
-    font-weight: 500 !important;
-    color: #4cc2b1;
-    font-weight: 500 !important;
-    background: white;
+.latestMessageDateTime{
+    transform: translate(.4rem,-.5rem);
     padding: 0 .3rem;
-    border-radius: 1.3rem;
 }
 
+.unSeen {
+    font-weight: 500 !important;
+    font-weight: 500 !important;
+    color: #12d2b6;
+    border-radius: 1.3rem;
+}
+.singleChatBox:hover .unSeen{
+    color: #ffffff !important;
+}
 #messagesDisplay::-webkit-scrollbar {
     display: none;
 }

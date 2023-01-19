@@ -2,7 +2,7 @@ import { Avatar, Box, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { scrollBottom } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
-import { HandleLogout } from '../configs/userConfigs'
+import { HandleLogout, islastMsgOfSender } from '../configs/userConfigs'
 import { ChatState } from '../Context/ChatProvider'
 import ProfileDrawer from './Materials/ProfileDrawer'
 
@@ -105,7 +105,7 @@ function MessageBox({ messages, setMessages }) {
                     <Box flexDir={m.sender._id === user?._id && "row-reverse"} display={"flex"} gap=".5rem" maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
 
                       {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
-                        <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
+                        (window.innerWidth < 770 || islastMsgOfSender(messages, i, m.sender._id)) && <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
                           <Tooltip hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : "Start a chat") : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
                             <Avatar cursor={"pointer"} onClick={() => handleMessageAvatarClick(m.sender)} size={'sm'} name={m.sender.name} src={m.sender.avatar} />
                           </Tooltip>
@@ -114,10 +114,8 @@ function MessageBox({ messages, setMessages }) {
 
                       <Text
                         padding=".3rem .5rem"
-                        fontSize={"1.1rem"}
+                        fontSize={"1rem"}
                         backgroundColor={m.sender._id !== user?._id ? "#56c8c0" : "#f8f8d9"}
-                        // #56c8c0
-                        // #36c2b7
                         key={i} pos="relative"
                         width={"fit-content"}
                         color={m.sender._id === user?._id ? "black" : "ghostwhite"}
@@ -127,6 +125,8 @@ function MessageBox({ messages, setMessages }) {
                         borderTopRightRadius=".5rem"
                         borderBottomLeftRadius={".5rem"}
                         borderBottomRightRadius={m.sender._id !== user?._id && ".5rem"}
+                        marginLeft={window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id) && (m.sender._id !== user?._id) && "2.5rem"}
+                        marginRight={window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id) && (m.sender._id === user?._id) && "2.5rem"}
                         textShadow={m.sender._id !== user?._id && "2px 2px 3px rgba(0,0,0,.3)"}
                       >
                         {m.content.message}

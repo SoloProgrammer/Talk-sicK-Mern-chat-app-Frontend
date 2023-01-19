@@ -62,3 +62,9 @@ export const HandleLogout = () => {
     localStorage.removeItem('token');
     window.location.reload(0);
 }
+
+export const islastMsgOfSender = (messages, i, senderId) => {
+
+    return (messages[i + 1] === undefined || messages[i + 1].sender._id !== senderId)
+
+}
