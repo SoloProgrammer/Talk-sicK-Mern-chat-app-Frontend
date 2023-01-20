@@ -9,6 +9,7 @@ import EmojiPicker from 'emoji-picker-react';
 import { server } from '../configs/serverURl'
 import { HandleLogout } from '../configs/userConfigs'
 import { scrollBottom } from '../configs/scrollConfigs'
+import sentAudio from '../../src/mp3/MessageSent.mp3'
 
 function MessagesBox() {
 
@@ -44,11 +45,14 @@ function MessagesBox() {
 
   const [loading, setLoading] = useState(false)
 
+  let messageSentBeep = new Audio(sentAudio)
+
   const sendMessage = async () => {
     if (messageText === "") return
 
     setMessageText("");
-    setLoading(true)
+    setLoading(true);
+
 
     try {
 
@@ -68,12 +72,13 @@ function MessagesBox() {
       let json = await res.json();
 
       if (!json.status) return showToast("Error", json.message, "error", 3000);
+      
+      messageSentBeep?.play();
 
       setMessages(json.allMessages);
-
       setChats(json.chats)
+      setLoading(false);
 
-      setLoading(false)
 
     } catch (error) {
       showToast("Error", error.message, "error", 3000)

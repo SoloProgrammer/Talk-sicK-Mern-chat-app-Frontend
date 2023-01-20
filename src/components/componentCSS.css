@@ -90,9 +90,8 @@
 .unSeen {
     font-weight: 500 !important;
     color: #12d2b6;
-    color: #0fbaa1;
+    color: #12c9d2;
     border-radius: 1.3rem;
-    text-shadow: 0 0 1px greenyellow;
 }
 .MsgTime{
     font-size: .6rem;
@@ -118,7 +117,6 @@
 
 .GroupUser:hover .Admin {
     background: #65f9ee94;
-    /* color: white !important; */
 }
 
 .profileDrawer {

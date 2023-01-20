@@ -5,5 +5,5 @@ export const getFormmatedTime = (date) => {
 }
 
 export const getFormmatedDate = (date) => {
-    return String(date.getDate()) + "/" + String(month[date.getMonth()]) + "/" + String(date.getYear())
+    return String(date.getDate()) + "/" + String(month[date.getMonth()]) + "/" + String(date.getFullYear())
 }
