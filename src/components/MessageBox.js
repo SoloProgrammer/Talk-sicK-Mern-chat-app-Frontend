@@ -9,7 +9,9 @@ import ProfileDrawer from './Materials/ProfileDrawer'
 
 function MessageBox({ messages, setMessages }) {
 
-  const { profile, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats } = ChatState()
+  var selectedChatCompare;
+
+  const { profile, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket } = ChatState();
 
   useEffect(() => {
     setTimeout(() => {
@@ -37,7 +39,9 @@ function MessageBox({ messages, setMessages }) {
       if (!json.status) return showToast("Error", json.message, "error", 3000)
 
       setMessages(json.allMessages)
-      setMessagesLoading(false)
+      setMessagesLoading(false);
+
+      socket?.emit('join chat', selectedChat?._id)
 
     } catch (error) {
       showToast("Error", error.message, "error", 3000)
@@ -49,8 +53,12 @@ function MessageBox({ messages, setMessages }) {
     scrollBottom("messagesDisplay")
   }, [messages])
 
+
   useEffect(() => {
-    selectedChat && fetchMessages()
+    if (selectedChat) {
+      fetchMessages()
+      selectedChatCompare = selectedChat;
+    }
     // eslint-disable-next-line
   }, [selectedChat?._id])
 

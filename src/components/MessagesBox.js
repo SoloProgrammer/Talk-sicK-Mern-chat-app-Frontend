@@ -1,6 +1,5 @@
 import { Box, FormControl, Image, Spinner, Text } from '@chakra-ui/react'
 import React, { useState, useEffect } from 'react'
-// import { getSender } from '../configs/userConfigs'
 import { ChatState } from '../Context/ChatProvider'
 import BrandLogo from '../utils/BrandLogo'
 import MessagesBoxTopbar from './Materials/MessagesBoxTopbar'
@@ -72,10 +71,10 @@ function MessagesBox() {
       let json = await res.json();
 
       if (!json.status) return showToast("Error", json.message, "error", 3000);
-      
+
       messageSentBeep?.play();
 
-      setMessages(json.allMessages);
+      setMessages([...messages, json.fullmessage]);
       setChats(json.chats)
       setLoading(false);
 

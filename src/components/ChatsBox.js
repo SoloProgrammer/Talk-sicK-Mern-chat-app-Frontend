@@ -6,6 +6,7 @@ import { getSender, HandleLogout } from '../configs/userConfigs'
 import ChatsTopBar from './Materials/ChatsTopBar'
 import ProfileDrawer from './Materials/ProfileDrawer'
 
+
 function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, setProfile, profile, showToast }) {
 
   const Trimlastestmsg = (msg) => {

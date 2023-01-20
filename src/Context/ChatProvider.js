@@ -1,8 +1,10 @@
-import { createContext, useState, useContext } from 'react'
+import { createContext, useState, useContext, useEffect } from 'react'
 import { useToast } from '@chakra-ui/react'
 import { server } from '../configs/serverURl';
 import { HandleLogout } from '../configs/userConfigs';
 const ChatContext = createContext();
+
+import io from 'socket.io-client'
 
 const ChatProvider = ({ children }) => {
 
@@ -29,6 +31,28 @@ const ChatProvider = ({ children }) => {
         const res = await fetch(`${server.URL.production}/api/user/getuser`, config);
         return res.json()
     }
+
+
+    //Socket.io connection with configuration........................................................
+
+    const [socketConneted, setSocketConnected] = useState(false)
+
+    const ENDPOINT = "http://localhost:8001"
+
+    const [socket, setSocket] = useState(null);
+    
+    useEffect(() => {
+        let socketCreated = io(ENDPOINT);
+        setSocket(socketCreated)
+
+        if (user) {
+            socket.emit('setup', user);
+            socket.on('connection', () => setSocketConnected(true))
+        }
+        console.log(socket);
+    }, [user]);
+
+    //Socket.io connection with configuration........................................................
 
     const [chats, setChats] = useState(null)
 
@@ -74,7 +98,7 @@ const ChatProvider = ({ children }) => {
 
 
     return (
-        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats }}>
+        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, socket }}>
             {children}
         </ChatContext.Provider>
     )
