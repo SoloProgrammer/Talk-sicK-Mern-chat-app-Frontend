@@ -32,6 +32,7 @@ function MessagesBox() {
 
   useEffect(() => {
     setMessageText("")
+    setIsEmojiPick(false)
   }, [selectedChat]);
 
   const handleEmojiClick = (emoji) => {
@@ -87,7 +88,6 @@ function MessagesBox() {
 
   }
 
-
   return (
     <Box overflow={"hidden"} display={{ base: selectedChat ? "flex" : "none", md: "flex" }} className='messagesBox' width={{ base: "100%", md: "60%", lg: "64%" }}>
       {
@@ -108,7 +108,7 @@ function MessagesBox() {
                 textAlign={"center"}
                 color="black"
                 fontSize={{ base: "1rem", md: "1.1rem" }} >
-                Talk-o-Meter a Chat app Project with live personal as well as group messaging functionality<br />You will also recieve live Notifications from chats you have created for the newly recived messages
+                Talk-o-Meter a Chat app Project with live personal as well as group messaging functionality<br />You will also recieve live Notifications from chats you have created for the newly recieved messages
               </Text>
               <br />
               <Text
@@ -139,7 +139,8 @@ function MessagesBox() {
                       height={"20rem"}
                       className="emojiPicker"
                       lazyLoadEmojis={false}
-                      />
+                      searchDisabled
+                    />
                   </Box>
                 }
                 <Box className="emojiPickbtn flex" width={{ base: "8%", md: "5%" }} >

@@ -89,13 +89,19 @@
 
 .unSeen {
     font-weight: 500 !important;
-    font-weight: 500 !important;
     color: #12d2b6;
+    color: #0fbaa1;
     border-radius: 1.3rem;
+    text-shadow: 0 0 1px greenyellow;
 }
-.singleChatBox:hover .unSeen{
-    color: #ffffff !important;
+.MsgTime{
+    font-size: .6rem;
+    color: black !important;
+    text-shadow: none !important;
+    display: inline-block;
+    transform: translate(7px,2px);
 }
+
 #messagesDisplay::-webkit-scrollbar {
     display: none;
 }

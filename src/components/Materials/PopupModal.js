@@ -18,7 +18,7 @@ import Loading from './Loading'
 import { ChatState } from '../../Context/ChatProvider'
 import UserListItem from '../../utils/UserListItem'
 import EmptySearch from '../EmptySearch'
-import { HandleLogout, UserChip } from '../../configs/userConfigs'
+import { defaultPic, HandleLogout, UserChip } from '../../configs/userConfigs'
 import { server } from '../../configs/serverURl'
 
 function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmemberLoading }) {
@@ -177,8 +177,6 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
         //     setUploadloading(true)
         // }
     }
-
-    let defaultPic = "https://cdn-icons-png.flaticon.com/512/847/847969.png"
 
     return (
         <>

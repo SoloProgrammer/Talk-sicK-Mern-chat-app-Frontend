@@ -45,7 +45,7 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
     return DateTime
   }
 
-  const seenMessage = async (msgId) => {
+  const seenlstMessage = async (msgId) => {
 
     try {
 
@@ -84,10 +84,12 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
   useEffect(() => {
 
     let elem = document.getElementById(`DateTime${selectedChat?._id}`)
-    elem?.classList.contains('unSeen') && elem.classList.remove('unSeen');
+    if (elem?.classList.contains('unSeen')) {
+      elem.classList.remove('unSeen');
+      selectedChat?.latestMessage && seenlstMessage(selectedChat.latestMessage._id)
+    }
 
-    selectedChat?.latestMessage && seenMessage(selectedChat.latestMessage._id)
-     // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [selectedChat?._id])
 
   return (
@@ -128,23 +130,23 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
                       _hover={{ bg: "#2da89f61" }}
                     >
                       <Box maxWidth={"67px"} >
-                        {getSender(chat, user)?.avatar === "" ?
-                          <Avatar boxShadow={"0 0 0 3px #27aea4"} name={getSender(chat, user)?.name} />
-                          : <Avatar boxShadow={"0 0 0 3px #27aea4"} src={getSender(chat, user)?.avatar} />
-                        }
+                        <Avatar boxShadow={"0 0 0 3px #27aea4"} src={getSender(chat, user)?.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} />
                       </Box>
                       <Box width={{ base: "calc(100% - 15%)", md: "calc(100% - 12%)" }}>
                         <Box display={"flex"} justifyContent="space-between" width={"100%"}>
                           <Text fontSize={"1rem"} fontWeight="semibold">{getSender(chat, user)?.name}</Text>
                           {chat.latestMessage &&
+
                             <Text
-                              fontSize={".7rem"}
+                              fontSize={".75rem"}
                               fontWeight="normal"
                               id={`DateTime${chat._id}`}
                               padding={".0 .3rem"}
                               className={`latestMessageDateTime flex ${!(chat.latestMessage.seenBy.includes(user?._id)) && "unSeen"}`}>
                               <>{getDateTime(chat.latestMessage.createdAt)}</>
-                            </Text>}
+                            </Text>
+
+                          }
                           {/* color="#35c697" */}
                         </Box>
                         {/* latestmessage */}
@@ -154,7 +156,7 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
                               &&
                               (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "}
                           </Text>
-                          {Trimlastestmsg(chat.latestMessage ? chat.latestMessage.content.message : "No message yet!")}
+                          {Trimlastestmsg(chat.latestMessage?.content.message || "No message yet!")}
                         </Text>
                       </Box>
                     </Box>

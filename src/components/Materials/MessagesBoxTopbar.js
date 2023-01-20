@@ -24,7 +24,7 @@ function MessagesBoxTopbar() {
                 padding="0 .9rem">
 
                 <Box display={"flex"} color="white" gap="1rem" className='msgleftTop' alignItems={"center"}>
-                    <Avatar cursor={"pointer"} onClick={() => setProfile(getSender(selectedChat, user))} boxShadow={getSender(selectedChat, user)?.avatar.length ? "0 0 0 2px #fff" : "0 0 0 1px #fff"} src={getSender(selectedChat, user)?.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1673770725/iqujmf95b5loz1ohqphc.png"} />
+                    <Avatar cursor={"pointer"} onClick={() => setProfile(getSender(selectedChat, user))} boxShadow={"0 0 0 2px #fff"} src={getSender(selectedChat, user)?.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} />
                     <Text fontSize={{ base: "1.3rem", md: "1.5rem" }} fontWeight="normal">
                         {
                             getSender(selectedChat, user)?.name

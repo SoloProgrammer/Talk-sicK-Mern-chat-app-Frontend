@@ -1,6 +1,8 @@
 import { Avatar, AvatarGroup, Box, Image, Text, Tooltip } from '@chakra-ui/react'
 import { ChatState } from '../Context/ChatProvider'
 
+export const defaultPic = "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"
+
 export const getSender = (chat, user) => {
     if (chat?.isGroupchat) return { name: chat.chatName, avatar: chat.groupAvatar }
     let sender = chat?.users.filter(u => u._id !== user?._id)[0]
@@ -19,7 +21,7 @@ export const GroupMembers = (selectedChat) => {
             <AvatarGroup size='sm' max={3}>
                 {
                     selectedChat.users.map((u, i) => {
-                        return <Avatar key={i} src={u.avatar ? u.avatar : "https://res.cloudinary.com/dvzjzf36i/image/upload/v1673770725/iqujmf95b5loz1ohqphc.png"} />
+                        return <Avatar key={i} src={u.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1673770725/iqujmf95b5loz1ohqphc.png"} />
                     })
                 }
             </AvatarGroup>

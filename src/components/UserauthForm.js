@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { ChatState } from '../Context/ChatProvider';
 import { server } from '../configs/serverURl'
+import { defaultPic } from '../configs/userConfigs';
 
 function Login({ value, inputValues, setInputValues }) {
 
@@ -14,7 +15,6 @@ function Login({ value, inputValues, setInputValues }) {
     setInputValues({ ...inputValues, [e.target.name]: e.target.value })
   }
 
-  let defaultPic = "https://cdn-icons-png.flaticon.com/512/847/847969.png"
   const [pic, setPic] = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -108,11 +108,11 @@ function Login({ value, inputValues, setInputValues }) {
       <Stack spacing={6}>
         {value !== "login" && <Box>
           <label style={{ margin: "20px 3px", fontSize: "1rem", fontWeight: "300", color: "grey" }} htmlFor="pass "><span className='red'>*</span> Fullname</label>
-          <Input onChange={handleChange} value={inputValues.name ? inputValues.name : ""} id="pass" name='name' variant='filled' placeholder='Fullname' />
+          <Input onChange={handleChange} value={inputValues?.name || ""} id="pass" name='name' variant='filled' placeholder='Fullname' />
         </Box>}
         <Box>
           <label style={{ margin: "20px 3px", fontSize: "1rem", fontWeight: "300", color: "grey" }} htmlFor="email"><span className='red'>*</span> Email</label>
-          <Input onChange={handleChange} name='email' value={inputValues.email ? inputValues.email : ""} id="email" variant='filled' placeholder='Email' />
+          <Input onChange={handleChange} name='email' value={inputValues?.email || ""} id="email" variant='filled' placeholder='Email' />
         </Box>
         <Box>
           <label style={{ margin: "20px 3px", fontSize: "1rem", fontWeight: "300", color: "grey" }} htmlFor="pass "><span className='red'>*</span> Password</label>
@@ -139,7 +139,7 @@ function Login({ value, inputValues, setInputValues }) {
           <InputGroup size='md'>
             <Input
               onChange={handleChange}
-              value={inputValues.confpass ? inputValues.confpass : ""}
+              value={inputValues?.confpass || ""}
               name='confpass'
               id="pass"
               variant="filled"
@@ -157,7 +157,7 @@ function Login({ value, inputValues, setInputValues }) {
         {value !== "login" && <>
           <input onChange={HandleUpload} accept="image/*" style={{ display: "none" }} id="icon-button-file" type="file" />
           <Box display={"flex"} justifyContent="space-between" alignItems={"center"}>
-            <Avatar name='Dan Abrahmov' src={pic ? pic : defaultPic} />
+            <Avatar name='A V' src={pic ? pic : defaultPic} />
             <Text><b>Upload your profile picture </b></Text>
             <img width={25} src="https://cdn-icons-png.flaticon.com/512/556/556130.png" alt="handPointer" />
             <label style={{ cursor: "pointer" }} htmlFor="icon-button-file"><img width={30} src="https://cdn-icons-png.flaticon.com/512/1177/1177911.png" alt="Upload pic" /></label>

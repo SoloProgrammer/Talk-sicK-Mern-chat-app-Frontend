@@ -13,7 +13,7 @@ function Homepage() {
 
         setTimeout(() => document.querySelector('.userForm').classList.remove('hide'), 0);
     }, [navigate])
-    const [inputValues, setInputValues] = useState({})
+    const [inputValues, setInputValues] = useState({});
     
     return (
         
