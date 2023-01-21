@@ -38,7 +38,9 @@ const ChatProvider = ({ children }) => {
     const [socketConneted, setSocketConnected] = useState(false)
 
     // const ENDPOINT = "http://localhost:8001"
-    const ENDPOINT = "https://expensive-crab-lapel.cyclic.app"
+    
+    const ENDPOINT = server.URL.production
+
 
     const [socket, setSocket] = useState(null);
 
