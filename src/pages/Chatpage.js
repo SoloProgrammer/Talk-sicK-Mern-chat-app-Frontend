@@ -3,13 +3,13 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { ChatState } from '../Context/ChatProvider';
 import ChatsBox from '../components/ChatsBox';
-import MessagesBox from '../components/MessagesBox';
+import MessageBox from '../components/MessageBox';
 import { server } from '../configs/serverURl';
 import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, showToast, chats, chatsLoading, setChatsLoading, setChats, isfetchChats, setIsfetchChats, user, selectedChat, setSelectedChat, setProfile, profile } = ChatState()
+  const { getUser, setUser, showToast, chats, chatsLoading, setChatsLoading, setChats, isfetchChats, setIsfetchChats, user, selectedChat, setSelectedChat, setProfile, profile,seenlstMessage } = ChatState()
   const navigate = useNavigate();
 
   const GetuserInfo = async () => {
@@ -70,8 +70,8 @@ function Chatpage() {
   return (
     <Box className={`mainChatBox hideleft`} width="100%" display="flex" justifyContent={"center"} alignItems="center" transition={".5s"}>
       <Box width={{ base: "95%", md: "95%" }} height={{ base: "98vh", md: "97vh" }} background={"white"} display="flex" overflow={"hidden"}>
-        <ChatsBox profile={profile} setProfile={setProfile} chats={chats} chatsLoading={chatsLoading} user={user} selectedChat={selectedChat} setSelectedChat={setSelectedChat} showToast={showToast}/>
-        <MessagesBox />
+        <ChatsBox seenlstMessage={seenlstMessage} profile={profile} setProfile={setProfile} chats={chats} chatsLoading={chatsLoading} user={user} selectedChat={selectedChat} setSelectedChat={setSelectedChat} showToast={showToast}/>
+        <MessageBox />
       </Box>
     </Box>
   )

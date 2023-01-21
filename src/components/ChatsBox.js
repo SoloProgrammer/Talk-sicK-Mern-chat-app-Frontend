@@ -1,13 +1,12 @@
 import { Avatar, Box, Image, Text } from '@chakra-ui/react'
 import { getFormmatedDate, getFormmatedTime } from '../configs/dateConfigs'
-import { server } from '../configs/serverURl'
 import React, { useEffect } from 'react'
-import { getSender, HandleLogout } from '../configs/userConfigs'
+import { getSender } from '../configs/userConfigs'
 import ChatsTopBar from './Materials/ChatsTopBar'
 import ProfileDrawer from './Materials/ProfileDrawer'
 
 
-function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, setProfile, profile, showToast }) {
+function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, setProfile, profile, seenlstMessage }) {
 
   const Trimlastestmsg = (msg) => {
     let trimInd = window.innerWidth > 1300 ? 50 : 30
@@ -46,37 +45,6 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
     return DateTime
   }
 
-  const seenlstMessage = async (msgId) => {
-
-    try {
-
-      let config = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          token: localStorage.getItem('token')
-        },
-        body: JSON.stringify({ msgId })
-      }
-
-      let res = await fetch(`${server.URL.production}/api/message/seenMessage`, config);
-
-      if (res.status === 401) return HandleLogout();
-
-      let json = await res.json();
-
-      // ToDo gave an appropiatiate msg for the bad res[ponse from the server!
-      if (!json.status) return
-
-    } catch (error) {
-      setSelectedChat(null)
-      setProfile(null)
-      showToast("Error", error.message, "error", 3000)
-      return
-    }
-
-  }
-
   const handleChatClick = async (chat) => {
     setSelectedChat(chat);
     setProfile(null);
@@ -85,6 +53,7 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
   useEffect(() => {
 
     let elem = document.getElementById(`DateTime${selectedChat?._id}`)
+    console.log("runs..", selectedChat?.latestMessage?.seenBy);
     if (elem?.classList.contains('unSeen')) {
       elem.classList.remove('unSeen');
       selectedChat?.latestMessage && seenlstMessage(selectedChat.latestMessage._id)
@@ -137,13 +106,12 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
                         <Box display={"flex"} justifyContent="space-between" width={"100%"}>
                           <Text fontSize={"1rem"} fontWeight="semibold">{getSender(chat, user)?.name}</Text>
                           {chat.latestMessage &&
-
                             <Text
                               fontSize={".75rem"}
                               fontWeight="normal"
                               id={`DateTime${chat._id}`}
                               padding={".0 .3rem"}
-                              className={`latestMessageDateTime flex ${!(chat.latestMessage.seenBy.includes(user?._id)) && "unSeen"}`}>
+                              className={`latestMessageDateTime flex ${(chat.latestMessage?.seenBy.includes(user?._id) === false) && "unSeen"}`}>
                               <>{getDateTime(chat.latestMessage.createdAt)}</>
                             </Text>
 

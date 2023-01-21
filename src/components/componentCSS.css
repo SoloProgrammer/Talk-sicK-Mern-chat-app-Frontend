@@ -89,9 +89,7 @@
 
 .unSeen {
     font-weight: 500 !important;
-    color: #12d2b6;
     color: #12c9d2;
-    border-radius: 1.3rem;
 }
 .MsgTime{
     font-size: .6rem;

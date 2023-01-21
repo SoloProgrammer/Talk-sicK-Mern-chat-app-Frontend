@@ -2,9 +2,9 @@ import { createContext, useState, useContext, useEffect } from 'react'
 import { useToast } from '@chakra-ui/react'
 import { server } from '../configs/serverURl';
 import { HandleLogout } from '../configs/userConfigs';
-const ChatContext = createContext();
-
 import io from 'socket.io-client'
+
+const ChatContext = createContext();
 
 const ChatProvider = ({ children }) => {
 
@@ -37,19 +37,23 @@ const ChatProvider = ({ children }) => {
 
     const [socketConneted, setSocketConnected] = useState(false)
 
-    const ENDPOINT = "http://localhost:8001"
+    // const ENDPOINT = "http://localhost:8001"
+    const ENDPOINT = "https://expensive-crab-lapel.cyclic.app"
 
     const [socket, setSocket] = useState(null);
-    
+
     useEffect(() => {
-        let socketCreated = io(ENDPOINT);
+        let socketCreated = io(ENDPOINT, { transports: ['websocket', 'polling'] });
         setSocket(socketCreated)
 
         if (user) {
             socket.emit('setup', user);
             socket.on('connection', () => setSocketConnected(true))
         }
-        console.log(socket);
+
+        socketConneted && console.log()
+
+        // eslint-disable-next-line 
     }, [user]);
 
     //Socket.io connection with configuration........................................................
@@ -96,9 +100,41 @@ const ChatProvider = ({ children }) => {
 
     }
 
+    const seenlstMessage = async (msgId) => {
+
+        try {
+
+            let config = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    token: localStorage.getItem('token')
+                },
+                body: JSON.stringify({ msgId })
+            }
+
+            let res = await fetch(`${server.URL.production}/api/message/seenMessage`, config);
+
+            if (res.status === 401) return HandleLogout();
+
+            let json = await res.json();
+
+            // ToDo gave an appropiatiate msg for the bad res[ponse from the server!
+            if (!json.status) return
+
+            setChats(json.chats) // refresing the chats whenever a new orr lastemessgge seen by user to show him in the chat that he has seenn the lastemessage!
+
+        } catch (error) {
+            setSelectedChat(null)
+            setProfile(null)
+            showToast("Error", error.message, "error", 3000)
+            return
+        }
+
+    }
 
     return (
-        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, socket }}>
+        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket }}>
             {children}
         </ChatContext.Provider>
     )
