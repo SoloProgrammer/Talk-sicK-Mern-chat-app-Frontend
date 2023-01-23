@@ -4,9 +4,12 @@ import React, { useEffect } from 'react'
 import { getSender } from '../configs/userConfigs'
 import ChatsTopBar from './Materials/ChatsTopBar'
 import ProfileDrawer from './Materials/ProfileDrawer'
+import { ChatState } from '../Context/ChatProvider'
 
 
-function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, setProfile, profile, seenlstMessage }) {
+function ChatsBox() {
+
+  const { chats, chatsLoading, user, selectedChat, setSelectedChat, setProfile, profile, seenlstMessage,notifications,setNotifications } = ChatState()
 
   const Trimlastestmsg = (msg) => {
     let trimInd = window.innerWidth > 1300 ? 50 : 30
@@ -45,15 +48,15 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
     return DateTime
   }
 
-  const handleChatClick = async (chat) => {
+  const handleChatClick = (chat) => {
     setSelectedChat(chat);
     setProfile(null);
+    notifications.length && setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
   }
 
   useEffect(() => {
 
     let elem = document.getElementById(`DateTime${selectedChat?._id}`)
-    console.log("runs..", selectedChat?.latestMessage?.seenBy);
     if (elem?.classList.contains('unSeen')) {
       elem.classList.remove('unSeen');
       selectedChat?.latestMessage && seenlstMessage(selectedChat.latestMessage._id)
@@ -106,14 +109,17 @@ function ChatsBox({ chats, chatsLoading, user, selectedChat, setSelectedChat, se
                         <Box display={"flex"} justifyContent="space-between" width={"100%"}>
                           <Text fontSize={"1rem"} fontWeight="semibold">{getSender(chat, user)?.name}</Text>
                           {chat.latestMessage &&
-                            <Text
-                              fontSize={".75rem"}
-                              fontWeight="normal"
-                              id={`DateTime${chat._id}`}
-                              padding={".0 .3rem"}
-                              className={`latestMessageDateTime flex ${(chat.latestMessage?.seenBy.includes(user?._id) === false) && "unSeen"}`}>
-                              <>{getDateTime(chat.latestMessage.createdAt)}</>
-                            </Text>
+                            <>
+                              <Text
+                                fontSize={".75rem"}
+                                fontWeight="normal"
+                                id={`DateTime${chat._id}`}
+                                padding={".0 .3rem"}
+                                className={`latestMessageDateTime flex ${(chat.latestMessage?.seenBy.includes(user?._id) === false) && "unSeen"}`}>
+                                <>{getDateTime(chat.latestMessage.createdAt)}</>
+                              </Text>
+
+                            </>
 
                           }
                           {/* color="#35c697" */}

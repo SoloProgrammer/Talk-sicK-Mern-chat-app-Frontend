@@ -38,7 +38,7 @@ const ChatProvider = ({ children }) => {
     const [socketConneted, setSocketConnected] = useState(false)
 
     // const ENDPOINT = "http://localhost:8001"
-    
+
     const ENDPOINT = server.URL.production
 
     const [socket, setSocket] = useState(null);
@@ -134,8 +134,24 @@ const ChatProvider = ({ children }) => {
 
     }
 
+    useEffect(() => {
+        if (selectedChat) {
+            setSelectedChat(chats.filter(chat => chat._id === selectedChat._id)[0])
+        }
+        // if (chats) {
+        //     console.log(chats);
+        //     chats.forEach(chat => {
+        //         console.log(chat.chatName,chat.latestMessage?.seenBy.includes(user?._id))
+        //         (chat.latestMessage?.seenBy.includes(user?._id) === false) && setNotifications([chat.latestMessage, ...notifications])
+        //     })
+        // }
+        // eslint-disable-next-line
+    }, [chats])
+
+    const [notifications, setNotifications] = useState([])
+
     return (
-        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket }}>
+        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications }}>
             {children}
         </ChatContext.Provider>
     )

@@ -82,21 +82,34 @@
 .MessagesBox::-webkit-scrollbar {
     display: none;
 }
-.latestMessageDateTime{
-    transform: translate(.4rem,-.5rem);
+
+.latestMessageDateTime {
+    transform: translate(.4rem, -.5rem);
     padding: 0 .3rem;
 }
 
 .unSeen {
     font-weight: 500 !important;
+
     color: #12c9d2;
 }
-.MsgTime{
+
+.notification_badge {
+    font-size: 12px !important;
+    border-radius: 50% !important;
+    width: 1.3rem !important;
+    height: 1.3rem !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.MsgTime {
     font-size: .6rem;
     color: black !important;
     text-shadow: none !important;
     display: inline-block;
-    transform: translate(7px,2px);
+    transform: translate(7px, 2px);
 }
 
 #messagesDisplay::-webkit-scrollbar {

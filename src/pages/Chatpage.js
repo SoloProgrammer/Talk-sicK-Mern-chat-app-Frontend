@@ -9,7 +9,7 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, showToast, chats, chatsLoading, setChatsLoading, setChats, isfetchChats, setIsfetchChats, user, selectedChat, setSelectedChat, setProfile, profile,seenlstMessage } = ChatState()
+  const { getUser, setUser, showToast, setChatsLoading, setChats, isfetchChats, setIsfetchChats, profile } = ChatState()
   const navigate = useNavigate();
 
   const GetuserInfo = async () => {
@@ -70,7 +70,7 @@ function Chatpage() {
   return (
     <Box className={`mainChatBox hideleft`} width="100%" display="flex" justifyContent={"center"} alignItems="center" transition={".5s"}>
       <Box width={{ base: "95%", md: "95%" }} height={{ base: "98vh", md: "97vh" }} background={"white"} display="flex" overflow={"hidden"}>
-        <ChatsBox seenlstMessage={seenlstMessage} profile={profile} setProfile={setProfile} chats={chats} chatsLoading={chatsLoading} user={user} selectedChat={selectedChat} setSelectedChat={setSelectedChat} showToast={showToast}/>
+        <ChatsBox />
         <MessageBox />
       </Box>
     </Box>

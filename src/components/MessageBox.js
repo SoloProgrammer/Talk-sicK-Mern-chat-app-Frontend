@@ -9,11 +9,13 @@ import { server } from '../configs/serverURl'
 import { HandleLogout } from '../configs/userConfigs'
 import { scrollBottom } from '../configs/scrollConfigs'
 import sentAudio from '../../src/mp3/MessageSent.mp3'
+import notifyAudio from '../../src/mp3/Notification.mp3'
 
 var selectedChatCompare;
+var notificationsCompare;
 function MessagesBox() {
 
-  const { setChats, selectedChat, setProfile, profile, showToast, socket, seenlstMessage } = ChatState()
+  const { setChats, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -69,8 +71,14 @@ function MessagesBox() {
     }
 
   }
+  useEffect(() => {
+    notificationsCompare = notifications
+    // console.log(notifications);
 
-  // reciveing real time message from socket!....................................................
+  }, [notifications])
+
+  let notificationBeep = new Audio(notifyAudio)
+  // reciveing real time message from server with the help of socket!....................................................
   useEffect(() => {
 
     // this useEFfect will run whenever socket sends a new message.................................. to recieved it!
@@ -78,11 +86,22 @@ function MessagesBox() {
 
       if (!selectedChatCompare || selectedChatCompare?._id !== newMessageRecieved.chat._id) {
         // give notification
+        if (!socket) return
+        else {
+          
+          if ((notificationsCompare.length === 0) || (notificationsCompare.length > 0 && !(notificationsCompare.map(noti => noti.chat._id).includes(newMessageRecieved.chat._id)))) {
+            setNotifications([newMessageRecieved, ...notificationsCompare])
+            notificationBeep.play()
+          }
+
+        }
         refreshChats();
       }
       else {
         setMessages([...Previousmessages, newMessageRecieved]);
         seenlstMessage(newMessageRecieved._id);
+        refreshChats();
+
       }
     })
 
