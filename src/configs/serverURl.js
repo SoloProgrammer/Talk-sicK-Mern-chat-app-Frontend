@@ -1,5 +1,5 @@
 export const  server = {
     URL:{
-        production:"https://talk-o-meter.onrender.com",
+        production:"https://talk-o-meter-server.onrender.com", 
     }
 }

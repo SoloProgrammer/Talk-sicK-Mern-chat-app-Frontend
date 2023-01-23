@@ -41,7 +41,6 @@ const ChatProvider = ({ children }) => {
     
     const ENDPOINT = server.URL.production
 
-
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {

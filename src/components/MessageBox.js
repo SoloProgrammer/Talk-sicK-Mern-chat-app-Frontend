@@ -82,7 +82,7 @@ function MessagesBox() {
       }
       else {
         setMessages([...Previousmessages, newMessageRecieved]);
-        seenlstMessage(newMessageRecieved._id)
+        seenlstMessage(newMessageRecieved._id);
       }
     })
 
@@ -100,7 +100,6 @@ function MessagesBox() {
 
     setMessageText("");
     setLoading(true);
-
 
     try {
 
