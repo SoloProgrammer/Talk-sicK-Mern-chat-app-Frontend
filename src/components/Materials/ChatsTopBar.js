@@ -46,7 +46,7 @@ function ChatsTopBar() {
                 </Box>
                 <Box display={"flex"} justifyContent="space-evenly">
                     <Menu>
-                        <Tooltip label="Search Users" placement='bottom-end' borderRadius={".2rem"}>
+                        <Tooltip isDisabled={window.innerWidth < 770} label="Search Users" placement='bottom-end' borderRadius={".2rem"}>
                             <MenuButton _active={{ boxShadow: "inset 0 0 0 22px #a2f1ec54" }}
                                 _hover={{ boxShadow: "inset 0 0 0 22px #a2f1ec54" }}
                                 width="fit-content"
@@ -59,7 +59,7 @@ function ChatsTopBar() {
                         <SideDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
                     </Menu>
                     <Menu>
-                        <Tooltip label="Notifications" placement='bottom-end' borderRadius={".2rem"}>
+                        <Tooltip isDisabled={window.innerWidth < 770} label="Notifications" placement='bottom-end' borderRadius={".2rem"}>
                             <MenuButton p={1}
                                 _active={{ boxShadow: "inset 0 0 0 15px #a2f1ec54" }}
                                 _hover={{ boxShadow: "inset 0 0 0 15px #a2f1ec54" }}

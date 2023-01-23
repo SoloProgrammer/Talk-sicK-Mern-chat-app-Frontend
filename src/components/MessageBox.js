@@ -1,4 +1,4 @@
-import { Box, FormControl, Image, Spinner, Text } from '@chakra-ui/react'
+import { Box, FormControl, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useState, useEffect } from 'react'
 import { ChatState } from '../Context/ChatProvider'
 import BrandLogo from '../utils/BrandLogo'
@@ -75,7 +75,7 @@ function MessagesBox() {
 
     // this useEFfect will run whenever socket sends a new message.................................. to recieved it!
     socket?.on("message recieved", (newMessageRecieved, Previousmessages) => {
-      
+
       if (!selectedChatCompare || selectedChatCompare?._id !== newMessageRecieved.chat._id) {
         // give notification
         refreshChats();
@@ -214,7 +214,9 @@ function MessagesBox() {
                   {
                     loading
                       ?
-                      <Spinner size={"md"} color="#39b5ac" />
+                      <Tooltip placement='top' label="sending...." isOpen>
+                        <Spinner size={"md"} color="#39b5ac" />
+                      </Tooltip>
                       :
                       <Image
                         opacity={".5"}
