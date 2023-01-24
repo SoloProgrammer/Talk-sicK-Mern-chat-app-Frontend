@@ -117,6 +117,9 @@ html,body {
 .App{
     background-size: contain;
 }
+.brand_logo{
+    font-size: 1.4rem;
+}
 .brand_logo .brandpic{
     overflow: hidden;
     width: 30px;

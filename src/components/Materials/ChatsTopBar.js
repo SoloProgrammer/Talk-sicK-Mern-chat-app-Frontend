@@ -8,11 +8,11 @@ import CreateGroupChat from './CreateGroupChat';
 import { defaultPic } from '../../configs/userConfigs';
 
 import NotificationBadge from 'react-notification-badge';
-import {Effect} from 'react-notification-badge';
- 
+import { Effect } from 'react-notification-badge';
+
 function ChatsTopBar() {
 
-    const { user, setProfile, profile, notifications, setNotifications, setSelectedChat,chats } = ChatState();
+    const { user, setProfile, profile, notifications, setNotifications, setSelectedChat, chats } = ChatState();
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -69,7 +69,7 @@ function ChatsTopBar() {
                                 _hover={{ boxShadow: "inset 0 0 0 18px #a2f1ec54" }}
                                 transition=".5s" borderRadius='full'
                                 padding={".3rem"}>
-                                {notifications.length > 0 && <NotificationBadge className="notification_badge" pos="absolute" count={notifications.length} effect={Effect.SCALE}/>}
+                                {notifications.length > 0 && <NotificationBadge className="notification_badge" pos="absolute" count={notifications.length} effect={Effect.SCALE} />}
                                 <BellIcon fontSize={window.innerWidth > 770 ? "2rem" : "1.8rem"} m={1} />
                             </MenuButton>
                         </Tooltip>

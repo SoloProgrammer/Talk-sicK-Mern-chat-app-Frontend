@@ -120,10 +120,10 @@ const ChatProvider = ({ children }) => {
 
             let json = await res.json();
 
-            // ToDo gave an appropiatiate msg for the bad res[ponse from the server!
+            // ToDo gave an appropiatiate msg for the bad response from the server!
             if (!json.status) return
 
-            setChats(json.chats) // refresing the chats whenever a new orr lastemessgge seen by user to show him in the chat that he has seenn the lastemessage!
+            setChats(json.chats) // refresing the chats whenever a new or lastemessgge seen by user to show him in the chat that he has seen the latestmessage!
 
         } catch (error) {
             setSelectedChat(null)
@@ -135,16 +135,11 @@ const ChatProvider = ({ children }) => {
     }
 
     useEffect(() => {
+
+        // whenever new message recives and user is on another chat so all the chats will be fetch again and to stay the user on the same chat he is before refrshing the chats this logic is used!
         if (selectedChat) {
             setSelectedChat(chats.filter(chat => chat._id === selectedChat._id)[0])
         }
-        // if (chats) {
-        //     console.log(chats);
-        //     chats.forEach(chat => {
-        //         console.log(chat.chatName,chat.latestMessage?.seenBy.includes(user?._id))
-        //         (chat.latestMessage?.seenBy.includes(user?._id) === false) && setNotifications([chat.latestMessage, ...notifications])
-        //     })
-        // }
         // eslint-disable-next-line
     }, [chats])
 

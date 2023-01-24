@@ -9,7 +9,7 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, showToast, setChatsLoading, setChats, isfetchChats, setIsfetchChats, profile } = ChatState()
+  const { getUser, setUser, showToast, setChatsLoading, setChats, isfetchChats, setIsfetchChats, profile, user, setNotifications, notifications } = ChatState()
   const navigate = useNavigate();
 
   const GetuserInfo = async () => {
@@ -55,12 +55,29 @@ function Chatpage() {
       setChats(json.chats);
       setIsfetchChats(false);
       setChatsLoading(false);
+
+      if (json.chats) {
+        let UnseenMsgnotifications = []
+        json.chats.map(chat => {
+          if (user && chat.latestMessage  && !(chat.latestMessage?.seenBy.includes(user._id))) {
+            // console.log("`````````````````",chat.latestMessage,user._id)
+            UnseenMsgnotifications.push(chat.latestMessage)
+          }
+          return null
+        })
+        setNotifications(UnseenMsgnotifications)
+      }
+
       setTimeout(() => document.querySelector('.allchats')?.classList.remove('hidetop'), 10)
 
     } catch (error) {
       return showToast("Error", error.message, "error", 3000)
     }
   }
+
+  // useEffect(() =>{
+  //   console.log(".................",notifications)
+  // },[notifications])
 
   useEffect(() => {
     localStorage.getItem('token') && fetchallchats()

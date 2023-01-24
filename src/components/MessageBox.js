@@ -73,7 +73,6 @@ function MessagesBox() {
   }
   useEffect(() => {
     notificationsCompare = notifications
-    // console.log(notifications);
 
   }, [notifications])
 
@@ -100,8 +99,7 @@ function MessagesBox() {
       else {
         setMessages([...Previousmessages, newMessageRecieved]);
         seenlstMessage(newMessageRecieved._id);
-        refreshChats();
-
+        // refreshChats();
       }
     })
 
