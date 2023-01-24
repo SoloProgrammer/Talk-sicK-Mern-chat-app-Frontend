@@ -22,7 +22,7 @@ function ChatsBox() {
       trimInd = 30
     } else if (window.innerWidth <= 500) trimInd = 30
 
-    return msg.slice(0, trimInd).length !== trimInd ? msg.slice(0, trimInd) : msg.slice(0, trimInd).concat(".....")
+    return msg.length <= trimInd ? msg : msg.slice(0, trimInd).concat(".....")
   }
 
   const getDateTime = (timeStamps) => {
