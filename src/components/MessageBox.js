@@ -146,8 +146,6 @@ function MessagesBox() {
       setChats(json.chats);
 
       setLoading(false);
-
-
     } catch (error) {
       showToast("Error", error.message, "error", 3000)
     }

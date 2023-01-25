@@ -32,10 +32,11 @@ const ChatProvider = ({ children }) => {
         return res.json()
     }
 
-
     //Socket.io connection with configuration........................................................
 
-    const [socketConneted, setSocketConnected] = useState(false)
+    const [socketConneted, setSocketConnected] = useState(false);
+
+    const [onlineUsers,setOnlineUsers] = useState([])
 
     // const ENDPOINT = "http://localhost:8001"
 
@@ -47,16 +48,20 @@ const ChatProvider = ({ children }) => {
         let socketCreated = io(ENDPOINT, { transports: ['websocket', 'polling'] });
         setSocket(socketCreated)
 
-        if (user) {
+        if (socket) {
             socket.emit('setup', user);
             socket.on('connection', () => setSocketConnected(true))
+            socket.on('activeUsers',(users)=>{
+                // console.log("online users",users)
+                setOnlineUsers(users)
+            });
         }
-
+        
         socketConneted && console.log()
-
+        
         // eslint-disable-next-line 
     }, [user]);
-
+    
     //Socket.io connection with configuration........................................................
 
     const [chats, setChats] = useState(null)
@@ -146,7 +151,7 @@ const ChatProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([])
 
     return (
-        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications }}>
+        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications,onlineUsers,setOnlineUsers }}>
             {children}
         </ChatContext.Provider>
     )

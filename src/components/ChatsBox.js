@@ -1,7 +1,7 @@
-import { Avatar, Box, Image, Text } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, Box, Image, Text } from '@chakra-ui/react'
 import { getFormmatedDate, getFormmatedTime } from '../configs/dateConfigs'
 import React, { useEffect } from 'react'
-import { getSender } from '../configs/userConfigs'
+import { getSender, isUserOnline } from '../configs/userConfigs'
 import ChatsTopBar from './Materials/ChatsTopBar'
 import ProfileDrawer from './Materials/ProfileDrawer'
 import { ChatState } from '../Context/ChatProvider'
@@ -9,7 +9,7 @@ import { ChatState } from '../Context/ChatProvider'
 
 function ChatsBox() {
 
-  const { chats, chatsLoading, user, selectedChat, setSelectedChat, setProfile, profile, seenlstMessage,notifications,setNotifications } = ChatState()
+  const { chats, chatsLoading, user, selectedChat, setSelectedChat, setProfile, profile, seenlstMessage, notifications, setNotifications } = ChatState()
 
   const Trimlastestmsg = (msg) => {
     let trimInd = window.innerWidth > 1300 ? 50 : 30
@@ -63,7 +63,9 @@ function ChatsBox() {
     }
 
     // eslint-disable-next-line
-  }, [selectedChat?._id])
+  }, [selectedChat?._id]);
+
+ 
 
   return (
     <Box display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
@@ -103,7 +105,18 @@ function ChatsBox() {
                       _hover={{ bg: "#2da89f61" }}
                     >
                       <Box maxWidth={"67px"} >
-                        <Avatar boxShadow={"0 0 0 3px #27aea4"} src={getSender(chat, user)?.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} />
+                        <Avatar boxShadow={"0 0 0 3px #27aea4"} src={getSender(chat, user)?.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} >
+                          {
+                            !(chat.isGroupchat) 
+                            && 
+                            <AvatarBadge 
+                            borderWidth="2px" 
+                            borderColor='#ffffff' 
+                            bg={isUserOnline(getSender(chat,user)) ? '#00c200' : "darkgrey"} 
+                            boxSize='.8em' />
+                          }
+                          
+                        </Avatar>
                       </Box>
                       <Box width={{ base: "calc(100% - 15%)", md: "calc(100% - 12%)" }}>
                         <Box display={"flex"} justifyContent="space-between" width={"100%"}>

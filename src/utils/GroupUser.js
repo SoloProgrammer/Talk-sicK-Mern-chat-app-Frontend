@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import { ChatState } from '../Context/ChatProvider'
-import { HandleLogout } from '../configs/userConfigs'
+import { HandleLogout, isUserOnline } from '../configs/userConfigs'
 import { server } from '../configs/serverURl'
 
 
@@ -79,7 +79,7 @@ function GroupUser({ u }) {
             setRemoveUserLoading(false)
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
-            
+
             // checking if the logged in user is not in the return chat from server that means he is from that chat successfully and then to dispaly the change we can refetch the all chats from server!
             if (!(json.chat.users.map(u => u._id).includes(user?._id))) {
                 setSelectedChat(null)
@@ -142,7 +142,13 @@ function GroupUser({ u }) {
             alignItems="center">
 
             <Tooltip hasArrow label={user?._id === u._id ? "My Profile" : "Start a chat"} placement='left'>
-                <Avatar onClick={() => handleStartChat(u)} cursor={"pointer"} _hover={{ boxShadow: "0 0 0 2px white" }} name={u.name} src={u.avatar} size="sm" />
+                <Avatar onClick={() => handleStartChat(u)} cursor={"pointer"} _hover={{ boxShadow: "0 0 0 2px white" }} name={u.name} src={u.avatar} size="sm">
+                    <AvatarBadge
+                        borderWidth="1.8px"
+                        borderColor='#ffffff'
+                        bg={isUserOnline(u) ? '#00c200' : "darkgrey"}
+                        boxSize='.9em' />
+                </Avatar>
             </Tooltip>
 
             <Box>
