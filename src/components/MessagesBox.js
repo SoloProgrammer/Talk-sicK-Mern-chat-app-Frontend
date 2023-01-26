@@ -93,11 +93,12 @@ function MessageBox({ messages, setMessages }) {
   }
 
   return (
-    <Box className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden">
+    <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden">
       {
         profile && profile._id !== user?._id && // profile?._id is same as profile && profile._id but in some instance we need to check the profile first and then the detauils inside it! it opens this profile drawer with profile?._id condition!
         <ProfileDrawer width="50%" />
       }
+      
       {
         messagesLoading
           ?
@@ -159,6 +160,7 @@ function MessageBox({ messages, setMessages }) {
             }
           </Box>
       }
+      
     </Box>
   )
 }

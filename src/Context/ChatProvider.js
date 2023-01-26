@@ -36,13 +36,17 @@ const ChatProvider = ({ children }) => {
 
     const [socketConneted, setSocketConnected] = useState(false);
 
-    const [onlineUsers,setOnlineUsers] = useState([])
+    const [onlineUsers, setOnlineUsers] = useState([])
 
-    // const ENDPOINT = "http://localhost:8001"
+    const ENDPOINT = "http://localhost:8001"
 
-    const ENDPOINT = server.URL.production
+    // const ENDPOINT = server.URL.production
 
     const [socket, setSocket] = useState(null);
+
+    const [isTyping,setIsTyping] = useState(null);
+
+    const [typingUser,setTypingUser] = useState(null) // this is needed inside the groupChat as we need to find who is typing in the whole group! 
 
     useEffect(() => {
         let socketCreated = io(ENDPOINT, { transports: ['websocket', 'polling'] });
@@ -50,18 +54,13 @@ const ChatProvider = ({ children }) => {
 
         if (socket) {
             socket.emit('setup', user);
-            socket.on('connection', () => setSocketConnected(true))
-            socket.on('activeUsers',(users)=>{
-                // console.log("online users",users)
-                setOnlineUsers(users)
-            });
+            socket.on('connected', () => setSocketConnected(true))
+            socket.on('activeUsers', (users) => setOnlineUsers(users));
         }
-        
-        socketConneted && console.log()
-        
+
         // eslint-disable-next-line 
     }, [user]);
-    
+
     //Socket.io connection with configuration........................................................
 
     const [chats, setChats] = useState(null)
@@ -151,7 +150,7 @@ const ChatProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([])
 
     return (
-        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications,onlineUsers,setOnlineUsers }}>
+        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers,isTyping,setIsTyping,typingUser,setTypingUser }}>
             {children}
         </ChatContext.Provider>
     )

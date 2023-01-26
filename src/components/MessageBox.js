@@ -15,7 +15,7 @@ var selectedChatCompare;
 var notificationsCompare;
 function MessagesBox() {
 
-  const { setChats, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications } = ChatState()
+  const { user, setChats, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -25,11 +25,39 @@ function MessagesBox() {
   const emojiIconActive = "https://cdn-icons-png.flaticon.com/512/166/166549.png"
   const emojiIcon = "https://cdn-icons-png.flaticon.com/512/9320/9320978.png"
 
-  const handleChange = (e) => {
+  const handleMessageTyping = (e) => {
+
     setMessageText(e.target.value)
     if (profile) setProfile(null)
     if (isEmojiPick) setIsEmojiPick(false)
+
   }
+
+  useEffect(() => {
+
+    if (!socketConneted) return console.log("Socket disconnected!")
+
+    if (messageText.length > 0) socket.emit("typing", selectedChat._id, user?.name);
+
+    let clearTyping = setTimeout(() => {
+      socket.emit("stop typing", selectedChat._id);
+    }, 1000);
+
+    return () => clearTimeout(clearTyping)
+
+    // eslint-disable-next-line
+  }, [messageText])
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("typing", (user) => {
+        setIsTyping(true);
+        setTypingUser(user)
+
+      })
+      socket.on("stop typing", () => setIsTyping(false))
+    }
+  })
 
   const [isEmojiPick, setIsEmojiPick] = useState(false)
 
@@ -87,7 +115,7 @@ function MessagesBox() {
         // give notification
         if (!socket) return
         else {
-          
+
           if ((notificationsCompare.length === 0) || (notificationsCompare.length > 0 && !(notificationsCompare.map(noti => noti.chat._id).includes(newMessageRecieved.chat._id)))) {
             setNotifications([newMessageRecieved, ...notificationsCompare])
             notificationBeep.play()
@@ -223,7 +251,7 @@ function MessagesBox() {
                     onMouseOver={(e) => e.target.src = emojiIconActive} onMouseOut={(e) => e.target.src = !isEmojiPick ? emojiIcon : emojiIconActive} />
                 </Box>
                 <FormControl onKeyDown={handleKeyDown} height={"3rem"} width={{ base: "84%", md: "90%" }}>
-                  <input onFocus={() => scrollBottom('messagesDisplay')} className='MessageBoxInput' placeholder='Write message here......' id='text' type="text" value={messageText} onChange={handleChange} />
+                  <input onFocus={() => scrollBottom('messagesDisplay')} className='MessageBoxInput' placeholder='Write message here......' id='text' type="text" value={messageText} onChange={handleMessageTyping} />
                 </FormControl>
                 <Box className='flex' width={{ base: "8%", md: "5%" }}>
                   {

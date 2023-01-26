@@ -9,7 +9,7 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, showToast, setChatsLoading, setChats, isfetchChats, setIsfetchChats, profile, user, setNotifications, notifications } = ChatState()
+  const { getUser, setUser, showToast, setChatsLoading, setChats, isfetchChats, setIsfetchChats, profile, user, setNotifications } = ChatState()
   const navigate = useNavigate();
 
   const GetuserInfo = async () => {
@@ -74,10 +74,6 @@ function Chatpage() {
       return showToast("Error", error.message, "error", 3000)
     }
   }
-
-  // useEffect(() =>{
-  //   console.log(".................",notifications)
-  // },[notifications])
 
   useEffect(() => {
     localStorage.getItem('token') && fetchallchats()

@@ -5,7 +5,7 @@ import { ChatState } from '../../Context/ChatProvider'
 
 function MessagesBoxTopbar() {
 
-    const { selectedChat, user, setSelectedChat, setProfile } = ChatState();
+    const { selectedChat, user, setSelectedChat, setProfile, isTyping, typingUser } = ChatState();
 
     return (
         <>
@@ -30,6 +30,13 @@ function MessagesBoxTopbar() {
                             getSender(selectedChat, user)?.name
                         }
                     </Text>
+
+                    {isTyping
+                        &&
+                        <Text pos={"absolute"} bottom=".3rem" fontSize={".9rem"} color="floralwhite" letterSpacing=".01rem" left={"5rem"}>
+                            {selectedChat.isGroupchat && typingUser.split(" ")[0] + " is "}
+                            typing.....
+                        </Text>}
                 </Box>
                 <Box className='msgrightTop'>
                     {
