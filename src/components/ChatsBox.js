@@ -65,7 +65,6 @@ function ChatsBox() {
     // eslint-disable-next-line
   }, [selectedChat?._id]);
 
- 
 
   return (
     <Box display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
@@ -138,7 +137,8 @@ function ChatsBox() {
                           {/* color="#35c697" */}
                         </Box>
                         {/* latestmessage */}
-                        <Text fontSize={".9rem"} marginTop=".1rem">
+                        
+                         <Text fontSize={".9rem"} marginTop=".1rem">
                           <Text fontSize={".8rem"} fontWeight="black" display={"inline"}>
                             {chat.latestMessage
                               &&
@@ -146,6 +146,7 @@ function ChatsBox() {
                           </Text>
                           {Trimlastestmsg(chat.latestMessage?.content.message || "No message yet!")}
                         </Text>
+                       
                       </Box>
                     </Box>
                   )
