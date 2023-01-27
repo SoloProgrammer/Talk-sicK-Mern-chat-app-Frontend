@@ -44,9 +44,9 @@ const ChatProvider = ({ children }) => {
 
     const [socket, setSocket] = useState(null);
 
-    const [isTyping,setIsTyping] = useState(null);
+    const [isTyping, setIsTyping] = useState(null);
 
-    const [typingUser,setTypingUser] = useState(null) // this is needed inside the groupChat as we need to find who is typing in the whole group! 
+    const [typingUser, setTypingUser] = useState(null) // this is needed inside the groupChat as we need to find who is typing in the whole group! 
 
     useEffect(() => {
         let socketCreated = io(ENDPOINT, { transports: ['websocket', 'polling'] });
@@ -63,7 +63,9 @@ const ChatProvider = ({ children }) => {
 
     //Socket.io connection with configuration........................................................
 
-    const [chats, setChats] = useState(null)
+    const [chats, setChats] = useState(null);
+
+    const [chatMessages, setChatMessages] = useState([])
 
     const [selectedChat, setSelectedChat] = useState(null);
 
@@ -150,7 +152,7 @@ const ChatProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([])
 
     return (
-        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers,isTyping,setIsTyping,typingUser,setTypingUser }}>
+        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser }}>
             {children}
         </ChatContext.Provider>
     )

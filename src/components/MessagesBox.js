@@ -10,7 +10,7 @@ import ProfileDrawer from './Materials/ProfileDrawer'
 function MessageBox({ messages, setMessages }) {
 
 
-  const { profile, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket } = ChatState();
+  const { profile, chatMessages, setChatMessages, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket } = ChatState();
 
   useEffect(() => {
     setTimeout(() => {
@@ -18,12 +18,28 @@ function MessageBox({ messages, setMessages }) {
     }, 0);
   }, [profile])
 
-  const [messagesLoading, setMessagesLoading] = useState(false)
+  const [messagesLoading, setMessagesLoading] = useState(false);
 
   const fetchMessages = async () => {
+
+    // setMessagesLoading(true)
+    // console.log(chatMessages);
+    let isChatMsg = false
+    chatMessages.map((chatMsg, i) => {
+      // console.log(Object.keys(chatMsg),selectedChat?._id);
+      if (chatMsg.chatId === selectedChat?._id) {
+        setMessages(chatMsg.messages)
+        isChatMsg = true
+      }
+      return 1
+    });
+
+    if (isChatMsg) return setMessagesLoading(false)
+
     try {
 
       setMessagesLoading(true)
+
       let config = {
         headers: {
           token: localStorage.getItem('token')
@@ -39,6 +55,12 @@ function MessageBox({ messages, setMessages }) {
 
       setMessages(json.allMessages)
       setMessagesLoading(false);
+
+      // optimization!!!!!!!!!!!!!!!
+
+      // setting fetching messages inside the chatmessages so when next time user click on the previous chat it will not refetch the chat messages instead it will take messages from this chatMessages state! 
+
+      setChatMessages([...chatMessages, { chatId: selectedChat?._id, messages: json.allMessages }])
 
       socket?.emit('join chat', selectedChat?._id)
 
@@ -98,7 +120,7 @@ function MessageBox({ messages, setMessages }) {
         profile && profile._id !== user?._id && // profile?._id is same as profile && profile._id but in some instance we need to check the profile first and then the detauils inside it! it opens this profile drawer with profile?._id condition!
         <ProfileDrawer width="50%" />
       }
-      
+
       {
         messagesLoading
           ?
@@ -160,7 +182,7 @@ function MessageBox({ messages, setMessages }) {
             }
           </Box>
       }
-      
+
     </Box>
   )
 }

@@ -13,9 +13,10 @@ import notifyAudio from '../../src/mp3/Notification.mp3'
 
 var selectedChatCompare;
 var notificationsCompare;
+
 function MessagesBox() {
 
-  const { user, setChats, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser } = ChatState()
+  const { user, setChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -102,6 +103,7 @@ function MessagesBox() {
   useEffect(() => {
     notificationsCompare = notifications
 
+    // eslint-disable-next-line 
   }, [notifications])
 
   let notificationBeep = new Audio(notifyAudio)
@@ -117,7 +119,7 @@ function MessagesBox() {
         else {
 
           if ((notificationsCompare.length === 0) || (notificationsCompare.length > 0 && !(notificationsCompare.map(noti => noti.chat._id).includes(newMessageRecieved.chat._id)))) {
-            setNotifications([newMessageRecieved, ...notificationsCompare])
+            setNotifications([newMessageRecieved, ...notificationsCompare]);
             notificationBeep.play()
           }
 
@@ -130,6 +132,7 @@ function MessagesBox() {
         // refreshChats();
       }
     })
+    // eslint-disable-next-line 
 
   });
 
@@ -170,6 +173,18 @@ function MessagesBox() {
       socket.emit('new message', json.fullmessage, messages)
 
       setMessages([...messages, json.fullmessage]);
+
+      chatMessages.map(chatMsg => {
+        if (chatMsg.chatId === selectedChat?._id) {
+          // console.log("inside");
+          chatMsg = { chatId: selectedChat._id, messages: [...chatMsg.messages, json.fullmessage] }
+          // console.log(chatMsg);
+          setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat._id)), chatMsg])
+        }
+        return 1
+      })
+
+      // setChatMessages([...chatMessages,])
 
       setChats(json.chats);
 

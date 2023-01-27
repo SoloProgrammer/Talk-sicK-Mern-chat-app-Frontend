@@ -67,7 +67,7 @@ function ChatsBox() {
 
 
   return (
-    <Box display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
+    <Box pos={"relative"} display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
       <ChatsTopBar />
       <Box overflowY={"auto"} pos={"relative"} transition={".6s"} height={"calc(100vh - 7.3rem)"} className='allchats hidetop'>
         {
@@ -85,7 +85,7 @@ function ChatsBox() {
             </Box>
             :
             !chatsLoading &&
-            <Box display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" paddingBottom={"1.3rem"} >
+            <Box display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" paddingBottom={window.innerWidth > 770 ? "4rem" : "3.2rem"} >
               {
                 chats?.map((chat, i) => {
                   return (
@@ -160,6 +160,11 @@ function ChatsBox() {
             <Image width={"12rem"} src='https://miro.medium.com/max/600/1*beQRWt1uWdnQM_nqCwhJnA.gif'></Image>
           </Box>
         }
+      </Box>
+        <Box background={"white"} pos={"absolute"} bottom="0"  width="full" height="fit-content" padding={".7rem .6rem"} boxShadow="0 0 3px rgba(0,0,0,.3)">
+          <Text margin={0} textAlign={"center"} fontSize={window.innerWidth > 770 ? ".9rem" : ".7rem"} fontWeight={"semibold"}>
+            Design and Develop with ❤️ by Dev Shinde | <span style={{fontWeight:"lighter"}}>© Copyright 2023</span>
+          </Text>
       </Box>
     </Box>
   )

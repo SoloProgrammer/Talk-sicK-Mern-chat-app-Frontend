@@ -1,14 +1,13 @@
 import { Avatar, Box, Image, Text, Tooltip } from '@chakra-ui/react'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { getSender } from '../../configs/userConfigs'
 import { ChatState } from '../../Context/ChatProvider'
 import GroupMembersBox from '../GroupMembersBox'
 // import randomColor from 'randomcolor'
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { selectedChat, user, profile, setProfile } = ChatState()
+    const { selectedChat, user, profile, setProfile, onlineUsers } = ChatState()
 
-    useEffect(() => { })
 
     return (
         <Box
@@ -40,6 +39,19 @@ function ProfileDrawer({ width, align = "right" }) {
                 <Avatar src={profile?.avatar} width="11rem" height={"11rem"} />
                 <Text fontSize={"2xl"} color="gray.500" fontWeight="semibold" pos={"relative"} width="full" className='flex'>
                     {(selectedChat && user?._id !== profile?._id) ? getSender(selectedChat, user)?.name : profile?.name}
+
+                    {
+                        onlineUsers.map(U => U.userId).includes(profile._id)
+                            ?
+                            <Text fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#49cf81"} letterSpacing=".01rem" background="#d5ffe2">
+                                online
+                            </Text>
+                            :
+                            <Text fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#3e4240"} letterSpacing=".01rem" background="#d9d9d9">
+                                offline
+                            </Text>
+                    }
+
                 </Text>
 
 
