@@ -162,7 +162,7 @@ function ChatsBox() {
         }
       </Box>
         <Box background={"white"} pos={"absolute"} bottom="0"  width="full" height="fit-content" padding={".7rem .6rem"} boxShadow="0 0 3px rgba(0,0,0,.3)">
-          <Text margin={0} textAlign={"center"} fontSize={window.innerWidth > 770 ? ".9rem" : ".7rem"} fontWeight={"semibold"}>
+          <Text margin={0} textAlign={"center"} fontSize={window.innerWidth > 770 ? ".9rem" : ".8rem"} fontWeight={"semibold"}>
             Design and Develop with ❤️ by Dev Shinde | <span style={{fontWeight:"lighter"}}>© Copyright 2023</span>
           </Text>
       </Box>

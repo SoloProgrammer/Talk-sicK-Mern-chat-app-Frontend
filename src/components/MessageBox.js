@@ -13,6 +13,7 @@ import notifyAudio from '../../src/mp3/Notification.mp3'
 
 var selectedChatCompare;
 var notificationsCompare;
+var chatMessagesCompare;
 
 function MessagesBox() {
 
@@ -38,10 +39,10 @@ function MessagesBox() {
 
     if (!socketConneted) return console.log("Socket disconnected!")
 
-    if (messageText.length > 0) socket.emit("typing", selectedChat._id, user?.name);
+    if (messageText.length > 0) socket.emit("typing", selectedChat?._id, user?.name);
 
     let clearTyping = setTimeout(() => {
-      socket.emit("stop typing", selectedChat._id);
+      socket.emit("stop typing", selectedChat?._id);
     }, 1000);
 
     return () => clearTimeout(clearTyping)
@@ -51,9 +52,11 @@ function MessagesBox() {
 
   useEffect(() => {
     if (socket) {
-      socket.on("typing", (user) => {
-        setIsTyping(true);
-        setTypingUser(user)
+      socket.on("typing", (user, room) => {
+        if (room === selectedChatCompare._id) {
+          setIsTyping(true);
+          setTypingUser(user)
+        }
 
       })
       socket.on("stop typing", () => setIsTyping(false))
@@ -66,9 +69,10 @@ function MessagesBox() {
     setMessageText("")
     setIsEmojiPick(false)
     selectedChatCompare = selectedChat
+    chatMessagesCompare = chatMessages
 
     // eslint-disable-next-line
-  }, [selectedChat?._id]);
+  }, [selectedChat?._id, chatMessages]);
 
   const handleEmojiClick = (emoji) => {
     setMessageText(messageText.concat(emoji.emoji))
@@ -120,6 +124,8 @@ function MessagesBox() {
 
           if ((notificationsCompare.length === 0) || (notificationsCompare.length > 0 && !(notificationsCompare.map(noti => noti.chat._id).includes(newMessageRecieved.chat._id)))) {
             setNotifications([newMessageRecieved, ...notificationsCompare]);
+            // console.log(".................", selectedChatCompare);
+            setChatMessages(chatMessagesCompare.filter(chatM => chatM.chatId !== newMessageRecieved.chat._id))
             notificationBeep.play()
           }
 
@@ -129,7 +135,24 @@ function MessagesBox() {
       else {
         setMessages([...Previousmessages, newMessageRecieved]);
         seenlstMessage(newMessageRecieved._id);
-        // refreshChats();
+        refreshChats();
+
+        // console.log("outside",chatMessages);
+        
+        chatMessagesCompare.map(cmp => {
+
+          // console.log("inside map", selectedChatCompare._id,cmp.chatId);
+
+          if (cmp.chatId === selectedChatCompare._id) {
+
+            let chatWithNewMsg = { chatId: selectedChatCompare._id, messages: [...cmp.messages, newMessageRecieved] }
+
+            // console.log("chatwithnewMessage", chatWithNewMsg);
+
+            setChatMessages([...(chatMessagesCompare.filter(chm => chm.chatId !== selectedChatCompare._id)), chatWithNewMsg])
+          }
+          return 1
+        })
       }
     })
     // eslint-disable-next-line 
@@ -176,15 +199,13 @@ function MessagesBox() {
 
       chatMessages.map(chatMsg => {
         if (chatMsg.chatId === selectedChat?._id) {
-          // console.log("inside");
+
           chatMsg = { chatId: selectedChat._id, messages: [...chatMsg.messages, json.fullmessage] }
-          // console.log(chatMsg);
-          setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat._id)), chatMsg])
+
+          setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat._id)), chatMsg]) // cm := ChatMessage
         }
         return 1
       })
-
-      // setChatMessages([...chatMessages,])
 
       setChats(json.chats);
 

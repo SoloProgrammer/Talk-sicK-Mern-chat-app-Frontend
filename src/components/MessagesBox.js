@@ -23,7 +23,6 @@ function MessageBox({ messages, setMessages }) {
   const fetchMessages = async () => {
 
     // setMessagesLoading(true)
-    // console.log(chatMessages);
     let isChatMsg = false
     chatMessages.map((chatMsg, i) => {
       // console.log(Object.keys(chatMsg),selectedChat?._id);
@@ -62,8 +61,6 @@ function MessageBox({ messages, setMessages }) {
 
       setChatMessages([...chatMessages, { chatId: selectedChat?._id, messages: json.allMessages }])
 
-      socket?.emit('join chat', selectedChat?._id)
-
     } catch (error) {
       showToast("Error", error.message, "error", 3000)
     }
@@ -77,6 +74,7 @@ function MessageBox({ messages, setMessages }) {
 
   useEffect(() => {
     selectedChat && fetchMessages()
+    socket?.emit('join chat', selectedChat?._id)
     // eslint-disable-next-line
   }, [selectedChat?._id])
 

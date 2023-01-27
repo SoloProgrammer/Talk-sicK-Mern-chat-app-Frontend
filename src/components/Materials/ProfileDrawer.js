@@ -41,7 +41,7 @@ function ProfileDrawer({ width, align = "right" }) {
                     {(selectedChat && user?._id !== profile?._id) ? getSender(selectedChat, user)?.name : profile?.name}
 
                     {
-                        onlineUsers.map(U => U.userId).includes(profile._id)
+                        !(selectedChat?.isGroupchat) && (onlineUsers.map(U => U.userId).includes(profile._id)
                             ?
                             <Text fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#49cf81"} letterSpacing=".01rem" background="#d5ffe2">
                                 online
@@ -49,7 +49,7 @@ function ProfileDrawer({ width, align = "right" }) {
                             :
                             <Text fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#3e4240"} letterSpacing=".01rem" background="#d9d9d9">
                                 offline
-                            </Text>
+                            </Text>)
                     }
 
                 </Text>
