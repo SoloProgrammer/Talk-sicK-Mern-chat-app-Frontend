@@ -11,7 +11,7 @@ function Homepage() {
         let token = localStorage.getItem('token');
         if (token) navigate('/chats')
 
-        setTimeout(() => document.querySelector('.userForm').classList.remove('hide'), 0);
+        setTimeout(() => document.querySelector('.userForm')?.classList.remove('hide'), 0);
     }, [navigate])
     const [inputValues, setInputValues] = useState({});
     

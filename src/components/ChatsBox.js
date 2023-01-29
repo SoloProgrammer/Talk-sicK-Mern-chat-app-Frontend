@@ -5,11 +5,21 @@ import { getSender, isUserOnline } from '../configs/userConfigs'
 import ChatsTopBar from './Materials/ChatsTopBar'
 import ProfileDrawer from './Materials/ProfileDrawer'
 import { ChatState } from '../Context/ChatProvider'
+import { useNavigate } from 'react-router-dom'
 
 
 function ChatsBox() {
 
-  const { chats, chatsLoading, user, selectedChat, setSelectedChat, setProfile, profile, seenlstMessage, notifications, setNotifications } = ChatState()
+  const { chats, chatsLoading, user, selectedChat, setProfile, profile, seenlstMessage, notifications, setNotifications } = ChatState()
+
+  const navigate = useNavigate();
+
+  // const params = useParams();
+  // if (params === {}) params = null;
+  // else {
+  //   let { chatId } = params
+  // }
+
 
   const Trimlastestmsg = (msg) => {
     let trimInd = window.innerWidth > 1300 ? 50 : 30
@@ -49,7 +59,9 @@ function ChatsBox() {
   }
 
   const handleChatClick = (chat) => {
-    setSelectedChat(chat);
+
+    navigate(`/chats/chat/${chat._id}`);
+    // setSelectedChat(chat);
     setProfile(null);
     notifications.length && setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
   }
@@ -106,15 +118,15 @@ function ChatsBox() {
                       <Box maxWidth={"67px"} >
                         <Avatar boxShadow={"0 0 0 3px #27aea4"} src={getSender(chat, user)?.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} >
                           {
-                            !(chat.isGroupchat) 
-                            && 
-                            <AvatarBadge 
-                            borderWidth="2px" 
-                            borderColor='#ffffff' 
-                            bg={isUserOnline(getSender(chat,user)) ? '#00c200' : "darkgrey"} 
-                            boxSize='.8em' />
+                            !(chat.isGroupchat)
+                            &&
+                            <AvatarBadge
+                              borderWidth="2px"
+                              borderColor='#ffffff'
+                              bg={isUserOnline(getSender(chat, user)) ? '#00c200' : "darkgrey"}
+                              boxSize='.8em' />
                           }
-                          
+
                         </Avatar>
                       </Box>
                       <Box width={{ base: "calc(100% - 15%)", md: "calc(100% - 12%)" }}>
@@ -134,11 +146,10 @@ function ChatsBox() {
                             </>
 
                           }
-                          {/* color="#35c697" */}
                         </Box>
                         {/* latestmessage */}
-                        
-                         <Text fontSize={".9rem"} marginTop=".1rem">
+
+                        <Text fontSize={".9rem"} marginTop=".1rem">
                           <Text fontSize={".8rem"} fontWeight="black" display={"inline"}>
                             {chat.latestMessage
                               &&
@@ -146,7 +157,7 @@ function ChatsBox() {
                           </Text>
                           {Trimlastestmsg(chat.latestMessage?.content.message || "No message yet!")}
                         </Text>
-                       
+
                       </Box>
                     </Box>
                   )
@@ -157,14 +168,14 @@ function ChatsBox() {
         {
           chatsLoading &&
           <Box display={"flex"} justifyContent="center" alignItems={"center"} height={"100%"}>
-            <Image width={"12rem"} src='https://miro.medium.com/max/600/1*beQRWt1uWdnQM_nqCwhJnA.gif'></Image>
+            <Image width={"12rem"} src='https://miro.medium.com/max/600/1*beQRWt1uWdnQM_nqCwhJnA.gif' />
           </Box>
         }
       </Box>
-        <Box background={"white"} pos={"absolute"} bottom="0"  width="full" height="fit-content" padding={".7rem .6rem"} boxShadow="0 0 3px rgba(0,0,0,.3)">
-          <Text margin={0} textAlign={"center"} fontSize={window.innerWidth > 770 ? ".9rem" : ".8rem"} fontWeight={"semibold"}>
-            Design and Develop with ❤️ by Dev Shinde | <span style={{fontWeight:"lighter"}}>© Copyright 2023</span>
-          </Text>
+      <Box background={"white"} pos={"absolute"} bottom="0" width="full" height="fit-content" padding={".7rem .6rem"} boxShadow="0 0 3px rgba(0,0,0,.3)">
+        <Text margin={0} textAlign={"center"} fontSize={window.innerWidth > 770 ? ".9rem" : ".75rem"} fontWeight={"semibold"}>
+          Design and Develop with ❤️ by Dev Shinde | <span style={{ fontWeight: "lighter" }}>© Copyright 2023</span>
+        </Text>
       </Box>
     </Box>
   )

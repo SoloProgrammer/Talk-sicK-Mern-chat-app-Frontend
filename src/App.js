@@ -5,15 +5,16 @@ import Homepage from './pages/Homepage';
 import './components/componentCSS.css'
 
 function App() {
-  
+
   return (
     <>
-    <div className="App">
-      <Routes>
-        <Route exact path='/' element={<Homepage/>}/>
-        <Route exact path='/chats' element={<Chatpage/>}/>
-      </Routes>
-    </div>
+      <div className="App">
+        <Routes>
+          <Route exact path='/' element={<Homepage />} />
+          <Route exact path='/chats' element={<Chatpage />} />
+          <Route exact path='/chats/chat/:chatId' element={<Chatpage />} />
+        </Routes>
+      </div>
     </>
   );
 }

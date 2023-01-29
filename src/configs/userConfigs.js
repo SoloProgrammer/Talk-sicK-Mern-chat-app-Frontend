@@ -9,8 +9,8 @@ export const getSender = (chat, user) => {
     return sender
 }
 
-export  const isUserOnline = (User) =>{
-    const {onlineUsers} = ChatState()
+export const isUserOnline = (User) => {
+    const { onlineUsers } = ChatState()
     return onlineUsers.map(u => u.userId).includes(User._id)
 }
 

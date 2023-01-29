@@ -38,9 +38,9 @@ const ChatProvider = ({ children }) => {
 
     const [onlineUsers, setOnlineUsers] = useState([])
 
-    const ENDPOINT = "http://localhost:8001"
+    // const ENDPOINT = "http://localhost:8001"
 
-    // const ENDPOINT = server.URL.production
+    const ENDPOINT = server.URL.production
 
     const [socket, setSocket] = useState(null);
 
@@ -144,15 +144,17 @@ const ChatProvider = ({ children }) => {
 
         // whenever new message recives and user is on another chat so all the chats will be fetch again and to stay the user on the same chat he is before refrshing the chats this logic is used!
         if (selectedChat) {
-            setSelectedChat(chats.filter(chat => chat._id === selectedChat._id)[0])
+            chats && setSelectedChat(chats.filter(chat => chat._id === selectedChat._id)[0])
         }
         // eslint-disable-next-line
     }, [chats])
 
     const [notifications, setNotifications] = useState([])
 
+    const [newCreatedChat,setNewCreatedChat] = useState(null)
+
     return (
-        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser }}>
+        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser,newCreatedChat,setNewCreatedChat }}>
             {children}
         </ChatContext.Provider>
     )

@@ -1,11 +1,18 @@
 import { Avatar, Box, Image, Text, Tooltip } from '@chakra-ui/react'
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 import { getSender, GroupMembers } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
 
 function MessagesBoxTopbar() {
 
     const { selectedChat, user, setSelectedChat, setProfile, isTyping, typingUser } = ChatState();
+
+    let navigate = useNavigate()
+    const handleBack = () => {
+        setSelectedChat(null);
+        navigate('/chats')
+    }
 
     return (
         <>
@@ -46,7 +53,7 @@ function MessagesBoxTopbar() {
                     {
                         window.innerWidth < 770 && !(selectedChat?.isGroupchat) &&
                         <Tooltip label="Back" isOpen placement='bottom'>
-                            <Box onClick={() => setSelectedChat(null)} padding={".3rem"} borderRadius=".3rem" background={"white"}>
+                            <Box onClick={handleBack} padding={".3rem"} borderRadius=".3rem" background={"white"}>
                                 <Image maxWidth="1.5rem" src="https://cdn-icons-png.flaticon.com/512/7792/7792362.png"></Image>
                             </Box>
                         </Tooltip>
@@ -77,7 +84,7 @@ function MessagesBoxTopbar() {
                             width="100%"
                             className='backTochatsBtn'>
 
-                            <Box onClick={() => setSelectedChat(null)}
+                            <Box onClick={handleBack}
                                 className='flex'
                                 gap={".5rem"}
                                 width={"fit-content"}

@@ -3,11 +3,10 @@ import React from 'react'
 import { getSender } from '../../configs/userConfigs'
 import { ChatState } from '../../Context/ChatProvider'
 import GroupMembersBox from '../GroupMembersBox'
-// import randomColor from 'randomcolor'
+
 
 function ProfileDrawer({ width, align = "right" }) {
     const { selectedChat, user, profile, setProfile, onlineUsers } = ChatState()
-
 
     return (
         <Box
@@ -41,13 +40,13 @@ function ProfileDrawer({ width, align = "right" }) {
                     {(selectedChat && user?._id !== profile?._id) ? getSender(selectedChat, user)?.name : profile?.name}
 
                     {
-                        !(selectedChat?.isGroupchat) && (onlineUsers.map(U => U.userId).includes(profile._id)
+                        (profile.about) && (onlineUsers.map(U => U.userId).includes(profile._id)
                             ?
-                            <Text fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#49cf81"} letterSpacing=".01rem" background="#d5ffe2">
+                            <Text fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#29b764"} letterSpacing=".01rem" background="#d0ffde">
                                 online
                             </Text>
                             :
-                            <Text fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#3e4240"} letterSpacing=".01rem" background="#d9d9d9">
+                            <Text fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#3e4240"} letterSpacing=".01rem" background="#e0e0e0">
                                 offline
                             </Text>)
                     }

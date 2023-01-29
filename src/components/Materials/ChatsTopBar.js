@@ -5,21 +5,19 @@ import { BellIcon, ChevronDownIcon, SearchIcon } from '@chakra-ui/icons'
 import SideDrawer from './SideDrawer';
 import BrandLogo from '../../utils/BrandLogo';
 import CreateGroupChat from './CreateGroupChat';
-import { defaultPic } from '../../configs/userConfigs';
+import { defaultPic, HandleLogout } from '../../configs/userConfigs';
 
 import NotificationBadge from 'react-notification-badge';
 import { Effect } from 'react-notification-badge';
+import { useNavigate } from 'react-router-dom';
 
 function ChatsTopBar() {
 
-    const { user, setProfile, profile, notifications, setNotifications, setSelectedChat, chats } = ChatState();
+    const { user, setProfile, profile, notifications, setNotifications, chats } = ChatState();
 
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        window.location.href = '/'
-    }
+    const navigate = useNavigate()
 
     return (
         <>
@@ -36,7 +34,7 @@ function ChatsTopBar() {
                                 <span>My profile</span>
                             </MenuItem>
                             <div></div>
-                            <MenuItem onClick={handleLogout} display={"flex"} gap=".5rem" alignItems={"center"}>
+                            <MenuItem onClick={HandleLogout} display={"flex"} gap=".5rem" alignItems={"center"}>
                                 <Image src='https://cdn-icons-png.flaticon.com/512/4980/4980424.png'
                                     boxSize='1.5rem'
                                     borderRadius='full' />
@@ -85,7 +83,7 @@ function ChatsTopBar() {
                                                 key={noti._id}
                                                 onClick={() => {
                                                     setNotifications(notifications.filter(not => not._id !== noti._id));
-                                                    setSelectedChat(chats.filter(chat => chat._id === noti.chat._id)[0])
+                                                    navigate(`/chats/chat/${chats.filter(chat => chat._id === noti.chat._id)[0]._id}`)
                                                 }}
 
                                                 className='flex' gap={".6rem"} justifyContent="flex-start">
@@ -109,13 +107,13 @@ function ChatsTopBar() {
                                     {
                                         notifications.length > 1
                                         &&
-                                        <Text 
-                                        marginLeft={".9rem"} 
-                                        cursor="pointer" 
-                                        onClick={()=>setNotifications([])} 
-                                        fontSize=".8rem" 
-                                        color={"#2365d1"} 
-                                        fontWeight="bold">Mark all read</Text>
+                                        <Text
+                                            marginLeft={".9rem"}
+                                            cursor="pointer"
+                                            onClick={() => setNotifications([])}
+                                            fontSize=".8rem"
+                                            color={"#2365d1"}
+                                            fontWeight="bold">Mark all read</Text>
                                     }
                                 </>
                                 :
@@ -129,7 +127,7 @@ function ChatsTopBar() {
                 <CreateGroupChat />
 
             </Box>
-            <Box padding={".3rem"} borderBottom="2px solid darkcyan" background={"aliceblue"}>
+            <Box padding={".3rem"} borderBottom="2px solid darkcyan" background={"aliceblue"} pos="inherit" zIndex={1}>
                 <Text textAlign={"center"} textTransform="uppercase" fontStyle={"italic"} fontWeight="hairline">My chats</Text>
             </Box>
         </>

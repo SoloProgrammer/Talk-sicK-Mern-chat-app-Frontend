@@ -1,6 +1,6 @@
 import { Box } from '@chakra-ui/react';
 import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ChatState } from '../Context/ChatProvider';
 import ChatsBox from '../components/ChatsBox';
 import MessageBox from '../components/MessageBox';
@@ -9,8 +9,28 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, showToast, setChatsLoading, setChats, isfetchChats, setIsfetchChats, profile, user, setNotifications } = ChatState()
+  const { getUser, setUser, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat } = ChatState()
+
   const navigate = useNavigate();
+  const locaObj = useLocation();
+
+  let params = useParams();
+  let { chatId } = params
+  if (Object.keys(params).length < 1) params = null;
+
+
+  useEffect(() => {
+    if (params && !(chats?.map(chat => chat._id).includes(chatId))) {
+      navigate('/chats')
+      setSelectedChat(null)
+    }
+    else {
+      chats && setSelectedChat(chats?.filter(chat => chat._id === chatId)[0])
+      setProfile(null);
+    }
+    // eslint-disable-next-line
+  }, [locaObj])
+
 
   const GetuserInfo = async () => {
     let res = await getUser();
@@ -28,6 +48,7 @@ function Chatpage() {
     else GetuserInfo()
 
     setTimeout(() => document.querySelector('.mainChatBox')?.classList.remove('hideleft'), 0);
+    // setTimeout(() => document.querySelector('.allchats')?.classList.remove('hidetop'), 10);
     // eslint-disable-next-line
   }, [navigate])
 
@@ -53,17 +74,16 @@ function Chatpage() {
       if (!json.status) return showToast("Error", json.message, "error", 3000)
 
       setChats(json.chats);
-      setIsfetchChats(false);
       setChatsLoading(false);
+      isfetchChats && setIsfetchChats(false)
 
       if (json.chats) {
         let UnseenMsgnotifications = []
         json.chats.map(chat => {
-          if (user && chat.latestMessage  && !(chat.latestMessage?.seenBy.includes(user._id))) {
-            // console.log("`````````````````",chat.latestMessage,user._id)
+          if (user && chat.latestMessage && !(chat.latestMessage?.seenBy.includes(user._id))) {
             UnseenMsgnotifications.push(chat.latestMessage)
           }
-          return null
+          return 1
         })
         setNotifications(UnseenMsgnotifications)
       }
@@ -76,9 +96,13 @@ function Chatpage() {
   }
 
   useEffect(() => {
-    localStorage.getItem('token') && fetchallchats()
+    !params && !chats && setChatsLoading(true) // just showing the loading until user and then chat has been fully !loaded
+
+    if ((isfetchChats === null || isfetchChats) && user && !params && !chats) {
+      localStorage.getItem('token') && fetchallchats()
+    }
     // eslint-disable-next-line
-  }, [isfetchChats])
+  }, [isfetchChats, user])
 
   return (
     <Box className={`mainChatBox hideleft`} width="100%" display="flex" justifyContent={"center"} alignItems="center" transition={".5s"}>

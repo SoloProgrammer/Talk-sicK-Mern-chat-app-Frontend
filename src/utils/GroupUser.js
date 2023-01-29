@@ -3,6 +3,7 @@ import { Avatar, AvatarBadge, Box, Image, Spinner, Text, Tooltip } from '@chakra
 import { ChatState } from '../Context/ChatProvider'
 import { HandleLogout, isUserOnline } from '../configs/userConfigs'
 import { server } from '../configs/serverURl'
+import { useNavigate } from 'react-router-dom'
 
 
 function GroupUser({ u }) {
@@ -13,6 +14,7 @@ function GroupUser({ u }) {
     const [removeAdminLoading, setRemoveAdminLoading] = useState(false)
     const [removeUserLoading, setRemoveUserLoading] = useState(false)
 
+    const navigate = useNavigate()
     const handleFunc = async (userId, action) => {
 
         if (action === "removegroupAdmin") {
@@ -85,13 +87,15 @@ function GroupUser({ u }) {
                 setSelectedChat(null)
                 setProfile(null) // setting profile to null if it is not!
                 showToast("Success", `You left ${json.chat.chatName}`, "success", 3000)
-                setIsfetchChats(true)
+                setIsfetchChats(true);
+                navigate('/chats')
             }
             else {
                 setSelectedChat(json.chat);
                 setChats(json.chats)
                 showToast("Success", json.message, "success", 3000)
             }
+
         } catch (error) {
             return showToast("Error", error.message, "error", 3000)
         }

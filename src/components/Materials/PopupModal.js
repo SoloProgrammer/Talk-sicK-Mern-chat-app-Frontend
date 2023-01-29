@@ -20,17 +20,20 @@ import UserListItem from '../../utils/UserListItem'
 import EmptySearch from '../EmptySearch'
 import { defaultPic, HandleLogout, UserChip } from '../../configs/userConfigs'
 import { server } from '../../configs/serverURl'
+import { useNavigate } from 'react-router-dom'
 
 function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmemberLoading }) {
 
-    const { showToast, setIsfetchChats, selectedChat, setSelectedChat } = ChatState()
+    const { showToast, setIsfetchChats, selectedChat, setChats, setSelectedChat } = ChatState()
 
     const [selectedUsers, setSelectedUsers] = useState([])
     const [searchResults, setSearchResults] = useState(null)
     const [groupName, setGroupName] = useState("")
 
     const [search, setSearch] = useState("")
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate()
 
     const HandleSearch = (e) => {
         setSearch(e.target.value);
@@ -68,12 +71,12 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
     useEffect(() => {
 
-        let timeSearch = setTimeout(() => {
+        let searchDelay = setTimeout(() => {
             SearchUsers()
         }, 200);
 
         // cleapUp function needed to 300ms delay in search.... 
-        return () => { clearTimeout(timeSearch) }
+        return () => { clearTimeout(searchDelay) }
 
         // eslint-disable-next-line
     }, [search])
@@ -125,9 +128,11 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
             }
 
             showToast("Success", "New Group Created Sucessfully", "success", 3000);
-            setIsfetchChats(true)
-            setCreategroupLoading(false)
+            setCreategroupLoading(false);
+            setChats(json.chats)
             setSelectedChat(json.Fullgroup)
+            navigate(`/chats/chat/${json.Fullgroup._id}`)
+
 
             onClose()
 

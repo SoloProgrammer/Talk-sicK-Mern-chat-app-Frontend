@@ -1,5 +1,6 @@
 import { Avatar, Box, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
+// import { useNavigate, useParams } from 'react-router-dom'
 import { getFormmatedTime } from '../configs/dateConfigs'
 import { scrollBottom } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'

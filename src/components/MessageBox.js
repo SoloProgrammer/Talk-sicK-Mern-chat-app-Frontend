@@ -37,7 +37,7 @@ function MessagesBox() {
 
   useEffect(() => {
 
-    if (!socketConneted) return console.log("Socket disconnected!")
+    if (!socketConneted) return console.log("Socket disconnected!");
 
     if (messageText.length > 0) socket.emit("typing", selectedChat?._id, user?.name);
 
@@ -52,10 +52,10 @@ function MessagesBox() {
 
   useEffect(() => {
     if (socket) {
-      socket.on("typing", (user, room) => {
-        if (room === selectedChatCompare._id) {
+      socket.on("typing", (u, room) => {
+        if (u !== user?.name && room === selectedChatCompare._id) {
           setIsTyping(true);
-          setTypingUser(user)
+          setTypingUser(u)
         }
 
       })
@@ -138,7 +138,7 @@ function MessagesBox() {
         refreshChats();
 
         // console.log("outside",chatMessages);
-        
+
         chatMessagesCompare.map(cmp => {
 
           // console.log("inside map", selectedChatCompare._id,cmp.chatId);
