@@ -14,13 +14,6 @@ function ChatsBox() {
 
   const navigate = useNavigate();
 
-  // const params = useParams();
-  // if (params === {}) params = null;
-  // else {
-  //   let { chatId } = params
-  // }
-
-
   const Trimlastestmsg = (msg) => {
     let trimInd = window.innerWidth > 1300 ? 50 : 30
 
@@ -106,7 +99,7 @@ function ChatsBox() {
                       onClick={() => { handleChatClick(chat, i) }}
                       display={"flex"}
                       width="100%"
-                      bg={selectedChat?._id === chat?._id ? "#2da89f61" : "#e2e2e29e"}
+                      bg={selectedChat?._id === chat?._id ? "#2da89f61" : "#e9e9e99e"}
                       boxShadow={selectedChat?._id === chat?._id && "inset 0 0 0 1.1px #2baca1;"}
                       padding={"0.7rem 0.5rem"}
                       gap="1rem"

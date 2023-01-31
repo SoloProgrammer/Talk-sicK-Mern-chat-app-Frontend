@@ -28,6 +28,8 @@ function Chatpage() {
       chats && setSelectedChat(chats?.filter(chat => chat._id === chatId)[0])
       setProfile(null);
     }
+    chats && setTimeout(() => document.querySelector('.allchats')?.classList.remove('hidetop'), 10)
+
     // eslint-disable-next-line
   }, [locaObj])
 
@@ -102,7 +104,12 @@ function Chatpage() {
       localStorage.getItem('token') && fetchallchats()
     }
     // eslint-disable-next-line
-  }, [isfetchChats, user])
+  }, [user]);
+
+  useEffect(()=>{
+    localStorage.getItem('token') && fetchallchats()
+    // eslint-disable-next-line
+  },[isfetchChats])
 
   return (
     <Box className={`mainChatBox hideleft`} width="100%" display="flex" justifyContent={"center"} alignItems="center" transition={".5s"}>

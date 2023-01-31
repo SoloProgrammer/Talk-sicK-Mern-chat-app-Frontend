@@ -29,9 +29,9 @@ function MessagesBox() {
 
   const handleMessageTyping = (e) => {
 
-    setMessageText(e.target.value)
-    if (profile) setProfile(null)
-    if (isEmojiPick) setIsEmojiPick(false)
+    setMessageText(e.target.value);
+    if (profile) setProfile(null);
+    if (isEmojiPick) setIsEmojiPick(false);
 
   }
 
@@ -41,11 +41,11 @@ function MessagesBox() {
 
     if (messageText.length > 0) socket.emit("typing", selectedChat?._id, user?.name);
 
-    let clearTyping = setTimeout(() => {
+    let TypingDelay = setTimeout(() => {
       socket.emit("stop typing", selectedChat?._id);
     }, 1000);
 
-    return () => clearTimeout(clearTyping)
+    return () => clearTimeout(TypingDelay)
 
     // eslint-disable-next-line
   }, [messageText])
