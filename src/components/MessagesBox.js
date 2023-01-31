@@ -1,7 +1,7 @@
 import { Avatar, Box, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 // import { useNavigate, useParams } from 'react-router-dom'
-import { getFormmatedTime } from '../configs/dateConfigs'
+import { getFormmatedDate, getFormmatedTime } from '../configs/dateConfigs'
 import { scrollBottom } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
 import { HandleLogout, islastMsgOfSender } from '../configs/userConfigs'
@@ -113,6 +113,53 @@ function MessageBox({ messages, setMessages }) {
     return getFormmatedTime(date)
   }
 
+  const getMessageDay = (msgTimestamps) => {
+    const date = new Date(msgTimestamps);
+
+    let msgday = date.getDay()
+    let currdate = new Date()
+
+    if (date.getFullYear !== currdate.getFullYear || date.getMonth !== currdate.getMonth) {
+      return getFormmatedDate(date);
+    }
+    else {
+      let currday = currdate.getDay()
+      let dayDiff = currday - msgday;
+      if (dayDiff === 0) return "Today"
+      else if (dayDiff === 1) return "Yesterday"
+      else return getFormmatedDate(date);
+    }
+
+  }
+
+  const isFirstMsgOfTheDay = (msgTimestamp, messages, i) => {
+    let msgDate = new Date(msgTimestamp);
+    
+    if(messages[i - 1]){
+      // console.log(msgDate.getDate());
+      
+      let preMsgDate = new Date(messages[i - 1].createdAt);
+      
+      if(messages[i + 1]){
+
+        let nextMsgDate = new Date(messages[i + 1].createdAt);
+
+        // console.log(preMsgDate,nextMsgDate);
+
+        if(msgDate.getDay() !== preMsgDate.getDay() && msgDate.getDay() === nextMsgDate.getDay()){
+
+          // console.log(messages[i+1],messages[i-1]);
+          return true
+        }
+        
+      }else {
+        if(msgDate.getDay() !== preMsgDate.getDay()) return true 
+      }
+   
+    }
+    else return true
+  }
+
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden">
       {
@@ -129,53 +176,65 @@ function MessageBox({ messages, setMessages }) {
             </Box>
           </Box>
           :
-          <Box id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".2rem .4rem"} >
+          <Box id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".2rem .4rem"} paddingTop=".6rem">
             {
               messages.length > 0 && messages.map((m, i) => {
                 return (
-                  <Box key={i} className='flex' width={"100%"} justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}>
-                    <Box flexDir={m.sender._id === user?._id && "row-reverse"} display={"flex"} gap=".5rem" maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
+                  <>
+                    {
+                      isFirstMsgOfTheDay(m.createdAt,messages,i,m)
+                      &&
+                      <Box  margin={".5rem 0"} pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "2px" : "1.5px"} solid #15dfd0`} width={"100%"}>
+                        <Text
+                          pos={"absolute"}
+                          className="messagesDay"
+                        >{getMessageDay(m.createdAt)}</Text>
+                      </Box>
+                    }
+                    <Box key={i} className='flex' width={"100%"} justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}>
+                      <Box flexDir={m.sender._id === user?._id && "row-reverse"} display={"flex"} gap=".5rem" maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
 
-                      {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
-                        (window.innerWidth < 770 || islastMsgOfSender(messages, i, m.sender._id)) &&
-                        <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
-                          <Tooltip hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : "Start a chat") : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
-                            <Avatar cursor={"pointer"} onClick={() => handleMessageAvatarClick(m.sender)} size={'sm'} name={m.sender.name} src={m.sender.avatar} />
-                          </Tooltip>
-                        </Box>
-                      }
+                        {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
+                          (window.innerWidth < 770 || islastMsgOfSender(messages, i, m.sender._id)) &&
+                          <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
+                            <Tooltip hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : "Start a chat") : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
+                              <Avatar cursor={"pointer"} onClick={() => handleMessageAvatarClick(m.sender)} size={'sm'} name={m.sender.name} src={m.sender.avatar} />
+                            </Tooltip>
+                          </Box>
+                        }
 
-                      <Text
-                        padding=".3rem .5rem"
-                        fontSize={"1rem"}
-                        backgroundColor={m.sender._id !== user?._id ? "#56c8c0" : "#f8f8d9"}
-                        key={i} pos="relative"
-                        width={"fit-content"}
-                        color={m.sender._id === user?._id ? "black" : "ghostwhite"}
-                        minWidth={"3.3rem"}
-                        fontWeight={'medium'}
-                        boxShadow={m.sender._id === user?._id && "0 0 4px rgba(0,0,0,.3)"}
-                        borderTopLeftRadius={(m.sender._id === user?._id || (window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id))) && ".5rem"}
-                        borderTopRightRadius=".5rem"
-                        borderBottomLeftRadius={".5rem"}
-                        position="relative"
-                        borderBottomRightRadius={(m.sender._id !== user?._id || !islastMsgOfSender(messages, i, m.sender._id)) && ".5rem"}
-                        marginLeft={window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id) && (m.sender._id !== user?._id) && "2.5rem"}
-                        marginRight={window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id) && (m.sender._id === user?._id) && "2.5rem"}
-                        textShadow={m.sender._id !== user?._id && "2px 2px 3px rgba(0,0,0,.3)"}
-                        paddingBottom="1rem"
-                        paddingRight={"1rem"}
-                        paddingLeft={m.content.message.length === 1 && ".9rem"}
-                      >
-                        {m.content.message}
+                        <Text
+                          padding=".3rem .5rem"
+                          fontSize={"1rem"}
+                          backgroundColor={m.sender._id !== user?._id ? "#56c8c0" : "#f8f8d9"}
+                          key={i} pos="relative"
+                          width={"fit-content"}
+                          color={m.sender._id === user?._id ? "black" : "ghostwhite"}
+                          minWidth={"3.3rem"}
+                          fontWeight={'medium'}
+                          boxShadow={m.sender._id === user?._id && "0 0 4px rgba(0,0,0,.3)"}
+                          borderTopLeftRadius={(m.sender._id === user?._id || (window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id))) && ".5rem"}
+                          borderTopRightRadius=".5rem"
+                          borderBottomLeftRadius={".5rem"}
+                          position="relative"
+                          borderBottomRightRadius={(m.sender._id !== user?._id || !islastMsgOfSender(messages, i, m.sender._id)) && ".5rem"}
+                          marginLeft={window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id) && (m.sender._id !== user?._id) && "2.5rem"}
+                          marginRight={window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id) && (m.sender._id === user?._id) && "2.5rem"}
+                          textShadow={m.sender._id !== user?._id && "2px 2px 3px rgba(0,0,0,.3)"}
+                          paddingBottom="1rem"
+                          paddingRight={"1rem"}
+                          paddingLeft={m.content.message.length === 1 && ".9rem"}
+                        >
+                          {m.content.message}
 
-                        <Text pos={"absolute"} fontSize={".6rem"} right=".4rem" color={"black !important"} textShadow="none !important">
-                          {getMsgTime(m.createdAt)}
+                          <Text pos={"absolute"} fontSize={".6rem"} right=".4rem" color={"black !important"} textShadow="none !important">
+                            {getMsgTime(m.createdAt)}
+                          </Text>
+
                         </Text>
-
-                      </Text>
+                      </Box>
                     </Box>
-                  </Box>
+                  </>
                 )
               })
             }
