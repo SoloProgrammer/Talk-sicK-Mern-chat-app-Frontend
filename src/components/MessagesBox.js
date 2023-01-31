@@ -125,6 +125,7 @@ function MessageBox({ messages, setMessages }) {
     else {
       let currday = currdate.getDay()
       let dayDiff = currday - msgday;
+      
       if (dayDiff === 0) return "Today"
       else if (dayDiff === 1) return "Yesterday"
       else return getFormmatedDate(date);
@@ -133,29 +134,29 @@ function MessageBox({ messages, setMessages }) {
   }
 
   const isFirstMsgOfTheDay = (msgTimestamp, messages, i) => {
-    let msgDate = new Date(msgTimestamp);
-    
-    if(messages[i - 1]){
-      // console.log(msgDate.getDate());
-      
-      let preMsgDate = new Date(messages[i - 1].createdAt);
-      
-      if(messages[i + 1]){
 
-        let nextMsgDate = new Date(messages[i + 1].createdAt);
+    let msgDay = (new Date(msgTimestamp)).getDay()
+
+    if (messages[i - 1]) {
+
+      let preMsgDay = (new Date(messages[i - 1].createdAt)).getDay()
+
+      if (messages[i + 1]) {
+
+        let nextMsgDay = (new Date(messages[i + 1].createdAt)).getDay()
 
         // console.log(preMsgDate,nextMsgDate);
 
-        if(msgDate.getDay() !== preMsgDate.getDay() && msgDate.getDay() === nextMsgDate.getDay()){
+        if (msgDay !== preMsgDay && msgDay === nextMsgDay) {
 
           // console.log(messages[i+1],messages[i-1]);
           return true
         }
-        
-      }else {
-        if(msgDate.getDay() !== preMsgDate.getDay()) return true 
+
+      } else {
+        if (msgDay !== preMsgDay) return true
       }
-   
+
     }
     else return true
   }
@@ -182,9 +183,9 @@ function MessageBox({ messages, setMessages }) {
                 return (
                   <>
                     {
-                      isFirstMsgOfTheDay(m.createdAt,messages,i,m)
+                      isFirstMsgOfTheDay(m.createdAt, messages, i, m)
                       &&
-                      <Box  margin={".5rem 0"} pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "2px" : "1.5px"} solid #15dfd0`} width={"100%"}>
+                      <Box margin={".5rem 0"} pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "2px" : "1.5px"} solid #15dfd0`} width={"100%"}>
                         <Text
                           pos={"absolute"}
                           className="messagesDay"
