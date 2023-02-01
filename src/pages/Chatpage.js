@@ -104,12 +104,7 @@ function Chatpage() {
       localStorage.getItem('token') && fetchallchats()
     }
     // eslint-disable-next-line
-  }, [user]);
-
-  useEffect(()=>{
-    localStorage.getItem('token') && fetchallchats()
-    // eslint-disable-next-line
-  },[isfetchChats])
+  }, [isfetchChats,user]);
 
   return (
     <Box className={`mainChatBox hideleft`} width="100%" display="flex" justifyContent={"center"} alignItems="center" transition={".5s"}>

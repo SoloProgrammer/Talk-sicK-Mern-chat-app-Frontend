@@ -38,9 +38,9 @@ const ChatProvider = ({ children }) => {
 
     const [onlineUsers, setOnlineUsers] = useState([])
 
-    const ENDPOINT = "http://localhost:8001"
+    // const ENDPOINT = "http://localhost:8001"
 
-    // const ENDPOINT = server.URL.production
+    const ENDPOINT = server.URL.production
 
     const [socket, setSocket] = useState(null);
 

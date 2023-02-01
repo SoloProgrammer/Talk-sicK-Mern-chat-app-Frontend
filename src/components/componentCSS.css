@@ -121,10 +121,10 @@
     top: 50%;
     transform: translate(-50%,-50%);
     background-color: white;
-    padding: .1rem .5rem;
+    padding: .1rem 1rem;
     border-radius: 2rem;
     font-size: .8rem;
-    box-shadow: 0 0 3px rgba(0,0,0,.4);
+    box-shadow: 0 0 2px rgba(0,0,0,.5);  
     font-weight: bold;
 }
 

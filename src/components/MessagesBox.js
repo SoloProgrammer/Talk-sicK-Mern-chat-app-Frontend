@@ -34,7 +34,7 @@ function MessageBox({ messages, setMessages }) {
       return 1
     });
 
-    if (isChatMsg) return setMessagesLoading(false)
+    if (isChatMsg) return
 
     try {
 
@@ -54,8 +54,8 @@ function MessageBox({ messages, setMessages }) {
       if (!json.status) return showToast("Error", json.message, "error", 3000)
 
       setMessages(json.allMessages)
-      setMessagesLoading(false);
 
+      setMessagesLoading(false);
       // optimization!!!!!!!!!!!!!!!
 
       // setting fetching messages inside the chatmessages so when next time user click on the previous chat it will not refetch the chat messages instead it will take messages from this chatMessages state! 
@@ -69,9 +69,9 @@ function MessageBox({ messages, setMessages }) {
   }
 
   useEffect(() => {
-    scrollBottom("messagesDisplay")
+   scrollBottom("messagesDisplay")
+    // eslint-disable-next-line
   }, [messages])
-
 
   useEffect(() => {
     selectedChat && fetchMessages()
@@ -125,7 +125,7 @@ function MessageBox({ messages, setMessages }) {
     else {
       let currday = currdate.getDay()
       let dayDiff = currday - msgday;
-      
+
       if (dayDiff === 0) return "Today"
       else if (dayDiff === 1) return "Yesterday"
       else return getFormmatedDate(date);
