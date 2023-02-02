@@ -67,7 +67,7 @@ function GroupMembersBox() {
 
 
     return (
-        <Box width={"90%"} marginLeft=".8rem">
+        <Box width={"100%"} marginLeft=".5rem">
             <Box className='flex' justifyContent={"space-between"} marginBottom=".5rem">
                 <Text fontSize={{ base: "1.2rem", md: "1.4rem" }} fontWeight="hairline" color="slategrey">Group members</Text>
                 {
@@ -94,7 +94,7 @@ function GroupMembersBox() {
                         </Box>
                     </PopupModal>}
             </Box>
-            <Box className='GroupUsersBox' height={{ base: 'calc(100vh - 30.5rem)', md: 'calc(100vh - 29rem)' }} width="100%" overflowY="auto" >
+            <Box className='GroupUsersBox' height={{ base: 'calc(100vh - 30rem)', md: 'calc(100vh - 28.5rem)' }} width="100%" overflowY="auto" >
                 {
                     groupUsers.map(u => {
                         return <GroupUser key={u._id} u={u} />

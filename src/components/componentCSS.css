@@ -46,6 +46,43 @@
     box-shadow: 0 0 0 2px white !important;
 }
 
+.userDetailInpt {
+    text-align: center;
+    min-width: 5ch !important;
+    max-width: 45ch !important;
+    outline: none;
+    background: transparent;
+    border: none;
+}
+
+.InptBox {
+    padding-left: .5rem !important;
+    padding-right: .5rem !important;
+    /* max-width: ; */
+    background-color: rgb(241, 243, 244);
+    position: relative;
+    transition: .3s;
+}
+.InptBox::after{
+    content: "";
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+    height: 1.5px;
+    transition: .5s all;
+    background: rgb(8, 142, 225);
+    transform-origin: center;
+    transform: scale(0);
+}
+
+.InptBox.active::after {
+    transform: scale(1);
+}
+
+.nameInptBox {
+    background: transparent !important
+}
+
 .chaticon img {
     width: 100%;
     height: 100%;
@@ -90,7 +127,6 @@
 
 .unSeen {
     font-weight: 500 !important;
-
     color: #12c9d2;
 }
 
@@ -116,15 +152,16 @@
 #messagesDisplay::-webkit-scrollbar {
     display: none;
 }
-.messagesDay{
+
+.messagesDay {
     left: 50%;
     top: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     background-color: white;
     padding: .1rem 1rem;
     border-radius: 2rem;
     font-size: .8rem;
-    box-shadow: 0 0 2px rgba(0,0,0,.5);  
+    box-shadow: 0 0 2px rgba(0, 0, 0, .5);
     font-weight: bold;
 }
 
@@ -135,6 +172,7 @@
 
 .GroupUsersBox::-webkit-scrollbar-thumb {
     background: #c6c6c6b9;
+    background-color: rgb(226, 229, 229);
     border-radius: 10rem;
 }
 
@@ -158,5 +196,13 @@
 
     .MessagesBox::before {
         margin-left: 0rem;
+    }
+
+    .userDetailInpt {
+        max-width: 30ch !important;
+    }
+
+    .nameInptBox {
+        max-width: 20ch !important;
     }
 }

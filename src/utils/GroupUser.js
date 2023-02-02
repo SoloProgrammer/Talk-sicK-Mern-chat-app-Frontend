@@ -147,11 +147,13 @@ function GroupUser({ u }) {
 
             <Tooltip hasArrow label={user?._id === u._id ? "My Profile" : "Start a chat"} placement='left'>
                 <Avatar onClick={() => handleStartChat(u)} cursor={"pointer"} _hover={{ boxShadow: "0 0 0 2px white" }} name={u.name} src={u.avatar} size="sm">
+                    <Tooltip fontSize={".65rem"} label={isUserOnline(u) ? "online" : "offline"} placement="bottom-start">
                     <AvatarBadge
                         borderWidth="1.8px"
                         borderColor='#ffffff'
                         bg={isUserOnline(u) ? '#00c200' : "darkgrey"}
                         boxSize='.9em' />
+                    </Tooltip> 
                 </Avatar>
             </Tooltip>
 

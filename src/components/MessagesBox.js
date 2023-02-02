@@ -152,9 +152,10 @@ function MessageBox({ messages, setMessages }) {
           // console.log(messages[i+1],messages[i-1]);
           return true
         }
+        else if(msgDay !== preMsgDay && msgDay !== nextMsgDay) return true
 
       } else {
-        if (msgDay !== preMsgDay) return true
+        if (msgDay !== preMsgDay) return true 
       }
 
     }
