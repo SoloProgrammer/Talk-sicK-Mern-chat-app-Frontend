@@ -1,4 +1,4 @@
-import { Avatar, AvatarBadge, Box, Image, Text } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, Box, Image, Text, Tooltip } from '@chakra-ui/react'
 import { getFormmatedDate, getFormmatedTime } from '../configs/dateConfigs'
 import React, { useEffect } from 'react'
 import { getSender, isUserOnline } from '../configs/userConfigs'
@@ -113,11 +113,13 @@ function ChatsBox() {
                           {
                             !(chat.isGroupchat)
                             &&
-                            <AvatarBadge
-                              borderWidth="2px"
-                              borderColor='#ffffff'
-                              bg={isUserOnline(getSender(chat, user)) ? '#00c200' : "darkgrey"}
-                              boxSize='.8em' />
+                            <Tooltip fontSize={".75rem"} label={isUserOnline(getSender(chat, user)) ? "online" : "offline"} placement="bottom-start">
+                              <AvatarBadge
+                                borderWidth="2px"
+                                borderColor='#ffffff'
+                                bg={isUserOnline(getSender(chat, user)) ? '#00c200' : "darkgrey"}
+                                boxSize='.8em' />
+                            </Tooltip>
                           }
 
                         </Avatar>
