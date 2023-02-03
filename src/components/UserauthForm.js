@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChatState } from '../Context/ChatProvider';
 import { server } from '../configs/serverURl'
 import { defaultPic } from '../configs/userConfigs';
+import { handleFileUpload } from '../configs/handleFileUpload';
 
 function Login({ value, inputValues, setInputValues }) {
 
@@ -20,40 +21,8 @@ function Login({ value, inputValues, setInputValues }) {
 
   const HandleUpload = async (e) => {
 
-    let pics = e.target.files[0]
-
-    if (pics === undefined) {
-      setPic(null)
-      return showToast("Not Selected", "Please select an Image file", "warning", 3000)
-    }
-    if (pics.type === 'image/jpeg' || pics.type === 'image/png' || pics.type === 'image/jpg') {
-      setLoading(true)
-      const data = new FormData();
-      data.append('file', pics);
-      data.append('upload_preset', "Talk-o-Meter");
-      data.append('cloud_name', "dvzjzf36i");
-
-      const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dvzjzf36i/image/upload"
-      let config = {
-        method: "POST",
-        body: data
-      }
-      try {
-        let res = await fetch(CLOUDINARY_URL, config)
-        let json = await res.json();
-        setPic(json.url.toString())
-        setLoading(false)
-      } catch (error) {
-        setLoading(false)
-        return showToast("Seems some suspicious*", "Some error occured try again later", "error", 3000)
-      }
-    }
-    else {
-      return showToast("*Not accepted", "Please select an Image file", "warning", 3000)
-    }
-    if (pics && pics[0]) {
-      setLoading(true)
-    }
+    let avatar = await handleFileUpload(e, setLoading, showToast)
+    setPic(avatar)
   }
 
   const handleSubmit = async () => {
@@ -160,7 +129,8 @@ function Login({ value, inputValues, setInputValues }) {
             <Avatar name='A V' src={pic ? pic : defaultPic} />
             <Text><b>Upload your profile picture </b></Text>
             <img width={25} src="https://cdn-icons-png.flaticon.com/512/556/556130.png" alt="handPointer" />
-            <label style={{ cursor: "pointer" }} htmlFor="icon-button-file"><img width={30} src="https://cdn-icons-png.flaticon.com/512/1177/1177911.png" alt="Upload pic" /></label>
+            <label style={{ cursor: "pointer" }} htmlFor="icon-button-file">
+              <img width={30} src="https://cdn-icons-png.flaticon.com/512/1177/1177911.png" alt="Upload pic" /></label>
           </Box>
         </>}
         <Button isLoading={loading} onClick={handleSubmit} colorScheme='teal' size='md'>

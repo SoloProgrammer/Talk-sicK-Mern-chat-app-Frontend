@@ -43,7 +43,7 @@ function MessagesBox() {
 
     let TypingDelay = setTimeout(() => {
       socket.emit("stop typing", selectedChat?._id);
-    }, 1000);
+    }, 1500);
 
     return () => clearTimeout(TypingDelay)
 

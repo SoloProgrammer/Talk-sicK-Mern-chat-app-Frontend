@@ -67,7 +67,7 @@ function GroupMembersBox() {
 
 
     return (
-        <Box width={"100%"} marginLeft=".5rem">
+        <Box width={"100%"} >
             <Box className='flex' justifyContent={"space-between"} marginBottom=".5rem">
                 <Text fontSize={{ base: "1.2rem", md: "1.4rem" }} fontWeight="hairline" color="slategrey">Group members</Text>
                 {

@@ -1,5 +1,6 @@
-import { Avatar, Box, Button, Image, Text, Tooltip } from '@chakra-ui/react'
+import { Avatar, Box, Button, Image, Input, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useState, useEffect } from 'react'
+import { handleFileUpload } from '../../configs/handleFileUpload'
 import { getSender, HandleLogout } from '../../configs/userConfigs'
 import { ChatState } from '../../Context/ChatProvider'
 import GroupMembersBox from '../GroupMembersBox'
@@ -23,23 +24,23 @@ function ProfileDrawer({ width, align = "right" }) {
     })
 
     const HandleDetailChange = (e) => {
-        if(e.target.tagName === "TEXTAREA"){
+        if (e.target.tagName === "TEXTAREA") {
             e.target.style.height = "0"
             e.target.style.height = e.target.scrollHeight + "px"
         }
         setSave({ ...save, [e.target.name]: true })
         if (!e.target.value.length) setSave({ ...save, [e.target.name]: false })
         // e.target.width = e.target.value + "ch"
-        setUserDetail({ ...userDetail, [e.target.name]: e.target.value  || profile[e.target.name]})
+        setUserDetail({ ...userDetail, [e.target.name]: e.target.value || profile[e.target.name] })
     }
     let allInpts = document.querySelectorAll('.InptBox')
 
     const HandleDetailSave = () => {
-        if(userDetail.phone.length && (userDetail.phone.length > 10 || userDetail.phone.length < 10)){
-            return showToast("Invalid","Phone cannot have less than 10 digits","error",3000)
+        if (userDetail.phone.length && (userDetail.phone.length > 10 || userDetail.phone.length < 10)) {
+            return showToast("Invalid", "Phone cannot have less than 10 digits", "error", 3000)
         }
 
-        setUserDetail({...userDetail,about:userDetail.about.replace(/\s{2}|\n/g,"")})
+        profile?._id === user?._id && setUserDetail({ ...userDetail, about: userDetail.about.replace(/\s{2}|\n/g, "") })
 
         setSave({
             name: false,
@@ -69,17 +70,33 @@ function ProfileDrawer({ width, align = "right" }) {
         }, 10);
     }
 
+    useEffect(() => {
+        setTimeout(() => {
+            document.querySelector('.DrawerInner')?.classList.remove('TopHide')
+        }, 100)
+    }, [profile]);
+
+    const [onHover, setOnHover] = useState(false);
+
+    const [avatarLoading, setAavatarloading] = useState(false);
+
+    const handleProfileAvatarChange = async (e) => {
+
+        let avatar = await handleFileUpload(e, setAavatarloading, showToast);
+        avatar && setProfile({ ...profile, avatar })
+    }
+
     return (
         <Box
             className={`profileDrawer ${align === "right" ? "right0 translateXFull maxWidth520" : "left0 translateXFull-"}`}
             width={{ base: "full", md: width }}
-            height={profile?._id === user?._id ? "calc(100% - 3.6rem)" : "100%"}
+            height={profile?._id !== user?._id && "100%"}
             pos={"absolute"}
             transition="all .3s"
             zIndex={"2"}
             overflowY="auto"
             background="white">
-            <Box className='DrawerInner' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"} height="full" pos="relative" padding={"0 .53rem"} paddingTop="1rem">
+            <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"} height="full" pos="relative" padding={"0 .53rem"} paddingTop="1rem" paddingBottom={"5rem"}>
 
                 <Box onClick={() => setProfile(null)} cursor={"pointer"} pos={"absolute"} left=".8rem" top={".8rem"}>
                     <Tooltip label="Close" placement='bottom'>
@@ -107,7 +124,21 @@ function ProfileDrawer({ width, align = "right" }) {
 
                 <Box className='profile_details' width={"full"} padding={{ base: "0rem .8rem", md: "0" }} >
                     <Box className='flex' flexDir={"column"} width="100%">
-                        <Avatar src={profile?.avatar} width="11rem" height={"11rem"} />
+                        <label htmlFor="profileAvatarOnchange">
+                            <Input onChange={handleProfileAvatarChange} type="file" name="avatar" id="profileAvatarOnchange" display="none" />
+                            <Avatar onMouseEnter={() => setOnHover(true)} onMouseLeave={() => setOnHover(false)} cursor={"pointer"} overflow={"hidden"} src={profile?.avatar} width="11rem" height={"11rem"} position="relative" >
+                                <Box display={onHover ? "flex" : "none"} background={"blackAlpha.500"} borderRadius={"."} width={"100%"} height="100%" pos={'absolute'} top="0" left={"0"} className="flex">
+                                    {
+                                        avatarLoading
+                                            ?
+                                            <Spinner size={'lg'} color="white" />
+                                            :
+                                            <Image cursor={"pointer"} filter={"invert(100%)"} width={"2rem"} src="https://cdn-icons-png.flaticon.com/512/2099/2099154.png" />
+
+                                    }
+                                </Box>
+                            </Avatar>
+                        </label>
                         <Text fontSize={"2xl"} color="gray.500" fontWeight="semibold" pos={"relative"} width="full" className='flex' marginTop={".5rem"}>
 
                             {/* Profile name */}
@@ -168,7 +199,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                             disabled={!selectedChat?.isGroupchat && profile?._id !== user?._id}
                                             value={userDetail.about}
                                             className="userDetailInpt"
-                                            style={{ width: userDetail.about.length + "ch",textAlign:"start" }}
+                                            style={{ width: userDetail.about.length + "ch", textAlign: "start" }}
                                             maxLength="90"
                                         />
                                         :
@@ -204,7 +235,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                                     className="userDetailInpt"
                                                     style={{ width: userDetail.email.length + "ch" }}
                                                     maxLength="35"
-                                                    autoComplete="off"  
+                                                    autoComplete="off"
                                                 />
 
                                             }
@@ -221,7 +252,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                                         placeholder={!userDetail.phone && "valid phone"}
                                                         onChange={HandleDetailChange}
                                                         disabled={!selectedChat?.isGroupchat && profile?._id !== user?._id}
-                                                        value={userDetail.phone || "" }
+                                                        value={userDetail.phone || ""}
                                                         className="userDetailInpt "
                                                         autoComplete="off"
                                                         style={{ width: 12 + "ch" }}
@@ -253,7 +284,7 @@ function ProfileDrawer({ width, align = "right" }) {
                 {
                     (selectedChat?.isGroupchat && user?._id !== profile?._id)
                     &&
-                    <Box className='flex' width={"100%"} padding="0 .5rem">
+                    <Box className='flex' width={"100%"} padding={{ base: "0 .5rem", md: "0 1rem" }} paddingRight={{ base: ".15rem", md: ".5rem" }}>
                         <GroupMembersBox />
                     </Box>
                 }
