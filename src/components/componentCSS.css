@@ -45,11 +45,19 @@
 .userAvatarBtn:hover .userAvatar {
     box-shadow: 0 0 0 2px white !important;
 }
+.borderT-B{
+    border-top: 1px solid rgba(0, 0, 0, .2);
+    border-bottom: 1px solid rgba(0, 0, 0, .2);
+}
+
+.disabledBg{
+    background: #d5efff !important;
+}
 
 .userDetailInpt {
     text-align: center;
-    min-width: 5ch !important;
-    max-width: 45ch !important;
+    min-width: fit-content !important;
+    max-width: 90% !important;
     outline: none;
     background: transparent;
     border: none;
@@ -111,9 +119,9 @@
     background: url('../Images/Bg1.jpg');
     background-position: fixed;
     background-size: contain;
-    filter: grayscale(1);
     margin-left: .2rem;
     opacity: .9;
+    filter: grayscale(1) brightness(95%);
 }
 
 .MessagesBox::-webkit-scrollbar {
@@ -152,6 +160,9 @@
 #messagesDisplay::-webkit-scrollbar {
     display: none;
 }
+.profileDrawer::-webkit-scrollbar{
+    display: none;
+}
 
 .messagesDay {
     left: 50%;
@@ -188,6 +199,10 @@
     max-width: 520px !important;
 }
 
+textarea{
+    resize: none !important;
+    max-height: 110px !important;
+}
 
 @media (max-width:770px) {
     .chakra-modal__content {
@@ -199,7 +214,7 @@
     }
 
     .userDetailInpt {
-        max-width: 30ch !important;
+        max-width: 90% !important;
     }
 
     .nameInptBox {

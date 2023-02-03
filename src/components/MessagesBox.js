@@ -186,7 +186,7 @@ function MessageBox({ messages, setMessages }) {
                     {
                       isFirstMsgOfTheDay(m.createdAt, messages, i, m)
                       &&
-                      <Box margin={".5rem 0"} pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "2px" : "1.5px"} solid #15dfd0`} width={"100%"}>
+                      <Box margin={i === 0 ? ".5rem 0" : "1rem 0"} pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "2px" : "1.5px"} solid #15dfd0`} width={"100%"}>
                         <Text
                           pos={"absolute"}
                           className="messagesDay"

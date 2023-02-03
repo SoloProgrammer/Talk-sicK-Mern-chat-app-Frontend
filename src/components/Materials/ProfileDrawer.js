@@ -23,23 +23,38 @@ function ProfileDrawer({ width, align = "right" }) {
     })
 
     const HandleDetailChange = (e) => {
+        if(e.target.tagName === "TEXTAREA"){
+            e.target.style.height = "0"
+            e.target.style.height = e.target.scrollHeight + "px"
+        }
         setSave({ ...save, [e.target.name]: true })
         if (!e.target.value.length) setSave({ ...save, [e.target.name]: false })
-        e.target.width = e.target.value + "ch"
-        setUserDetail({ ...userDetail, [e.target.name]: e.target.value || profile[e.target.name] })
+        // e.target.width = e.target.value + "ch"
+        setUserDetail({ ...userDetail, [e.target.name]: e.target.value  || profile[e.target.name]})
     }
     let allInpts = document.querySelectorAll('.InptBox')
 
-    const HandleDetailSave = (key) => {
-        setSave({ ...save, [key]: false })
+    const HandleDetailSave = () => {
+        if(userDetail.phone.length && (userDetail.phone.length > 10 || userDetail.phone.length < 10)){
+            return showToast("Invalid","Phone cannot have less than 10 digits","error",3000)
+        }
+
+        setUserDetail({...userDetail,about:userDetail.about.replace(/\s{2}|\n/g,"")})
+
+        setSave({
+            name: false,
+            about: false,
+            email: false,
+            phone: false,
+        })
         setIsEdit(false)
     }
-    
+
     const [isedit, setIsEdit] = useState(false);
-    
+
     useEffect(() => {
         if (isedit) {
-            showToast("Edit Access", "Now you can edit details by clicking onto particular one!", "success", 5000)
+            showToast("Edit Access", "Now you can edit details by clicking onto particular one!", "success", 3000)
         }
         allInpts.forEach(inpt => inpt.classList.remove('active'))
         // eslint-disable-next-line
@@ -58,10 +73,11 @@ function ProfileDrawer({ width, align = "right" }) {
         <Box
             className={`profileDrawer ${align === "right" ? "right0 translateXFull maxWidth520" : "left0 translateXFull-"}`}
             width={{ base: "full", md: width }}
-            height={"100%"}
+            height={profile?._id === user?._id ? "calc(100% - 3.6rem)" : "100%"}
             pos={"absolute"}
             transition="all .3s"
             zIndex={"2"}
+            overflowY="auto"
             background="white">
             <Box className='DrawerInner' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"} height="full" pos="relative" padding={"0 .53rem"} paddingTop="1rem">
 
@@ -82,7 +98,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                 </Tooltip>
                                 :
                                 <Tooltip label="save" placement='bottom'>
-                                    <Image onClick={() => setIsEdit(false)} cursor="pointer" src='https://cdn-icons-png.flaticon.com/512/443/443138.png' width={"2rem"} />
+                                    <Image onClick={HandleDetailSave} cursor="pointer" src='https://cdn-icons-png.flaticon.com/512/443/443138.png' width={"2rem"} />
                                 </Tooltip>
 
                         }
@@ -96,14 +112,11 @@ function ProfileDrawer({ width, align = "right" }) {
 
                             {/* Profile name */}
                             <Box className='InptBox flex nameInptBox' gap={".5rem"} >
-                                <Tooltip label="save" placement='top'>
-                                    <Image onClick={() => HandleDetailSave("name")} cursor="pointer" display={save.name && isedit ? "inline" : "none"} src='https://cdn-icons-png.flaticon.com/512/443/443138.png' width={"1.4rem"} />
-                                </Tooltip>
                                 {
                                     isedit
                                         ?
                                         <input type="text"
-                                            autocomplete="off"
+                                            autoComplete="off"
                                             name="name"
                                             onChange={HandleDetailChange}
                                             disabled={!selectedChat?.isGroupchat && profile?._id !== user?._id}
@@ -144,23 +157,19 @@ function ProfileDrawer({ width, align = "right" }) {
                                 fontSize="1.2rem">
                                 About
                             </Text>
-                            <Box className='InptBox flex borderT-B' gap={".5rem"} padding=".9rem 0" width="100%">
-                                <Tooltip label="save" placement='top'>
-                                    <Image onClick={() => HandleDetailSave("about")} cursor="pointer" display={save.about && isedit ? "inline" : "none"} src='https://cdn-icons-png.flaticon.com/512/443/443138.png' width=
-                                        {"1.4rem"} />
-                                </Tooltip>
+                            <Box className='InptBox flex' gap={".5rem"} padding=".9rem 0" width="100%">
                                 {
                                     isedit
                                         ?
-                                        <input type="text"
-                                            autocomplete="off"
+                                        <textarea type="text"
+                                            autoComplete="off"
                                             name="about"
                                             onChange={HandleDetailChange}
                                             disabled={!selectedChat?.isGroupchat && profile?._id !== user?._id}
                                             value={userDetail.about}
                                             className="userDetailInpt"
-                                            style={{ width: userDetail.about.length + "ch" }}
-                                            maxLength="70"
+                                            style={{ width: userDetail.about.length + "ch",textAlign:"start" }}
+                                            maxLength="90"
                                         />
                                         :
                                         <Text padding={"0 .5rem"} userSelect="none">
@@ -185,48 +194,36 @@ function ProfileDrawer({ width, align = "right" }) {
                                 <Box width={"full"}>
                                     <Box>
                                         <Text fontWeight={"hairline"} fontSize=".9rem">Email</Text>
-                                        <Box className='InptBox flex borderT-B' gap={".5rem"} padding=".9rem 0" width="100%">
-                                            <Tooltip label="save" placement='top'>
-                                                <Image onClick={() => HandleDetailSave("email")} cursor="pointer" display={save.email && isedit ? "inline" : "none"} src='https://cdn-icons-png.flaticon.com/512/443/443138.png' width={"1.4rem"} />
-                                            </Tooltip>
+                                        <Box className={`flex ${profile?._id === user?._id ? "disabledBg" : "InptBox"}`} gap={".5rem"} padding=".9rem 0" width="100%">
                                             {
-                                                isedit
-                                                    ?
-                                                    <input type="text"
-                                                        name="email"
-                                                        onChange={HandleDetailChange}
-                                                        disabled={!selectedChat?.isGroupchat && profile?._id !== user?._id}
-                                                        value={userDetail.email}
-                                                        className="userDetailInpt"
-                                                        style={{ width: userDetail.email.length + "ch" }}
-                                                        maxLength="35"
-                                                        autocomplete="off"
-                                                    />
-                                                    :
-                                                    <Text userSelect="none">
-                                                        {userDetail.email}
-                                                    </Text>
+                                                <input type="text"
+                                                    name="email"
+                                                    onChange={HandleDetailChange}
+                                                    disabled={true}
+                                                    value={userDetail.email}
+                                                    className="userDetailInpt"
+                                                    style={{ width: userDetail.email.length + "ch" }}
+                                                    maxLength="35"
+                                                    autoComplete="off"  
+                                                />
 
                                             }
                                         </Box>
                                     </Box>
                                     <Box marginTop={".4rem"}>
                                         <Text fontWeight={"hairline"} fontSize=".9rem">Phone</Text>
-                                        <Box className='InptBox flex borderT-B' gap={".5rem"} padding=".9rem 0" width="100%">
-                                            <Tooltip label="save" placement='top'>
-                                                <Image onClick={() => HandleDetailSave("phone")} cursor="pointer" display={save.phone && isedit ? "inline" : "none"} src='https://cdn-icons-png.flaticon.com/512/443/443138.png' width={"1.4rem"} />
-                                            </Tooltip>
+                                        <Box className='InptBox flex' gap={".5rem"} padding=".9rem 0" width="100%">
                                             {
                                                 isedit
                                                     ?
                                                     <input type="text"
                                                         name="phone"
-                                                        placeholder={userDetail.phone === "" && "valid phone"}
+                                                        placeholder={!userDetail.phone && "valid phone"}
                                                         onChange={HandleDetailChange}
                                                         disabled={!selectedChat?.isGroupchat && profile?._id !== user?._id}
-                                                        value={userDetail.phone}
+                                                        value={userDetail.phone || "" }
                                                         className="userDetailInpt "
-                                                        autocomplete="off"
+                                                        autoComplete="off"
                                                         style={{ width: 12 + "ch" }}
                                                     />
                                                     :
@@ -244,10 +241,10 @@ function ProfileDrawer({ width, align = "right" }) {
                 </Box>
                 {
                     profile?._id === user?._id &&
-                    <Box padding={{ base: "0rem .8rem", md: "0 1.1rem" }} width="full" marginTop={"1rem"}>
+                    <Box padding={{ base: "0rem .8rem", md: "0 1.1rem" }} width="full" marginTop={".5rem"}>
                         <Button colorScheme={"red"} width="full" onClick={HandleLogout}>
                             LOG-OUT &nbsp;
-                            <Image src='https://cdn-icons-png.flaticon.com/512/4034/4034229.png' width={"1.2rem"}/>
+                            <Image src='https://cdn-icons-png.flaticon.com/512/4034/4034229.png' width={"1.2rem"} />
                         </Button>
                     </Box>
                 }
