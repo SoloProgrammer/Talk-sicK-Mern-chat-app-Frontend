@@ -9,7 +9,9 @@ import GroupMembersBox from '../GroupMembersBox'
 function ProfileDrawer({ width, align = "right" }) {
     const { selectedChat, user, profile, setProfile, onlineUsers, showToast } = ChatState();
 
-    const [userDetail, setUserDetail] = useState({
+    // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
+
+    const [profileDetail, setProfileDetail] = useState({
         name: (selectedChat && user?._id !== profile?._id) ? getSender(selectedChat, user)?.name : profile?.name,
         about: profile?.about,
         email: profile?.email,
@@ -21,37 +23,62 @@ function ProfileDrawer({ width, align = "right" }) {
         about: false,
         email: false,
         phone: false,
-    })
-
+    });
+    
+    const [isedit, setIsEdit] = useState(false);
+    
     const HandleDetailChange = (e) => {
         if (e.target.tagName === "TEXTAREA") {
             e.target.style.height = "0"
             e.target.style.height = e.target.scrollHeight + "px"
         }
-        setSave({ ...save, [e.target.name]: true })
-        if (!e.target.value.length) setSave({ ...save, [e.target.name]: false })
-        // e.target.width = e.target.value + "ch"
-        setUserDetail({ ...userDetail, [e.target.name]: e.target.value || profile[e.target.name] })
+        setSave({ ...save, [e.target.name]: true });
+
+        if (!e.target.value.length) setSave({ ...save, [e.target.name]: false });
+
+        setProfileDetail({ ...profileDetail, [e.target.name]: e.target.name === "phone" ? String(e.target.value).slice(0,10) : e.target.value})
+        
     }
     let allInpts = document.querySelectorAll('.InptBox')
 
+    
     const HandleDetailSave = () => {
-        if (userDetail.phone.length && (userDetail.phone.length > 10 || userDetail.phone.length < 10)) {
-            return showToast("Invalid", "Phone cannot have less than 10 digits", "error", 3000)
+        
+        if(profile.isGrpProfile){
+            if(profileDetail.name.length === 0){
+                return showToast("Required",`Groupname cannot be empty..!`,"error",3000);
+            }
         }
 
-        profile?._id === user?._id && setUserDetail({ ...userDetail, about: userDetail.about.replace(/\s{2}|\n/g, "") })
+        let isProcessable = true;
 
-        setSave({
-            name: false,
-            about: false,
-            email: false,
-            phone: false,
-        })
-        setIsEdit(false)
+        profile?._id === user?._id && Object.keys(profileDetail).forEach(k =>{
+            if(profileDetail[k].length === 0 && k !== "phone"){
+                showToast("Required",`${k} field cannot be empty..!`,"error",3000);
+                isProcessable = false
+            }
+        });
+
+
+        if(isProcessable){
+
+            if (profileDetail.phone.length && (profileDetail.phone.length > 10 || profileDetail.phone.length < 10)) {
+                return showToast("Invalid", "Phone cannot have less than 10 digits", "error", 3000)
+            }
+    
+            profile?._id === user?._id && setProfileDetail({ ...profileDetail, about: profileDetail.about.replace(/\s{2}|\n/g, "") })
+    
+            setSave({
+                name: false,
+                about: false,
+                email: false,
+                phone: false,
+            })
+            setIsEdit(false)
+        }
+        
     }
 
-    const [isedit, setIsEdit] = useState(false);
 
     useEffect(() => {
         if (isedit) {
@@ -73,7 +100,7 @@ function ProfileDrawer({ width, align = "right" }) {
     useEffect(() => {
         setTimeout(() => {
             document.querySelector('.DrawerInner')?.classList.remove('TopHide')
-        }, 100)
+        }, 250)
     }, [profile]);
 
     const [onHover, setOnHover] = useState(false);
@@ -115,7 +142,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                 </Tooltip>
                                 :
                                 <Tooltip label="save" placement='bottom'>
-                                    <Image onClick={HandleDetailSave} cursor="pointer" src='https://cdn-icons-png.flaticon.com/512/443/443138.png' width={"2rem"} />
+                                    <Image onClick={HandleDetailSave} cursor="pointer" src='https://cdn-icons-png.flaticon.com/512/1293/1293029.png' width={"2rem"} />
                                 </Tooltip>
 
                         }
@@ -125,18 +152,25 @@ function ProfileDrawer({ width, align = "right" }) {
                 <Box className='profile_details' width={"full"} padding={{ base: "0rem .8rem", md: "0" }} >
                     <Box className='flex' flexDir={"column"} width="100%">
                         <label htmlFor="profileAvatarOnchange">
-                            <Input onChange={handleProfileAvatarChange} type="file" name="avatar" id="profileAvatarOnchange" display="none" />
                             <Avatar onMouseEnter={() => setOnHover(true)} onMouseLeave={() => setOnHover(false)} cursor={"pointer"} overflow={"hidden"} src={profile?.avatar} width="11rem" height={"11rem"} position="relative" >
-                                <Box display={onHover ? "flex" : "none"} background={"blackAlpha.500"} borderRadius={"."} width={"100%"} height="100%" pos={'absolute'} top="0" left={"0"} className="flex">
-                                    {
-                                        avatarLoading
-                                            ?
-                                            <Spinner size={'lg'} color="white" />
-                                            :
-                                            <Image cursor={"pointer"} filter={"invert(100%)"} width={"2rem"} src="https://cdn-icons-png.flaticon.com/512/2099/2099154.png" />
+                                {
+                                    (profile?._id === user?._id || selectedChat?.isGroupchat)
+                                    &&
+                                    <>
+                                        <Input onChange={handleProfileAvatarChange} type="file" name="avatar" id="profileAvatarOnchange" display="none" />
+                                        <Box display={onHover ? "flex" : "none"} background={"blackAlpha.500"} borderRadius={"."} width={"100%"} height="100%" pos={'absolute'} top="0" left={"0"} className="flex">
+                                            {
+                                                avatarLoading
+                                                    ?
+                                                    <Spinner size={'lg'} color="white" />
+                                                    :
+                                                    <Image cursor={"pointer"} filter={"invert(100%)"} width={"2rem"} src="https://cdn-icons-png.flaticon.com/512/2099/2099154.png" />
+        
+                                            }
+                                        </Box>  
+                                    </>
 
-                                    }
-                                </Box>
+                                }
                             </Avatar>
                         </label>
                         <Text fontSize={"2xl"} color="gray.500" fontWeight="semibold" pos={"relative"} width="full" className='flex' marginTop={".5rem"}>
@@ -151,14 +185,14 @@ function ProfileDrawer({ width, align = "right" }) {
                                             name="name"
                                             onChange={HandleDetailChange}
                                             disabled={!selectedChat?.isGroupchat && profile?._id !== user?._id}
-                                            value={userDetail.name}
-                                            className="userDetailInpt nameInpt"
-                                            style={{ width: userDetail.name.length + "ch" }}
+                                            value={profileDetail.name}
+                                            className="profileDetailInpt nameInpt"
+                                            style={{ width: profileDetail.name.length + "ch" }}
                                             maxLength="25"
                                         />
                                         :
                                         <Text>
-                                            {userDetail.name}
+                                            {profileDetail.name}
                                         </Text>
                                 }
                             </Box>
@@ -167,11 +201,11 @@ function ProfileDrawer({ width, align = "right" }) {
                             {
                                 (profile.about) && (onlineUsers.map(U => U.userId).includes(profile._id)
                                     ?
-                                    <Text fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#29b764"} letterSpacing=".01rem" background="#d0ffde">
+                                    <Text userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#29b764"} letterSpacing=".01rem" background="#d0ffde">
                                         online
                                     </Text>
                                     :
-                                    <Text fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#3e4240"} letterSpacing=".01rem" background="#e0e0e0">
+                                    <Text userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#3e4240"} letterSpacing=".01rem" background="#e0e0e0">
                                         offline
                                     </Text>)
                             }
@@ -197,14 +231,14 @@ function ProfileDrawer({ width, align = "right" }) {
                                             name="about"
                                             onChange={HandleDetailChange}
                                             disabled={!selectedChat?.isGroupchat && profile?._id !== user?._id}
-                                            value={userDetail.about}
-                                            className="userDetailInpt"
-                                            style={{ width: userDetail.about.length + "ch", textAlign: "start" }}
+                                            value={profileDetail.about}
+                                            className="profileDetailInpt"
+                                            style={{ width: profileDetail.about.length + "ch", textAlign: "center" }}
                                             maxLength="90"
                                         />
                                         :
                                         <Text padding={"0 .5rem"} userSelect="none">
-                                            {userDetail.about}
+                                            {profileDetail.about}
                                         </Text>
 
                                 }
@@ -231,9 +265,9 @@ function ProfileDrawer({ width, align = "right" }) {
                                                     name="email"
                                                     onChange={HandleDetailChange}
                                                     disabled={true}
-                                                    value={userDetail.email}
-                                                    className="userDetailInpt"
-                                                    style={{ width: userDetail.email.length + "ch" }}
+                                                    value={profileDetail.email}
+                                                    className="profileDetailInpt"
+                                                    style={{ width: profileDetail.email.length + "ch" }}
                                                     maxLength="35"
                                                     autoComplete="off"
                                                 />
@@ -247,19 +281,19 @@ function ProfileDrawer({ width, align = "right" }) {
                                             {
                                                 isedit
                                                     ?
-                                                    <input type="text"
+                                                    <input type="number"
                                                         name="phone"
-                                                        placeholder={!userDetail.phone && "valid phone"}
+                                                        placeholder={profileDetail.phone || "valid phone"}
                                                         onChange={HandleDetailChange}
                                                         disabled={!selectedChat?.isGroupchat && profile?._id !== user?._id}
-                                                        value={userDetail.phone || ""}
-                                                        className="userDetailInpt "
+                                                        value={profileDetail.phone || ""}
+                                                        className="profileDetailInpt "
                                                         autoComplete="off"
-                                                        style={{ width: 12 + "ch" }}
+                                                        // style={{ width: 12 + "ch" }}
                                                     />
                                                     :
                                                     <Text userSelect="none">
-                                                        {userDetail.phone || "Not provided"}
+                                                        {profileDetail.phone || "Not provided"}
                                                     </Text>
 
                                             }

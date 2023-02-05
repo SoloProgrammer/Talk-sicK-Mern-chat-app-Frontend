@@ -4,7 +4,7 @@ import { ChatState } from '../Context/ChatProvider'
 export const defaultPic = "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"
 
 export const getSender = (chat, user) => {
-    if (chat?.isGroupchat) return { name: chat.chatName, avatar: chat.groupAvatar }
+    if (chat?.isGroupchat) return { name: chat.chatName, avatar: chat.groupAvatar,isGrpProfile:true }
     let sender = chat?.users.filter(u => u._id !== user?._id)[0]
     return sender
 }

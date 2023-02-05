@@ -52,11 +52,8 @@ function ChatsBox() {
   }
 
   const handleChatClick = (chat) => {
-
     navigate(`/chats/chat/${chat._id}`);
-    // setSelectedChat(chat);
     setProfile(null);
-    notifications.length && setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
   }
 
   useEffect(() => {
@@ -66,6 +63,8 @@ function ChatsBox() {
       elem.classList.remove('unSeen');
       selectedChat?.latestMessage && seenlstMessage(selectedChat.latestMessage._id)
     }
+
+    notifications.length && setNotifications(notifications.filter(noti => noti.chat._id !== selectedChat?._id))
 
     // eslint-disable-next-line
   }, [selectedChat?._id]);

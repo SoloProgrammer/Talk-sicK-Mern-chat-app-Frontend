@@ -1,7 +1,6 @@
 import { Avatar, Box, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-// import { useNavigate, useParams } from 'react-router-dom'
-import { getFormmatedDate, getFormmatedTime } from '../configs/dateConfigs'
+import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay } from '../configs/messageConfigs'
 import { scrollBottom } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
 import { HandleLogout, islastMsgOfSender } from '../configs/userConfigs'
@@ -69,7 +68,7 @@ function MessageBox({ messages, setMessages }) {
   }
 
   useEffect(() => {
-   scrollBottom("messagesDisplay")
+    scrollBottom("messagesDisplay")
     // eslint-disable-next-line
   }, [messages])
 
@@ -107,61 +106,6 @@ function MessageBox({ messages, setMessages }) {
     }
   }
 
-  const getMsgTime = (timestamps) => {
-
-    let date = new Date(timestamps)
-    return getFormmatedTime(date)
-  }
-
-  const getMessageDay = (msgTimestamps) => {
-    const date = new Date(msgTimestamps);
-
-    let msgday = date.getDay()
-    let currdate = new Date()
-
-    if (date.getFullYear !== currdate.getFullYear || date.getMonth !== currdate.getMonth) {
-      return getFormmatedDate(date);
-    }
-    else {
-      let currday = currdate.getDay()
-      let dayDiff = currday - msgday;
-
-      if (dayDiff === 0) return "Today"
-      else if (dayDiff === 1) return "Yesterday"
-      else return getFormmatedDate(date);
-    }
-
-  }
-
-  const isFirstMsgOfTheDay = (msgTimestamp, messages, i) => {
-
-    let msgDay = (new Date(msgTimestamp)).getDay()
-
-    if (messages[i - 1]) {
-
-      let preMsgDay = (new Date(messages[i - 1].createdAt)).getDay()
-
-      if (messages[i + 1]) {
-
-        let nextMsgDay = (new Date(messages[i + 1].createdAt)).getDay()
-
-        // console.log(preMsgDate,nextMsgDate);
-
-        if (msgDay !== preMsgDay && msgDay === nextMsgDay) {
-
-          // console.log(messages[i+1],messages[i-1]);
-          return true
-        }
-        else if(msgDay !== preMsgDay && msgDay !== nextMsgDay) return true
-
-      } else {
-        if (msgDay !== preMsgDay) return true 
-      }
-
-    }
-    else return true
-  }
-
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden">
       {
@@ -182,11 +126,11 @@ function MessageBox({ messages, setMessages }) {
             {
               messages.length > 0 && messages.map((m, i) => {
                 return (
-                  <>
+                  <Box key={i}>
                     {
-                      isFirstMsgOfTheDay(m.createdAt, messages, i, m)
+                      isFirstMsgOfTheDay(m.createdAt, messages, i)
                       &&
-                      <Box margin={i === 0 ? ".5rem 0" : "1rem 0"} pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "2px" : "1.5px"} solid #15dfd0`} width={"100%"}>
+                      <Box margin={i === 0 ? ".5rem 0" : "1rem 0"} marginBottom="1.5rem" pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "2px" : "1.5px"} solid #15dfd0`} width={"100%"}>
                         <Text
                           pos={"absolute"}
                           className="messagesDay"
@@ -197,7 +141,7 @@ function MessageBox({ messages, setMessages }) {
                       <Box flexDir={m.sender._id === user?._id && "row-reverse"} display={"flex"} gap=".5rem" maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
 
                         {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
-                          (window.innerWidth < 770 || islastMsgOfSender(messages, i, m.sender._id)) &&
+                          (window.innerWidth < 770 || (islastMsgOfSender(messages, i, m.sender._id) || isLastMsgOfTheDay(m.createdAt, messages, i))) &&
                           <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
                             <Tooltip hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : "Start a chat") : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
                               <Avatar cursor={"pointer"} onClick={() => handleMessageAvatarClick(m.sender)} size={'sm'} name={m.sender.name} src={m.sender.avatar} />
@@ -220,7 +164,14 @@ function MessageBox({ messages, setMessages }) {
                           borderBottomLeftRadius={".5rem"}
                           position="relative"
                           borderBottomRightRadius={(m.sender._id !== user?._id || !islastMsgOfSender(messages, i, m.sender._id)) && ".5rem"}
-                          marginLeft={window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id) && (m.sender._id !== user?._id) && "2.5rem"}
+                          marginLeft=
+                          {window.innerWidth > 770
+                            &&
+                            (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))
+                            &&
+                            (m.sender._id !== user?._id)
+                            &&
+                            "2.5rem"}
                           marginRight={window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id) && (m.sender._id === user?._id) && "2.5rem"}
                           textShadow={m.sender._id !== user?._id && "2px 2px 3px rgba(0,0,0,.3)"}
                           paddingBottom="1rem"
@@ -236,7 +187,7 @@ function MessageBox({ messages, setMessages }) {
                         </Text>
                       </Box>
                     </Box>
-                  </>
+                  </Box>
                 )
               })
             }

@@ -54,9 +54,9 @@
     background: #d5efff !important;
 }
 
-.userDetailInpt {
+.profileDetailInpt {
     text-align: center;
-    min-width: fit-content !important;
+    min-width: 7ch !important;
     max-width: 90% !important;
     outline: none;
     background: transparent;
@@ -196,7 +196,8 @@
 }
 /* cubic-bezier(0.175, 0.885, 0.32, 1.275) */
 /* cubic-bezier(0.25, 0.46, 0.45, 0.94) */
-.DrawerInner { transition: .9s all cubic-bezier(0.25, 0.46, 0.45, 0.94) }
+.DrawerInner { transition: .8s all cubic-bezier(0.25, 0.46, 0.45, 0.94) }
+
 .TopHide{
     opacity: 0;
     transform: translateY(-300px);
@@ -219,7 +220,7 @@ textarea{
         margin-left: 0rem;
     }
 
-    .userDetailInpt {
+    .profileDetailInpt {
         max-width: 90% !important;
     }
 

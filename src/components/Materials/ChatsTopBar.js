@@ -10,6 +10,7 @@ import { defaultPic, HandleLogout } from '../../configs/userConfigs';
 import NotificationBadge from 'react-notification-badge';
 import { Effect } from 'react-notification-badge';
 import { useNavigate } from 'react-router-dom';
+import NotificationsMenu from './NotificationsMenu';
 
 function ChatsTopBar() {
 
@@ -47,19 +48,20 @@ function ChatsTopBar() {
                     <BrandLogo color="white" />
                 </Box>
                 <Box display={"flex"} justifyContent="space-evenly">
-                    <Menu>
-                        <Tooltip isDisabled={window.innerWidth < 770} label="Search Users" placement='bottom-end' borderRadius={".2rem"}>
-                            <MenuButton _active={{ boxShadow: "inset 0 0 0 22px #a2f1ec54" }}
+                    <Box>
+                        <Tooltip label="Search Users" placement='bottom-end' borderRadius={".2rem"}>
+                            <Box _active={{ boxShadow: "inset 0 0 0 22px #a2f1ec54" }}
                                 _hover={{ boxShadow: "inset 0 0 0 25px #a2f1ec54" }}
                                 width="fit-content"
+                                cursor={"pointer"}
                                 transition=".5s" borderRadius='full'
                                 onClick={onOpen}
-                                padding={".3rem .6rem"}>
+                                padding={".6rem"}>
                                 <SearchIcon fontSize={window.innerWidth > 770 ? "1.3rem" : "2lg"} m={1} />
-                            </MenuButton>
+                            </Box>
                         </Tooltip>
                         <SideDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
-                    </Menu>
+                    </Box>
                     <Menu>
                         <Tooltip isDisabled={window.innerWidth < 770} label="Notifications" placement='bottom-end' borderRadius={".2rem"}>
                             <MenuButton p={1}
@@ -75,47 +77,7 @@ function ChatsTopBar() {
 
                             {notifications.length > 0
                                 ?
-                                <>
-
-                                    {notifications.map(noti => {
-                                        return (
-                                            <MenuItem
-                                                key={noti._id}
-                                                onClick={() => {
-                                                    setNotifications(notifications.filter(not => not._id !== noti._id));
-                                                    navigate(`/chats/chat/${chats.filter(chat => chat._id === noti.chat._id)[0]._id}`)
-                                                }}
-
-                                                className='flex' gap={".6rem"} justifyContent="flex-start">
-                                                <Text className='flex' gap=".5rem">
-                                                    <Avatar size={'xs'} src={(noti.chat.isGroupchat ? noti.chat.groupAvatar : noti.sender.avatar) || defaultPic} />
-                                                    <Text>
-                                                        {noti.chat.isGroupchat
-                                                            ?
-                                                            noti.chat.chatName.length > 8 ? noti.chat.chatName.slice(0, 8) + "..." : noti.chat.chatName
-                                                            :
-                                                            noti.sender.name.split(" ")[0]}
-                                                    </Text>
-                                                </Text>
-                                                <Text fontSize={".9rem"} fontWeight="medium">
-                                                    {noti.chat.isGroupchat ? "has some new message!" : "has sent new message for you!"}
-                                                </Text>
-                                            </MenuItem>
-                                        )
-                                    })}
-
-                                    {
-                                        notifications.length > 1
-                                        &&
-                                        <Text
-                                            marginLeft={".9rem"}
-                                            cursor="pointer"
-                                            onClick={() => setNotifications([])}
-                                            fontSize=".8rem"
-                                            color={"#2365d1"}
-                                            fontWeight="bold">Mark all read</Text>
-                                    }
-                                </>
+                                <NotificationsMenu chats={chats} setNotifications={setNotifications} navigate={navigate} defaultPic={defaultPic} notifications={notifications}/>
                                 :
                                 <MenuItem>No messages</MenuItem>
                             }
