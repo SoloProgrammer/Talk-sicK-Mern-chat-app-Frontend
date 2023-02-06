@@ -1,13 +1,14 @@
 import { Avatar, Box, Button, Image, Input, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useState, useEffect } from 'react'
 import { handleFileUpload } from '../../configs/handleFileUpload'
+import { server } from '../../configs/serverURl'
 import { getSender, HandleLogout } from '../../configs/userConfigs'
 import { ChatState } from '../../Context/ChatProvider'
 import GroupMembersBox from '../GroupMembersBox'
 
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { selectedChat, user, profile, setProfile, onlineUsers, showToast } = ChatState();
+    const { selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser } = ChatState();
 
     // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
 
@@ -15,7 +16,7 @@ function ProfileDrawer({ width, align = "right" }) {
         name: (selectedChat && user?._id !== profile?._id) ? getSender(selectedChat, user)?.name : profile?.name,
         about: profile?.about,
         email: profile?.email,
-        phone: profile?.phone || ""
+        phone: profile?.phone
     });
 
     const [save, setSave] = useState({
@@ -24,9 +25,9 @@ function ProfileDrawer({ width, align = "right" }) {
         email: false,
         phone: false,
     });
-    
+
     const [isedit, setIsEdit] = useState(false);
-    
+
     const HandleDetailChange = (e) => {
         if (e.target.tagName === "TEXTAREA") {
             e.target.style.height = "0"
@@ -36,38 +37,63 @@ function ProfileDrawer({ width, align = "right" }) {
 
         if (!e.target.value.length) setSave({ ...save, [e.target.name]: false });
 
-        setProfileDetail({ ...profileDetail, [e.target.name]: e.target.name === "phone" ? String(e.target.value).slice(0,10) : e.target.value})
-        
-    }
-    let allInpts = document.querySelectorAll('.InptBox')
+        setProfileDetail({ ...profileDetail, [e.target.name]: e.target.name === "phone" ? Number(String(e.target.value).slice(0, 10)) : e.target.value })
 
-    
+    }
+    let allInpts = document.querySelectorAll('.InptBox');
+
+
+    const updateUserProfile = async (detailsToUpdate) => {
+
+        try {
+            let config = {
+                method: "PUT",
+                headers: {
+                    token: localStorage.getItem('token'),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(detailsToUpdate)
+            }
+
+            let res = await fetch(`${server.URL.production}/api/user/updateuser`, config);
+
+            if (res.status === "401") return HandleLogout();
+
+            let json = await res.json();
+            // setUser(json.updatedUser)
+            console.log(json.updatedUser.avatar)
+
+        } catch (error) {
+            return showToast("Error", error.message, "error", 3000)
+        }
+    }
+
+
     const HandleDetailSave = () => {
-        
-        if(profile.isGrpProfile){
-            if(profileDetail.name.length === 0){
-                return showToast("Required",`Groupname cannot be empty..!`,"error",3000);
+
+        if (profile.isGrpProfile) {
+            if (profileDetail.name.length === 0) {
+                return showToast("Required", `Groupname cannot be empty..!`, "error", 3000);
             }
         }
 
         let isProcessable = true;
 
-        profile?._id === user?._id && Object.keys(profileDetail).forEach(k =>{
-            if(profileDetail[k].length === 0 && k !== "phone"){
-                showToast("Required",`${k} field cannot be empty..!`,"error",3000);
+        profile?._id === user?._id && Object.keys(profileDetail).forEach(k => {
+            if (profileDetail[k].length === 0 && k !== "phone") {
+                showToast("Required", `${k} field cannot be empty..!`, "error", 3000);
                 isProcessable = false
             }
         });
 
+        if (isProcessable) {
 
-        if(isProcessable){
-
-            if (profileDetail.phone.length && (profileDetail.phone.length > 10 || profileDetail.phone.length < 10)) {
+            if (profileDetail.phone && String(profileDetail.phone).length < 10) {
                 return showToast("Invalid", "Phone cannot have less than 10 digits", "error", 3000)
             }
-    
+
             profile?._id === user?._id && setProfileDetail({ ...profileDetail, about: profileDetail.about.replace(/\s{2}|\n/g, "") })
-    
+
             setSave({
                 name: false,
                 about: false,
@@ -75,8 +101,11 @@ function ProfileDrawer({ width, align = "right" }) {
                 phone: false,
             })
             setIsEdit(false)
+
+            setUser({ ...user, ...profileDetail })
+            updateUserProfile(profileDetail);
+
         }
-        
     }
 
 
@@ -110,7 +139,11 @@ function ProfileDrawer({ width, align = "right" }) {
     const handleProfileAvatarChange = async (e) => {
 
         let avatar = await handleFileUpload(e, setAavatarloading, showToast);
-        avatar && setProfile({ ...profile, avatar })
+        if (avatar) {
+            setProfile({ ...profile, avatar });
+            setUser({ ...user, avatar })
+            updateUserProfile({ avatar });
+        }
     }
 
     return (
@@ -165,9 +198,9 @@ function ProfileDrawer({ width, align = "right" }) {
                                                     <Spinner size={'lg'} color="white" />
                                                     :
                                                     <Image cursor={"pointer"} filter={"invert(100%)"} width={"2rem"} src="https://cdn-icons-png.flaticon.com/512/2099/2099154.png" />
-        
+
                                             }
-                                        </Box>  
+                                        </Box>
                                     </>
 
                                 }
@@ -289,7 +322,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                                         value={profileDetail.phone || ""}
                                                         className="profileDetailInpt "
                                                         autoComplete="off"
-                                                        // style={{ width: 12 + "ch" }}
+                                                    // style={{ width: 12 + "ch" }}
                                                     />
                                                     :
                                                     <Text userSelect="none">

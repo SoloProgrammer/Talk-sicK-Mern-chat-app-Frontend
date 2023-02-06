@@ -122,7 +122,7 @@ function MessageBox({ messages, setMessages }) {
             </Box>
           </Box>
           :
-          <Box id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".2rem .4rem"} paddingTop=".6rem">
+          <Box id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".3rem .4rem"} paddingTop=".6rem">
             {
               messages.length > 0 && messages.map((m, i) => {
                 return (
@@ -144,7 +144,7 @@ function MessageBox({ messages, setMessages }) {
                           (window.innerWidth < 770 || (islastMsgOfSender(messages, i, m.sender._id) || isLastMsgOfTheDay(m.createdAt, messages, i))) &&
                           <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
                             <Tooltip hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : "Start a chat") : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
-                              <Avatar cursor={"pointer"} onClick={() => handleMessageAvatarClick(m.sender)} size={'sm'} name={m.sender.name} src={m.sender.avatar} />
+                              <Avatar cursor={"pointer"} onClick={() => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender)} size={'sm'} name={m.sender.name} src={m.sender._id === user?._id ? user?.avatar : m.sender.avatar} />
                             </Tooltip>
                           </Box>
                         }
@@ -164,6 +164,7 @@ function MessageBox({ messages, setMessages }) {
                           borderBottomLeftRadius={".5rem"}
                           position="relative"
                           borderBottomRightRadius={(m.sender._id !== user?._id || !islastMsgOfSender(messages, i, m.sender._id)) && ".5rem"}
+
                           marginLeft=
                           {window.innerWidth > 770
                             &&
@@ -172,7 +173,14 @@ function MessageBox({ messages, setMessages }) {
                             (m.sender._id !== user?._id)
                             &&
                             "2.5rem"}
-                          marginRight={window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id) && (m.sender._id === user?._id) && "2.5rem"}
+
+                          marginRight={window.innerWidth > 770
+                            &&
+                            (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))
+                            &&
+                            (m.sender._id === user?._id)
+                            && "2.5rem"}
+
                           textShadow={m.sender._id !== user?._id && "2px 2px 3px rgba(0,0,0,.3)"}
                           paddingBottom="1rem"
                           paddingRight={"1rem"}

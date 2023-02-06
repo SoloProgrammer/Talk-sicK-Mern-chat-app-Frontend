@@ -20,13 +20,13 @@ export const isAdmin = () => {
 }
 
 export const GroupMembers = (selectedChat) => {
-    const { profile } = ChatState()
+    const { profile,user } = ChatState()
     return (
         <Tooltip isOpen label="Group members" placement={profile ? "left" : 'bottom-end'} pointerEvents={"none"}>
             <AvatarGroup size='sm' max={3}>
                 {
                     selectedChat.users.map((u, i) => {
-                        return <Avatar key={i} src={u.avatar || defaultPic} />
+                        return <Avatar key={i} src={u._id === user?._id ? user?.avatar : u.avatar || defaultPic} />
                     })
                 }
             </AvatarGroup>
