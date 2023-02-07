@@ -24,7 +24,7 @@ import { useNavigate } from 'react-router-dom'
 
 function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmemberLoading }) {
 
-    const { showToast, setIsfetchChats, selectedChat, setChats, setSelectedChat } = ChatState()
+    const { showToast, selectedChat, setChats, setSelectedChat } = ChatState()
 
     const [selectedUsers, setSelectedUsers] = useState([])
     const [searchResults, setSearchResults] = useState(null)

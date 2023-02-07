@@ -2,23 +2,22 @@ import { Avatar, Box, Button, Image, Input, Spinner, Text, Tooltip } from '@chak
 import React, { useState, useEffect } from 'react'
 import { handleFileUpload } from '../../configs/handleFileUpload'
 import { server } from '../../configs/serverURl'
-import { getSender, HandleLogout } from '../../configs/userConfigs'
+import { HandleLogout } from '../../configs/userConfigs'
 import { ChatState } from '../../Context/ChatProvider'
 import GroupMembersBox from '../GroupMembersBox'
 
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser } = ChatState();
+    const { setSelectedChat, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats } = ChatState();
 
     // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
 
     const [profileDetail, setProfileDetail] = useState({
-        name: (selectedChat && user?._id !== profile?._id) ? getSender(selectedChat, user)?.name : profile?.name,
+        name: profile?.name,
         about: profile?.about,
         email: profile?.email,
         phone: profile?.phone
     });
-
     const [save, setSave] = useState({
         name: false,
         about: false,
@@ -45,6 +44,8 @@ function ProfileDrawer({ width, align = "right" }) {
 
     const updateUserProfile = async (detailsToUpdate) => {
 
+        setSaved(false)
+
         try {
             let config = {
                 method: "PUT",
@@ -60,54 +61,111 @@ function ProfileDrawer({ width, align = "right" }) {
             if (res.status === "401") return HandleLogout();
 
             let json = await res.json();
-            // setUser(json.updatedUser)
-            console.log(json.updatedUser.avatar)
+
+            if (!json.status) return showToast("Error", json.message, "error", 3000);
+
+            setUser(json.updatedUser);
+            setSaved(true);
+            setIsEdit(false)
+            showToast("Success", json.message, "success", 3000)
 
         } catch (error) {
             return showToast("Error", error.message, "error", 3000)
         }
     }
 
+    const updateGrpProfile = async (detailsToUpdate) => {
+
+        setSaved(false)
+
+        try {
+            let config = {
+                method: 'PUT',
+                headers: {
+                    token: localStorage.getItem('token'),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ chatId: selectedChat._id, detailsToUpdate })
+            }
+
+            let res = await fetch(`${server.URL.production}/api/chat/updategroup`, config);
+
+            if (res.status === "401") HandleLogout();
+
+            let json = await res.json();
+
+            if (!json.status) return showToast("Error", json.message, "error", 3000);
+
+            setSaved(true);
+
+            setSelectedChat({ ...selectedChat, ...detailsToUpdate });
+
+            setChats(json.chats);
+
+            showToast("Success", json.message, "success", 3000)
+
+        } catch (error) {
+
+        }
+        setIsEdit(false)
+    }
+
+    const [saved, setSaved] = useState(true);
 
     const HandleDetailSave = () => {
 
-        if (profile.isGrpProfile) {
-            if (profileDetail.name.length === 0) {
-                return showToast("Required", `Groupname cannot be empty..!`, "error", 3000);
+        let isChanged = false;
+
+        Object.keys(profileDetail).forEach(key => {
+            if (profileDetail[key] !== profile[key]) isChanged = true
+        })
+
+        if (isChanged) {
+            if (profile.isGrpProfile) {
+                if (profileDetail.name.length === 0) {
+                    return showToast("Required", `Groupname cannot be empty..!`, "error", 3000);
+                }
+            }
+
+            let isProcessable = true;
+
+            profile?._id === user?._id && Object.keys(profileDetail).forEach(k => {
+                // checking for key !== phone bcz phone is not required field so it can be empty.....!
+                if (profileDetail[k].length === 0 && k !== "phone") {
+                    showToast("Required", `${k} field cannot be empty..!`, "error", 3000);
+                    isProcessable = false
+                }
+            });
+
+            if (isProcessable) {
+
+                if (profileDetail.phone && String(profileDetail.phone).length < 10) {
+                    return showToast("Invalid", "Phone cannot have less than 10 digits", "error", 3000)
+                }
+
+                profile?._id === user?._id && setProfileDetail({ ...profileDetail, about: profileDetail.about.replace(/\s{2}|\n/g, "") })
+
+                setSave({
+                    name: false,
+                    about: false,
+                    email: false,
+                    phone: false,
+                })
+
+                if (profile?._id === user?._id) {
+                    updateUserProfile(profileDetail);
+                    setProfile({ ...profile, ...profileDetail })
+                } else {
+                    updateGrpProfile({ chatName: profileDetail.name });
+                    setProfile({ ...profile, ...profileDetail })
+                }
+
             }
         }
-
-        let isProcessable = true;
-
-        profile?._id === user?._id && Object.keys(profileDetail).forEach(k => {
-            if (profileDetail[k].length === 0 && k !== "phone") {
-                showToast("Required", `${k} field cannot be empty..!`, "error", 3000);
-                isProcessable = false
-            }
-        });
-
-        if (isProcessable) {
-
-            if (profileDetail.phone && String(profileDetail.phone).length < 10) {
-                return showToast("Invalid", "Phone cannot have less than 10 digits", "error", 3000)
-            }
-
-            profile?._id === user?._id && setProfileDetail({ ...profileDetail, about: profileDetail.about.replace(/\s{2}|\n/g, "") })
-
-            setSave({
-                name: false,
-                about: false,
-                email: false,
-                phone: false,
-            })
+        else {
             setIsEdit(false)
-
-            setUser({ ...user, ...profileDetail })
-            updateUserProfile(profileDetail);
-
         }
     }
-
 
     useEffect(() => {
         if (isedit) {
@@ -134,15 +192,22 @@ function ProfileDrawer({ width, align = "right" }) {
 
     const [onHover, setOnHover] = useState(false);
 
-    const [avatarLoading, setAavatarloading] = useState(false);
+    const [avatarLoading, setAvatarLoading] = useState(false);
 
     const handleProfileAvatarChange = async (e) => {
 
-        let avatar = await handleFileUpload(e, setAavatarloading, showToast);
+        setSaved(false)
+
+        let avatar = await handleFileUpload(e, setAvatarLoading, showToast);
         if (avatar) {
-            setProfile({ ...profile, avatar });
-            setUser({ ...user, avatar })
-            updateUserProfile({ avatar });
+            if (profile?._id === user._id) {
+                setProfile({ ...profile, avatar });
+                updateUserProfile({ avatar });
+            }
+            else {
+                setProfile({ ...profile, avatar })
+                updateGrpProfile({ groupAvatar: avatar })
+            }
         }
     }
 
@@ -168,15 +233,19 @@ function ProfileDrawer({ width, align = "right" }) {
                     (user?._id === profile?._id || selectedChat?.isGroupchat) &&
                     <Box pos={"absolute"} right='1rem' cursor={"pointer"}>
                         {
-                            !isedit
+                            !saved
                                 ?
-                                <Tooltip label="Edit" placement='bottom'>
-                                    <Image onClick={handleSetEdit} width={"2rem"} src='https://cdn-icons-png.flaticon.com/512/1160/1160758.png' />
-                                </Tooltip>
+                                <Spinner cursor={'progress'} size={'lg'} color="#08a673" />
                                 :
-                                <Tooltip label="save" placement='bottom'>
-                                    <Image onClick={HandleDetailSave} cursor="pointer" src='https://cdn-icons-png.flaticon.com/512/1293/1293029.png' width={"2rem"} />
-                                </Tooltip>
+                                !isedit
+                                    ?
+                                    <Tooltip label="Edit" placement='bottom'>
+                                        <Image onClick={handleSetEdit} width={"2rem"} src='https://cdn-icons-png.flaticon.com/512/1160/1160758.png' />
+                                    </Tooltip>
+                                    :
+                                    <Tooltip label="save" placement='bottom'>
+                                        <Image onClick={HandleDetailSave} cursor="pointer" src='https://cdn-icons-png.flaticon.com/512/1293/1293029.png' width={"2rem"} />
+                                    </Tooltip>
 
                         }
                     </Box>

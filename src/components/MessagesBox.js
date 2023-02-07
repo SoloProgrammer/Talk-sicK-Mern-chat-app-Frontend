@@ -132,6 +132,7 @@ function MessageBox({ messages, setMessages }) {
                       &&
                       <Box margin={i === 0 ? ".5rem 0" : "1rem 0"} marginBottom="1.5rem" pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "2px" : "1.5px"} solid #15dfd0`} width={"100%"}>
                         <Text
+                          userSelect={"none"}
                           pos={"absolute"}
                           className="messagesDay"
                         >{getMessageDay(m.createdAt)}</Text>

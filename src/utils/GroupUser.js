@@ -159,7 +159,7 @@ function GroupUser({ u }) {
 
             <Box>
                 <Box display={"flex"} gap="1rem" alignItems={"center"}>
-                    <b style={{ textTransform: "capitalize" }}>{u?.name}</b>
+                    <b style={{ textTransform: "capitalize" }}>{u?._id === user?._id ? user.name : u?.name}</b>
                     {
                         ((selectedChat?.groupAdmin.map(u => u._id).includes(user?._id)) || u?._id === user?._id)
                         &&
