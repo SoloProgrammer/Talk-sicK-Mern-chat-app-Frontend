@@ -18,7 +18,6 @@ function Chatpage() {
   let { chatId } = params
   if (Object.keys(params).length < 1) params = null;
 
-
   useEffect(() => {
     if (params && !(chats?.map(chat => chat._id).includes(chatId))) {
       navigate('/chats')

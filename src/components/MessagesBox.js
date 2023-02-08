@@ -1,5 +1,6 @@
 import { Avatar, Box, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay } from '../configs/messageConfigs'
 import { scrollBottom } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
@@ -11,6 +12,8 @@ function MessageBox({ messages, setMessages }) {
 
 
   const { profile, chatMessages, setChatMessages, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket } = ChatState();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setTimeout(() => {
@@ -79,17 +82,18 @@ function MessageBox({ messages, setMessages }) {
   }, [selectedChat?._id])
 
   const handleMessageAvatarClick = (avatarUser) => {
+
+    // if user click on his own avatar then display his profile other then else start a chat with that user avatar click!
     if (!(selectedChat?.isGroupchat) || avatarUser._id === user?._id) {
       setProfile(avatarUser)
       if (window.innerWidth < 770 && avatarUser._id === user._id) setSelectedChat(null)
-
     }
     else {
       let isChat = false
-      chats.map((c, i) => {
+      chats.forEach((c, i) => {
         if (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(avatarUser._id) && !c.isGroupchat) {
-          setSelectedChat(c);
-          setProfile(null)
+          navigate(`/chats/chat/${c._id}`);
+          setProfile(null);
           isChat = true
         }
         else {
@@ -97,11 +101,9 @@ function MessageBox({ messages, setMessages }) {
 
             // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
             if (window.innerWidth < 770) setSelectedChat(null)
-
             CreateChat(avatarUser._id)
           }
         }
-        return 1
       })
     }
   }
@@ -109,8 +111,9 @@ function MessageBox({ messages, setMessages }) {
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden">
       {
-        profile && profile._id !== user?._id && // profile?._id is same as profile && profile._id but in some instance we need to check the profile first and then the detauils inside it! it opens this profile drawer with profile?._id condition!
-        <ProfileDrawer width="50%" />
+        // profile?._id is same as profile && profile._id but in some instance we need to check the profile first and then the details inside it! it opens this profile drawer with profile?._id condition!
+        profile && profile._id !== user?._id &&
+        <ProfileDrawer width={"50%"}/>
       }
 
       {

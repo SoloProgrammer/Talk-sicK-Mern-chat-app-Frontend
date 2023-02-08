@@ -23,7 +23,8 @@ function ChatsBox() {
       trimInd = 25
     } else if (window.innerWidth > 1000 && window.innerWidth < 1300) {
       trimInd = 30
-    } else if (window.innerWidth <= 500) trimInd = 30
+    } else if (window.innerWidth <= 500 && window.innerWidth > 390) trimInd = 30
+      else if (window.innerWidth <= 390) trimInd = 20
 
     return msg.length <= trimInd ? msg : msg.slice(0, trimInd).concat(".....")
   }

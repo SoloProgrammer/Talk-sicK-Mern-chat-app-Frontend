@@ -186,6 +186,14 @@
     background-color: rgb(226, 229, 229);
     border-radius: 10rem;
 }
+.userChipBox::-webkit-scrollbar{
+    height: 8.5px;
+    background: transparent;
+}
+.userChipBox::-webkit-scrollbar-thumb{
+    background-color: rgb(226, 229, 229);
+    border-radius: 10rem;
+}
 
 .GroupUser:hover .Admin {
     background: #65f9ee94;

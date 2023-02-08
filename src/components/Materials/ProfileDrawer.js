@@ -18,12 +18,6 @@ function ProfileDrawer({ width, align = "right" }) {
         email: profile?.email,
         phone: profile?.phone
     });
-    const [save, setSave] = useState({
-        name: false,
-        about: false,
-        email: false,
-        phone: false,
-    });
 
     const [isedit, setIsEdit] = useState(false);
 
@@ -32,15 +26,13 @@ function ProfileDrawer({ width, align = "right" }) {
             e.target.style.height = "0"
             e.target.style.height = e.target.scrollHeight + "px"
         }
-        setSave({ ...save, [e.target.name]: true });
-
-        if (!e.target.value.length) setSave({ ...save, [e.target.name]: false });
 
         setProfileDetail({ ...profileDetail, [e.target.name]: e.target.name === "phone" ? Number(String(e.target.value).slice(0, 10)) : e.target.value })
 
     }
     let allInpts = document.querySelectorAll('.InptBox');
 
+    const [saved, setSaved] = useState(true);
 
     const updateUserProfile = async (detailsToUpdate) => {
 
@@ -62,7 +54,11 @@ function ProfileDrawer({ width, align = "right" }) {
 
             let json = await res.json();
 
-            if (!json.status) return showToast("Error", json.message, "error", 3000);
+            if (!json.status) {
+                showToast("Error", json.message, "error", 3000);
+                setSaved(true)
+                return
+            }
 
             setUser(json.updatedUser);
             setSaved(true);
@@ -94,7 +90,11 @@ function ProfileDrawer({ width, align = "right" }) {
 
             let json = await res.json();
 
-            if (!json.status) return showToast("Error", json.message, "error", 3000);
+            if (!json.status) {
+                showToast("Error", json.message, "error", 3000);
+                setSaved(true)
+                return
+            }
 
             setSaved(true);
 
@@ -110,7 +110,6 @@ function ProfileDrawer({ width, align = "right" }) {
         setIsEdit(false)
     }
 
-    const [saved, setSaved] = useState(true);
 
     const HandleDetailSave = () => {
 
@@ -144,14 +143,7 @@ function ProfileDrawer({ width, align = "right" }) {
                 }
 
                 profile?._id === user?._id && setProfileDetail({ ...profileDetail, about: profileDetail.about.replace(/\s{2}|\n/g, "") })
-
-                setSave({
-                    name: false,
-                    about: false,
-                    email: false,
-                    phone: false,
-                })
-
+                
                 if (profile?._id === user?._id) {
                     updateUserProfile(profileDetail);
                     setProfile({ ...profile, ...profileDetail })
@@ -221,7 +213,7 @@ function ProfileDrawer({ width, align = "right" }) {
             zIndex={"2"}
             overflowY="auto"
             background="white">
-            <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"} height="full" pos="relative" padding={"0 .53rem"} paddingTop="1rem" paddingBottom={"5rem"}>
+            <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"}  pos="relative" padding={"0 .53rem"} paddingTop="1rem" paddingBottom={"5rem"}>
 
                 <Box onClick={() => setProfile(null)} cursor={"pointer"} pos={"absolute"} left=".8rem" top={".8rem"}>
                     <Tooltip label="Close" placement='bottom'>
@@ -260,7 +252,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                     &&
                                     <>
                                         <Input onChange={handleProfileAvatarChange} type="file" name="avatar" id="profileAvatarOnchange" display="none" />
-                                        <Box display={onHover ? "flex" : "none"} background={"blackAlpha.500"} borderRadius={"."} width={"100%"} height="100%" pos={'absolute'} top="0" left={"0"} className="flex">
+                                        <Box display={onHover || isedit ? "flex" : "none"} background={"blackAlpha.500"} borderRadius={"."} width={"100%"} height="100%" pos={'absolute'} top="0" left={"0"} className="flex">
                                             {
                                                 avatarLoading
                                                     ?

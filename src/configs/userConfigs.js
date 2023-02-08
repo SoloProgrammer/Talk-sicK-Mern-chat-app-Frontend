@@ -1,10 +1,10 @@
-import { Avatar, AvatarGroup, Box, Image, Text, Tooltip } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, AvatarGroup, Box, Image, Text, Tooltip } from '@chakra-ui/react'
 import { ChatState } from '../Context/ChatProvider'
 
 export const defaultPic = "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"
 
 export const getSender = (chat, user) => {
-    if (chat?.isGroupchat) return { name: chat.chatName, avatar: chat.groupAvatar,isGrpProfile:true }
+    if (chat?.isGroupchat) return { name: chat.chatName, avatar: chat.groupAvatar, isGrpProfile: true }
     let sender = chat?.users.filter(u => u._id !== user?._id)[0]
     return sender
 }
@@ -20,13 +20,19 @@ export const isAdmin = () => {
 }
 
 export const GroupMembers = (selectedChat) => {
-    const { profile,user } = ChatState()
+    const { profile, user } = ChatState()
     return (
         <Tooltip isOpen label="Group members" placement={profile ? "left" : 'bottom-end'} pointerEvents={"none"}>
             <AvatarGroup size='sm' max={3}>
                 {
                     selectedChat.users.map((u, i) => {
-                        return <Avatar key={i} src={u._id === user?._id ? user?.avatar : u.avatar || defaultPic} />
+                        return <Avatar key={i} src={u._id === user?._id ? user?.avatar : u.avatar || defaultPic} >
+                            {isUserOnline(u) && <AvatarBadge
+                                borderWidth="1.8px"
+                                borderColor='#ffffff'
+                                bg={'#00c200'}
+                                boxSize='.9em' />}
+                        </Avatar>
                     })
                 }
             </AvatarGroup>
@@ -45,6 +51,7 @@ export const UserChip = ({ user, handleFunc }) => {
             padding={".2rem .2rem"}
             width="fit-content"
             borderRadius="1rem"
+            minW={"fit-content !important"}
             alignItems={"center"}>
 
             <Avatar size="xs" src={user.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} />

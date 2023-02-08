@@ -101,21 +101,19 @@ function GroupUser({ u }) {
         }
     }
 
-    const handleStartChat = (U) => {
+    const handleGroupUserAvatarClick = (U) => {
 
         // if user click on his own avatar then display his profile other then else start a chat with that user avatar click!
         if (!(selectedChat?.isGroupchat) || U._id === user?._id) {
             setProfile(U)
-            if (window.innerWidth < 770) setSelectedChat(null)
-            return
+            if (window.innerWidth < 770 && U._id === user._id) setSelectedChat(null)
         }
-
-        let isChat = false
-        if (U._id !== user?._id) {
-            chats.map((c, i) => {
+        else {
+            let isChat = false
+            chats.forEach((c, i) => {
                 if (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(U._id) && !c.isGroupchat) {
-                    setSelectedChat(c);
-                    setProfile(null)
+                    navigate(`/chats/chat/${c._id}`);
+                    setProfile(null);
                     isChat = true
                 }
                 else {
@@ -126,7 +124,6 @@ function GroupUser({ u }) {
                         CreateChat(U._id)
                     }
                 }
-                return 1
             })
         }
     }
@@ -146,14 +143,14 @@ function GroupUser({ u }) {
             alignItems="center">
 
             <Tooltip hasArrow label={user?._id === u._id ? "My Profile" : "Start a chat"} placement='left'>
-                <Avatar onClick={() => handleStartChat(u._id === user?._id ? user : u)} cursor={"pointer"} _hover={{ boxShadow: "0 0 0 2px white" }} name={u.name} src={u._id === user?._id ? user?.avatar : u.avatar} size="sm">
+                <Avatar onClick={() => handleGroupUserAvatarClick(u._id === user?._id ? user : u)} cursor={"pointer"} _hover={{ boxShadow: "0 0 0 2px white" }} name={u.name} src={u._id === user?._id ? user?.avatar : u.avatar} size="sm">
                     <Tooltip fontSize={".65rem"} label={isUserOnline(u) ? "online" : "offline"} placement="bottom-start">
-                    <AvatarBadge
-                        borderWidth="1.8px"
-                        borderColor='#ffffff'
-                        bg={isUserOnline(u) ? '#00c200' : "darkgrey"}
-                        boxSize='.9em' />
-                    </Tooltip> 
+                        <AvatarBadge
+                            borderWidth="1.8px"
+                            borderColor='#ffffff'
+                            bg={isUserOnline(u) ? '#00c200' : "darkgrey"}
+                            boxSize='.9em' />
+                    </Tooltip>
                 </Avatar>
             </Tooltip>
 
