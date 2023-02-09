@@ -1,4 +1,4 @@
-import { Avatar, Box, Spinner, Text, Tooltip } from '@chakra-ui/react'
+import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay } from '../configs/messageConfigs'
@@ -25,6 +25,10 @@ function MessageBox({ messages, setMessages }) {
 
   const fetchMessages = async () => {
 
+    if (!(selectedChat?.latestMessage)) {
+      setMessages([])
+      return
+    }
     // setMessagesLoading(true)
     let isChatMsg = false
     chatMessages.map((chatMsg, i) => {
@@ -113,21 +117,25 @@ function MessageBox({ messages, setMessages }) {
       {
         // profile?._id is same as profile && profile._id but in some instance we need to check the profile first and then the details inside it! it opens this profile drawer with profile?._id condition!
         profile && profile._id !== user?._id &&
-        <ProfileDrawer width={"50%"}/>
+        <ProfileDrawer width={"50%"} />
       }
 
       {
         messagesLoading
           ?
           <Box width={"100%"} height="100%" className='flex'>
-            <Box zIndex={1} padding={"1rem"} borderRadius="full" className='flex' bg={"white"} boxShadow="0 0 0 rgba(0,0,0,.3)">
-              <Spinner color='darkcyan' width={"3rem"} height="3rem" />
-            </Box>
+            <Tooltip label="Loading Conversations....." isOpen placement='top'>
+              <Box zIndex={1} padding={"1rem"} borderRadius="full" className='flex' bg={"white"} boxShadow="0 0 0 rgba(0,0,0,.3)">
+                <Spinner color='darkcyan' width={"3rem"} height="3rem" />
+              </Box>
+            </Tooltip>
           </Box>
           :
           <Box id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".3rem .4rem"} paddingTop=".6rem">
             {
-              messages.length > 0 && messages.map((m, i) => {
+              messages.length > 0 
+              ?
+              messages.map((m, i) => {
                 return (
                   <Box key={i}>
                     {
@@ -163,7 +171,7 @@ function MessageBox({ messages, setMessages }) {
                           minWidth={"3.3rem"}
                           fontWeight={'medium'}
                           boxShadow={m.sender._id === user?._id && "0 0 4px rgba(0,0,0,.3)"}
-                          borderTopLeftRadius={(m.sender._id === user?._id || (window.innerWidth > 770 && !islastMsgOfSender(messages, i, m.sender._id))) && ".5rem"}
+                          borderTopLeftRadius={ (m.sender._id === user?._id || (window.innerWidth > 770 && (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i) ))) && ".5rem"}
                           borderTopRightRadius=".5rem"
                           borderBottomLeftRadius={".5rem"}
                           position="relative"
@@ -202,6 +210,13 @@ function MessageBox({ messages, setMessages }) {
                   </Box>
                 )
               })
+              :
+              <Box width={"100%"} height="100%" className='flex'>
+                <Box zIndex={1} border="1px solid rgba(0,0,0,.2)" padding={".8rem 1.5rem"} borderRadius="full" className='flex' gap={"1rem"} bg={"white"} boxShadow="0 0 0 rgba(0,0,0,.3)">
+                    <Image width={{base:"2.2rem",md:"3rem"}} src="https://cdn-icons-png.flaticon.com/512/5809/5809335.png"/>
+                    <Text fontWeight={"medium"} fontSize="1rem">No Convertions Yet!</Text>
+                </Box>
+              </Box>
             }
           </Box>
       }

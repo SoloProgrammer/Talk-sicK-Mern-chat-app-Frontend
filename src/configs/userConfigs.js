@@ -26,13 +26,15 @@ export const GroupMembers = (selectedChat) => {
             <AvatarGroup size='sm' max={3}>
                 {
                     selectedChat.users.map((u, i) => {
-                        return <Avatar key={i} src={u._id === user?._id ? user?.avatar : u.avatar || defaultPic} >
-                            {isUserOnline(u) && <AvatarBadge
-                                borderWidth="1.8px"
-                                borderColor='#ffffff'
-                                bg={'#00c200'}
-                                boxSize='.9em' />}
-                        </Avatar>
+                        return (
+                                <Avatar key={i} src={u._id === user?._id ? user?.avatar : u.avatar || defaultPic} >
+                                {isUserOnline(u) && <AvatarBadge
+                                    borderWidth="1.8px"
+                                    borderColor='#ffffff'
+                                    bg={'#00c200'}
+                                    boxSize='.9em' />}
+                                </Avatar>
+                        )
                     })
                 }
             </AvatarGroup>

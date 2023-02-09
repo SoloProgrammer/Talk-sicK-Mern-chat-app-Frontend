@@ -101,8 +101,11 @@
     background: aliceblue !important;
 }
 
-.messagesBoxText {
-    transform: translateY(-140px);
+.chat1_icon{
+ transform: translateX(-3rem);
+}
+.chat2_icon{
+    transform: translateX(3rem);
 }
 
 .MessagesBox {

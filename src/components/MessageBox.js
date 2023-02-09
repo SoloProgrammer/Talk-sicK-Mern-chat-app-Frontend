@@ -10,6 +10,9 @@ import { HandleLogout } from '../configs/userConfigs'
 import { scrollBottom } from '../configs/scrollConfigs'
 import sentAudio from '../../src/mp3/MessageSent.mp3'
 import notifyAudio from '../../src/mp3/Notification.mp3'
+import chat1_icon from "../Images/chat1.jpg"
+import chat2_icon from "../Images/chat2.png"
+
 
 var selectedChatCompare;
 var notificationsCompare;
@@ -229,30 +232,30 @@ function MessagesBox() {
         !selectedChat ?
           <Box zIndex={1}
             display="flex"
-            justifyContent={"center"}
             alignItems="center"
             flexDir={"column"}
             width="100%"
-            padding={{ base: "0 .5rem", md: "0 5rem" }} gap="2rem" marginTop={"4rem"}>
+            padding={{ base: "0 .5rem", md: "0 5rem" }} gap="2rem" marginTop={"7rem"}>
             <BrandLogo />
-            <Image opacity={".5"} width={{ base: "250px", md: "300px" }} src="https://cdn-icons-png.flaticon.com/512/3964/3964329.png"></Image>
+            <Image className='chat1_icon' opacity={".7"} width="250px" src={chat2_icon}/>
+            <Image className='chat2_icon' opacity={".7"} width="250px" src={chat1_icon}/>
             <Box className='messagesBoxText'>
               <Text
                 fontWeight={"normal"}
                 letterSpacing="0.05rem"
                 textAlign={"center"}
-                color="black"
+                // color="#12a698"
                 fontSize={{ base: "1rem", md: "1.1rem" }} >
                 Talk-o-Meter a Chat app Project with live personal as well as group messaging functionality<br />You will also recieve live Notifications from chats you have created for the newly recieved messages
               </Text>
               <br />
               <Text
-                fontWeight={"hairline"}
+                fontWeight={"medium"}
                 fontSize={{ base: "xl", md: "2xl" }}
-                color={"black"}
+                color={"#31ceb8"}
                 textAlign="center"
               >
-                Create a chat or Click on the Existing chat to start Messaging
+                Create a chat or Click on the Existing chat to start Conversation..!
               </Text>
             </Box>
           </Box>

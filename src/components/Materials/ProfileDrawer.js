@@ -30,6 +30,7 @@ function ProfileDrawer({ width, align = "right" }) {
         setProfileDetail({ ...profileDetail, [e.target.name]: e.target.name === "phone" ? Number(String(e.target.value).slice(0, 10)) : e.target.value })
 
     }
+
     let allInpts = document.querySelectorAll('.InptBox');
 
     const [saved, setSaved] = useState(true);
@@ -109,7 +110,6 @@ function ProfileDrawer({ width, align = "right" }) {
         }
         setIsEdit(false)
     }
-
 
     const HandleDetailSave = () => {
 
@@ -212,6 +212,7 @@ function ProfileDrawer({ width, align = "right" }) {
             transition="all .3s"
             zIndex={"2"}
             overflowY="auto"
+            boxShadow={"0 0 4px rgb(0 0 0 / 30%)"}
             background="white">
             <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"}  pos="relative" padding={"0 .53rem"} paddingTop="1rem" paddingBottom={"5rem"}>
 
@@ -281,8 +282,8 @@ function ProfileDrawer({ width, align = "right" }) {
                                             disabled={!selectedChat?.isGroupchat && profile?._id !== user?._id}
                                             value={profileDetail.name}
                                             className="profileDetailInpt nameInpt"
-                                            style={{ width: profileDetail.name.length + "ch" }}
-                                            maxLength="25"
+                                            style={{ width: profileDetail.name.length + 1 + "ch" }}
+                                            maxLength="30"
                                         />
                                         :
                                         <Text>
@@ -329,6 +330,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                             className="profileDetailInpt"
                                             style={{ width: profileDetail.about.length + "ch", textAlign: "center" }}
                                             maxLength="90"
+                                            rows={1}
                                         />
                                         :
                                         <Text padding={"0 .5rem"} userSelect="none">
