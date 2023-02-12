@@ -172,7 +172,10 @@ function ProfileDrawer({ width, align = "right" }) {
         setTimeout(() => {
             let allInpts = document.querySelectorAll('.InptBox')
             document.querySelector('.nameInpt')?.focus()
-            allInpts.forEach(inpt => inpt.classList.add('active'))
+            allInpts.forEach(inpt => inpt.classList.add('active'));
+
+            let elm = document.getElementById('profileDetailInpt_about')
+            elm.style.height = `${elm?.scrollHeight}px`
         }, 10);
     }
 
@@ -328,6 +331,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                             disabled={!selectedChat?.isGroupchat && profile?._id !== user?._id}
                                             value={profileDetail.about}
                                             className="profileDetailInpt"
+                                            id='profileDetailInpt_about'
                                             style={{ width: profileDetail.about.length + "ch", textAlign: "center" }}
                                             maxLength="90"
                                             rows={1}

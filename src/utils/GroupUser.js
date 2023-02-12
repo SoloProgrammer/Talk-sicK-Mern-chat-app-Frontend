@@ -59,8 +59,12 @@ function GroupUser({ u }) {
             showToast("Error", error.message, "error", 3000)
         }
     }
-
+    
     const handleRemoveFromGroup = async (userId) => {
+        if (selectedChat?.groupAdmin.map(u => u._id).includes(user?._id) && selectedChat?.groupAdmin.length === 1) {
+            return showToast("Error", "Plz first add some one as GroupAdmin if you wish to leave this group.!", "error", 3000)
+        }
+
         setRemoveUserLoading(true)
         try {
             let config = {

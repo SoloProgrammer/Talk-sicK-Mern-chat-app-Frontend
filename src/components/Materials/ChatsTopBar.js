@@ -27,7 +27,7 @@ function ChatsTopBar() {
                 <Box>
                     <Menu>
                         <MenuButton onClick={() => profile?._id === user?._id && setProfile(null)} className='userAvatarBtn' height="fit-content" as={Button} rightIcon={<ChevronDownIcon />} background="transperent'">
-                            <Avatar className='userAvatar' transition=".3s" size={"md"} name={user?.name} src={user?.avatar} />{' '}
+                            <Avatar className='userAvatar' transition=".3s" size={"md"} src={user?.avatar} />{' '}
                         </MenuButton>
                         <MenuList boxShadow={"0 0 3px rgba(0,0,0,.4)"}>
                             <MenuItem display={"flex"} gap=".5rem" alignItems={"center"} onClick={() => setProfile(user)} >

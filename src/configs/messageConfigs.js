@@ -1,20 +1,20 @@
-import { getFormmatedDate, getFormmatedTime } from '../configs/dateConfigs'
+import { getFormmatedDate, getFormmatedTime, Fullmonth, weekDays } from '../configs/dateConfigs'
 
 
 export const getMsgTime = (timestamps) => {
 
-    let date = new Date(timestamps)
+    let date = new Date(timestamps);
     return getFormmatedTime(date)
 }
 
 export const getMessageDay = (msgTimestamps) => {
-    const date = new Date(msgTimestamps);
+    const msgFulldate = new Date(msgTimestamps);
 
-    let msgdate = date.getDate()
+    let msgdate = msgFulldate.getDate()
     let currFulldate = new Date()
 
-    if (date.getFullYear() !== currFulldate.getFullYear() || date.getMonth() !== currFulldate.getMonth()) {
-        return getFormmatedDate(date);
+    if (msgFulldate.getFullYear() !== currFulldate.getFullYear() || msgFulldate.getMonth() !== currFulldate.getMonth()) {
+        return getFormmatedDate(msgFulldate);
     }
     else {
 
@@ -24,8 +24,8 @@ export const getMessageDay = (msgTimestamps) => {
 
         if (dayDiff === 0) return "Today"
         else if (dayDiff === 1) return "Yesterday"
-
-        else return getFormmatedDate(date);
+        else if(dayDiff < 7) return weekDays[msgFulldate.getDay()]
+        else return msgdate + " " + Fullmonth[msgFulldate.getMonth()];
     }
 
 }
