@@ -16,8 +16,8 @@ function DeleteChat() {
     const [delLoading, setDelLoading] = useState(false);
 
     const handleDeleteChat = async () => {
-        setDelLoading(true)
         try {
+            setDelLoading(true)
             let config = {
                 method: "PUT",
                 headers: {
@@ -45,7 +45,9 @@ function DeleteChat() {
             showToast(json.message,'',"success",3000)
 
         } catch (error) {
-
+            showToast("Error",error.message,"error",3000)
+            setDelLoading(false);
+            setDelConfirm(false);
         }
     }
 
@@ -55,7 +57,7 @@ function DeleteChat() {
             <Box
                 _hover={{ bg: "gray.200", boxShadow: "0 0 2px rgba(0,0,0,.4)" }}
                 transition=".4s all"
-                cursor={"pointer"}
+                cursor={!delLoading && "pointer"}
                 border={"1px solid gray.500"}
                 fontWeight={"medium"}
                 className="flex"
@@ -71,7 +73,7 @@ function DeleteChat() {
                         delConfirm
                             ?
                             <>
-                                <Box className='flex' color={"white"} gap="1rem" fontSize={".85rem"}>
+                                <Box className='flex' color={"white"} gap="1rem" fontSize={".85rem"} margin=".1rem 0">
                                     <Text onClick={(e) => {
                                         e.stopPropagation();
                                         setDelConfirm(false)
