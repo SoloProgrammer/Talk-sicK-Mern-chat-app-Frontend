@@ -4,6 +4,7 @@ import { handleFileUpload } from '../../configs/handleFileUpload'
 import { server } from '../../configs/serverURl'
 import { HandleLogout } from '../../configs/userConfigs'
 import { ChatState } from '../../Context/ChatProvider'
+import DeleteChat from '../DeleteChat'
 import GroupMembersBox from '../GroupMembersBox'
 
 
@@ -218,7 +219,7 @@ function ProfileDrawer({ width, align = "right" }) {
             zIndex={"2"}
             top="0"
             overflowY="auto"
-            height={`${window.innerWidth > 770 ? `calc(100vh - ${profile?._id === user?._id ? "11rem" : "10.1rem"})` : `calc(100vh - ${profile?._id === user?._id ? "10rem" : "9.6rem"})`}`}
+            height={`${window.innerWidth > 770 ? `calc(100vh - ${profile?._id === user?._id ? "11rem" : "10.1rem"})` : `calc(100vh - ${profile?._id === user?._id ? "12rem" : "9.6rem"})`}`}
             paddingBottom={"1rem"}
             boxShadow={"0 0 4px rgb(0 0 0 / 30%)"}
             background="white">
@@ -427,6 +428,16 @@ function ProfileDrawer({ width, align = "right" }) {
                         <GroupMembersBox />
                     </Box>
                 }
+
+                {
+                    (profile?._id !== user?._id && !profile?.isGrpProfile)
+                    &&
+                    <Box width={"100%"} marginTop={".5rem"} padding={{ base: "0 .8rem", md: "0 1.1rem" }} display="flex" flexDir={"column"} gap=".2rem">
+                        <DeleteChat/>
+                    </Box>
+                }
+
+
 
             </Box>
         </Box>
