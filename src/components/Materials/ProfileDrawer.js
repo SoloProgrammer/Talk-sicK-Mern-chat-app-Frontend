@@ -21,6 +21,8 @@ function ProfileDrawer({ width, align = "right" }) {
 
     const [isedit, setIsEdit] = useState(false);
 
+    const regx = / {2}|\n/g
+
     const HandleDetailChange = (e) => {
         if (e.target.tagName === "TEXTAREA") {
             e.target.style.height = "0"
@@ -116,7 +118,7 @@ function ProfileDrawer({ width, align = "right" }) {
         let isChanged = false;
 
         Object.keys(profileDetail).forEach(key => {
-            if (profileDetail[key] !== profile[key]) isChanged = true
+            if (profileDetail[key] && profileDetail[key].replace(regx, "") !== profile[key]) isChanged = true
         })
 
         if (isChanged) {
@@ -142,8 +144,8 @@ function ProfileDrawer({ width, align = "right" }) {
                     return showToast("Invalid", "Phone cannot have less than 10 digits", "error", 3000)
                 }
 
-                profile?._id === user?._id && setProfileDetail({ ...profileDetail, about: profileDetail.about.replace(/\s{2}|\n/g, "") })
-                
+                profile?._id === user?._id && setProfileDetail({ ...profileDetail, about: profileDetail.about.replace(regx, " ") })
+
                 if (profile?._id === user?._id) {
                     updateUserProfile(profileDetail);
                     setProfile({ ...profile, ...profileDetail })
@@ -155,7 +157,8 @@ function ProfileDrawer({ width, align = "right" }) {
             }
         }
         else {
-            setIsEdit(false)
+            setIsEdit(false);
+            setProfileDetail({ ...profileDetail, about: profileDetail.about.replace(regx, " ") })
         }
     }
 
@@ -210,14 +213,16 @@ function ProfileDrawer({ width, align = "right" }) {
         <Box
             className={`profileDrawer ${align === "right" ? "right0 translateXFull maxWidth520" : "left0 translateXFull-"}`}
             width={{ base: "full", md: width }}
-            height={profile?._id !== user?._id && "100%"}
             pos={"absolute"}
             transition="all .3s"
             zIndex={"2"}
+            top="0"
             overflowY="auto"
+            height={`${window.innerWidth > 770 ? `calc(100vh - ${profile?._id === user?._id ? "11rem" : "10.1rem"})` : `calc(100vh - ${profile?._id === user?._id ? "10rem" : "9.6rem"})`}`}
+            paddingBottom={"1rem"}
             boxShadow={"0 0 4px rgb(0 0 0 / 30%)"}
             background="white">
-            <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"}  pos="relative" padding={"0 .53rem"} paddingTop="1rem" paddingBottom={"5rem"}>
+            <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"} pos="relative" padding={"0 .53rem"} paddingTop="1rem" >
 
                 <Box onClick={() => setProfile(null)} cursor={"pointer"} pos={"absolute"} left=".8rem" top={".8rem"}>
                     <Tooltip label="Close" placement='bottom'>

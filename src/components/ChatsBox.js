@@ -1,5 +1,5 @@
 import { Avatar, AvatarBadge, Box, Image, Text, Tooltip } from '@chakra-ui/react'
-import { getFormmatedDate, getFormmatedTime } from '../configs/dateConfigs'
+import { getFormmatedDate, getFormmatedTime, weekDays } from '../configs/dateConfigs'
 import React, { useEffect } from 'react'
 import { getSender, isUserOnline } from '../configs/userConfigs'
 import ChatsTopBar from './Materials/ChatsTopBar'
@@ -37,12 +37,15 @@ function ChatsBox() {
 
     let currdate = new Date();
 
-    let FormattedDate = getFormmatedDate(date)
+    let FormattedDate = getFormmatedDate(date);
+
+    let dayDiff = currdate.getDate() - date.getDate()
 
     if (date.getYear() === currdate.getYear() && date.getMonth() === currdate.getMonth()) {
-      if (currdate.getDate() - date.getDate() === 0) {
+      if (dayDiff === 0) {
         DateTime = FormattedTime
-      } else if (currdate.getDate() - date.getDate() === 1) DateTime = "Yesterday"
+      } else if (dayDiff === 1) DateTime = "Yesterday"
+      else if(dayDiff < 7) return weekDays[date.getDay()]
       else DateTime = FormattedDate
     }
     else {
@@ -169,7 +172,7 @@ function ChatsBox() {
       </Box>
       <Box zIndex={10} background={"white"} pos={"absolute"} bottom="0" width="full" height="fit-content" padding={".7rem .6rem"} boxShadow="0 0 3px rgba(0,0,0,.3)">
         <Text margin={0} textAlign={"center"} fontSize={window.innerWidth > 770 ? ".9rem" : ".75rem"} fontWeight={"semibold"}>
-          Design and Develop with ❤️ by Dev Shinde | <span style={{ fontWeight: "lighter" }}>© Copyright 2023</span>
+          Designed and Developed with ❤️ by Dev Shinde | <span style={{ fontWeight: "lighter" }}>© Copyright 2023</span>
         </Text>
       </Box>
     </Box>

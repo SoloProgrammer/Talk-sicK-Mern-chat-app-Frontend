@@ -219,7 +219,7 @@
 
 textarea{
     resize: none !important;
-    max-height: 110px !important;
+    max-height: 115px !important;
 }
 
 @media (max-width:770px) {

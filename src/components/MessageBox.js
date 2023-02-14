@@ -20,7 +20,7 @@ var chatMessagesCompare;
 
 function MessagesBox() {
 
-  const { user, setChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser } = ChatState()
+  const { user,setChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -32,7 +32,14 @@ function MessagesBox() {
 
   const handleMessageTyping = (e) => {
 
+    // if (e.target.scrollHeight < 150) {
+    //   e.target.style.height = "0"
+    //   e.target.style.height = e.target.scrollHeight + "px";
+    //   document.querySelector('.messageTextbox').style.height = e.target.scrollHeight + 8 + "px";
+    // }
+
     setMessageText(e.target.value);
+
     if (profile) setProfile(null);
     if (isEmojiPick) setIsEmojiPick(false);
 
@@ -73,7 +80,6 @@ function MessagesBox() {
     setIsEmojiPick(false)
     selectedChatCompare = selectedChat
     chatMessagesCompare = chatMessages
-
     // eslint-disable-next-line
   }, [selectedChat?._id, chatMessages]);
 
@@ -130,6 +136,8 @@ function MessagesBox() {
             // console.log(".................", selectedChatCompare);
             setChatMessages(chatMessagesCompare.filter(chatM => chatM.chatId !== newMessageRecieved.chat._id))
             notificationBeep.play()
+
+            console.log("..",newMessageRecieved)
           }
 
         }
@@ -162,7 +170,6 @@ function MessagesBox() {
 
   });
 
-
   const [messages, setMessages] = useState([])
 
   const [loading, setLoading] = useState(false)
@@ -170,7 +177,7 @@ function MessagesBox() {
   let messageSentBeep = new Audio(sentAudio)
 
   const sendMessage = async () => {
-    if (messageText === "") return
+    if (messageText.replace(regx, '').length === 0) return setMessageText("")
 
     setMessageText("");
     setLoading(true);
@@ -218,14 +225,47 @@ function MessagesBox() {
     }
   }
 
+  const regx = / |\n/g
+
+  // const handleKeyDown = (e) => {
+
+
+  //   if (e.keyCode === 13 && !e.shiftKey) {
+  //     if (e.target.value.replace(regx, '').length > 0) {
+  //       console.log("Sending...")
+  //       setMessageText("")
+  //       e.target.value = ""
+  //       e.target.value = ""
+  //       return
+  //     }
+  //     else {
+  //       e.target.value = ""
+  //       setMessageText("")
+  //       return
+  //     }
+  //   }
+
+  //   ((e.target.value.replace(regx, '').length > 0 && e.keyCode !== 13) || (e.keyCode === 8)) && setMessageText(e.target.value);
+
+
+
+  //   if ((e.keyCode === 13 && e.shiftKey) || (e.keyCode === 8 && e.shiftKey) || ((e.keyCode !== 13 && e.keyCode !== 8) || (e.keyCode === 8) || messageText.replace(regx, "").length > 1)) {
+  //     if (e.target.scrollHeight < 150) {
+  //       e.target.style.height = "0"
+  //       e.target.style.height = e.target.scrollHeight + "px";
+  //       document.querySelector('.messageTextbox').style.height = e.target.scrollHeight + 8 + "px";
+  //     }
+
+  //     if (profile) setProfile(null);
+  //     if (isEmojiPick) setIsEmojiPick(false);
+
+  //   }
+
+  // }
+
   const handleKeyDown = (e) => {
-
-    if (e.key === "Enter") {
-      sendMessage()
-    }
-
+    if (e.keyCode === 13) sendMessage()
   }
-
   return (
     <Box overflow={"hidden"} display={{ base: selectedChat ? "flex" : "none", md: "flex" }} className='messagesBox' width={{ base: "100%", md: "60%", lg: "64%" }}>
       {
@@ -237,21 +277,20 @@ function MessagesBox() {
             width="100%"
             padding={{ base: "0 .5rem", md: "0 5rem" }} gap="2rem" marginTop={"7rem"}>
             <BrandLogo />
-            <Image className='chat1_icon' opacity={".7"} width="250px" src={chat2_icon}/>
-            <Image className='chat2_icon' opacity={".7"} width="250px" src={chat1_icon}/>
+            <Image className='chat1_icon' opacity={".7"} width="220px" src={chat2_icon} />
+            <Image className='chat2_icon' opacity={".7"} width="220px" src={chat1_icon} />
             <Box className='messagesBoxText'>
               <Text
                 fontWeight={"normal"}
                 letterSpacing="0.05rem"
                 textAlign={"center"}
-                // color="#12a698"
-                fontSize={{ base: "1rem", md: "1.1rem" }} >
+                fontSize={{ md: ".9rem" }} >
                 Talk-o-Meter a Chat app Project with live personal as well as group messaging functionality<br />You will also recieve live Notifications from chats you have created for the newly recieved messages
               </Text>
               <br />
               <Text
                 fontWeight={"medium"}
-                fontSize={{ base: "xl", md: "2xl" }}
+                fontSize={{ md: "2xl" }}
                 color={"#31ceb8"}
                 textAlign="center"
               >
@@ -266,11 +305,20 @@ function MessagesBox() {
 
             <MessageBox messages={messages} setMessages={setMessages} />
 
-            <Box zIndex={3} marginLeft={{ base: "0rem", md: ".2rem" }} background={"white"} pos={"absolute"} bottom="0" width={"100%"} boxShadow="0 0 4px rgba(0,0,0,.3)">
-              <Box pos={"relative"} display="flex" padding={{ base: ".3rem .9rem", md: ".3rem" }}>
+            <Box
+              zIndex={3}
+              marginLeft={{ base: "0rem", md: ".2rem" }}
+              background={"white"}
+              pos={"absolute"}
+              bottom="0"
+              className='messageTextbox'
+              width={"100%"}
+              minHeight="57px !important"
+              boxShadow="0 -4px 4px -4px rgba(0,0,0,.3)">
+              <Box pos={"relative"} display="flex" height={"100%"} padding={{ base: ".3rem .9rem", md: ".3rem" }}>
                 {
                   isEmojiPick &&
-                  <Box width={{ base: "315px", md: "360px" }} pos={"absolute"} bottom="4.2rem">
+                  <Box width={{ base: "315px", md: "360px" }} pos={"absolute"} bottom="4.2rem" >
                     <EmojiPicker
                       onEmojiClick={handleEmojiClick}
                       width={"100%"}
@@ -281,7 +329,7 @@ function MessagesBox() {
                     />
                   </Box>
                 }
-                <Box className="emojiPickbtn flex" width={{ base: "8%", md: "5%" }} >
+                <Box className="emojiPickbtn flex" width={{ base: "8%", md: "5%" }} alignItems={"end"} paddingBottom=".5rem">
                   <Image _hover={{ width: { base: "2rem", md: "1.6rem" } }}
                     cursor={"pointer"}
                     onClick={() => setIsEmojiPick(!isEmojiPick)}
@@ -290,9 +338,16 @@ function MessagesBox() {
                     onMouseOver={(e) => e.target.src = emojiIconActive} onMouseOut={(e) => e.target.src = !isEmojiPick ? emojiIcon : emojiIconActive} />
                 </Box>
                 <FormControl onKeyDown={handleKeyDown} height={"3rem"} width={{ base: "84%", md: "90%" }}>
-                  <input onFocus={() => scrollBottom('messagesDisplay')} className='MessageBoxInput' placeholder='Write message here......' id='text' type="text" value={messageText} onChange={handleMessageTyping} />
+                  <input
+                    onFocus={() => scrollBottom('messagesDisplay')}
+                    className='MessageBoxInput'
+                    placeholder='Type your message......'
+                    id='text'
+                    type="text"
+                    value={messageText} onChange={handleMessageTyping}
+                  />
                 </FormControl>
-                <Box className='flex' width={{ base: "8%", md: "5%" }}>
+                <Box className='flex' width={{ base: "8%", md: "5%" }} alignItems={"end"} paddingBottom=".5rem">
                   {
                     loading
                       ?
@@ -305,8 +360,8 @@ function MessagesBox() {
                         cursor={messageText !== "" && "pointer"}
                         width={"2rem"}
                         onClick={sendMessage}
-                        className={`${messageText !== "" && "sentBtn"}`}
-                        src={`${messageText.length !== 0 ? sendBtn : sendBtnActive}`} ></Image>
+                        className={`${messageText.replace(regx, '').length > 0 && "sentBtn"}`}
+                        src={`${messageText.replace(regx, '').length !== 0 ? sendBtn : sendBtnActive}`} ></Image>
                   }
                 </Box>
               </Box>

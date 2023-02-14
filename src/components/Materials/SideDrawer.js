@@ -23,7 +23,7 @@ import { useNavigate } from 'react-router-dom'
 
 function SideDrawer({ isOpen, onClose }) {
 
-    const { showToast, setProfile, chats, setChats, setChatsLoading,setSelectedChat } = ChatState();
+    const { showToast, setProfile, chats, setChats, setChatsLoading } = ChatState();
 
     const [search, setSearch] = useState("")
     const [loading, setLoading] = useState(false)
@@ -65,6 +65,7 @@ function SideDrawer({ isOpen, onClose }) {
     }
 
     const CreateChat = async (user) => {
+        console.log("isyudg")
         setChatsLoading(true)
         try {
             let config = {
@@ -84,16 +85,14 @@ function SideDrawer({ isOpen, onClose }) {
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
             if (json.status) {
+                console.log(json)
                 setChatsLoading(false)
                 setChats(json.chats)
-                setSelectedChat(json.chat)
                 navigate(`/chats/chat/${json.chat._id}`)
                 setProfile(null)
                 return showToast("Talk-o-Meter reading", json.message, "success", 3000)
             }
-            if (json?.isChat) {
-                setProfile(null)
-            }
+           
 
         } catch (error) {
             return showToast('Error', error.message, "error", 3000)
@@ -115,7 +114,6 @@ function SideDrawer({ isOpen, onClose }) {
             if (i === chats.length - 1 && !ischat) CreateChat(user)
             return 1
         })
-
     }
 
     return (
