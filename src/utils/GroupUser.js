@@ -61,7 +61,7 @@ function GroupUser({ u }) {
     }
     
     const handleRemoveFromGroup = async (userId) => {
-        if (selectedChat?.groupAdmin.map(u => u._id).includes(user?._id) && selectedChat?.groupAdmin.length === 1) {
+        if (selectedChat?.groupAdmin.map(u => u._id).includes(userId) && selectedChat?.groupAdmin.length === 1) {
             return showToast("Error", "Plz first add some one as GroupAdmin if you wish to leave this group.!", "error", 3000)
         }
 
@@ -107,13 +107,13 @@ function GroupUser({ u }) {
 
     const handleGroupUserAvatarClick = (U) => {
 
-        setSelectedChat(null)
         // if user click on his own avatar then display his profile other then else start a chat with that user avatar click!
         if (!(selectedChat?.isGroupchat) || U._id === user?._id) {
             setProfile(U)
             if (window.innerWidth < 770 && U._id === user._id) setSelectedChat(null)
         }
         else {
+            setSelectedChat(null)
             let isChat = false
             chats.forEach((c, i) => {
                 if (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(U._id) && !c.isGroupchat) {

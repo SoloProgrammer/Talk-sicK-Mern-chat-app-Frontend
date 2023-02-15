@@ -85,12 +85,11 @@ function SideDrawer({ isOpen, onClose }) {
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
             if (json.status) {
-                console.log(json)
                 setChatsLoading(false)
                 setChats(json.chats)
                 navigate(`/chats/chat/${json.chat._id}`)
                 setProfile(null)
-                return showToast("Talk-o-Meter reading", json.message, "success", 3000)
+                return showToast("Congratulations 🎉", json.message, "success", 3000)
             }
            
 
@@ -127,7 +126,7 @@ function SideDrawer({ isOpen, onClose }) {
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerHeader>Search Users</DrawerHeader>
+                    <DrawerHeader>Search or Start a New Chat..!</DrawerHeader>
                     <DrawerBody>
                         <Box >
                             <FormControl width={"full"} display="flex" justifyContent={"space-between"} alignItems="center" gap={".5rem"}  onKeyDown={handleSearch}>
