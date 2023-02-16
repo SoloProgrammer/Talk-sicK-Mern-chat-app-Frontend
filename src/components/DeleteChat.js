@@ -42,10 +42,10 @@ function DeleteChat() {
 
             navigate('/chats');
 
-            showToast(json.message,'',"success",3000)
+            showToast(json.message, '', "success", 3000)
 
         } catch (error) {
-            showToast("Error",error.message,"error",3000)
+            showToast("Error", error.message, "error", 3000)
             setDelLoading(false);
             setDelConfirm(false);
         }
@@ -62,6 +62,7 @@ function DeleteChat() {
                 fontWeight={"medium"}
                 className="flex"
                 alignItems={"start"}
+                boxShadow={(delLoading || delConfirm) && "0 0 2px rgba(0,0,0,.4)"}
                 gap=".3rem"
                 background={(delConfirm || delLoading) && "gray.200"}
                 padding=".4rem .4rem"

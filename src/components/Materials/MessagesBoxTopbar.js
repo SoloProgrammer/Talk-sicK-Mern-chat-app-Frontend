@@ -37,6 +37,13 @@ function MessagesBoxTopbar() {
                             getSender(selectedChat, user)?.name
                         }
                     </Text>
+                    {selectedChat?.pinnedBy.includes(user?._id)
+                        &&
+                        <Tooltip label="pinned" placement='top' fontSize={".7rem"}>
+                            <Box background={"white"} padding=".3rem" borderRadius={"50%"} boxShadow="inset 0 0 1.5px rgba(0,0,0,1)" >
+                                <Image width={".8rem"} src="https://cdn-icons-png.flaticon.com/512/1274/1274749.png" />
+                            </Box>
+                        </Tooltip>}
 
                     {isTyping
                         &&

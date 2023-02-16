@@ -103,7 +103,16 @@ function Chatpage() {
       localStorage.getItem('token') && fetchallchats()
     }
     // eslint-disable-next-line
-  }, [isfetchChats,user]);
+  }, [isfetchChats, user]);
+
+
+  let elms = document.querySelectorAll('.chat_menu');
+  document.addEventListener('click', () => {
+    elms.forEach(item => {
+      item.classList.remove('menu_open')
+    })
+  })
+
 
   return (
     <Box className={`mainChatBox hideleft`} width="100%" display="flex" justifyContent={"center"} alignItems="center" transition={".5s"}>

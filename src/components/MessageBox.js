@@ -20,7 +20,7 @@ var chatMessagesCompare;
 
 function MessagesBox() {
 
-  const { user,setChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser } = ChatState()
+  const { user,setChats,refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -88,31 +88,6 @@ function MessagesBox() {
     setIsEmojiPick(false)
   }
 
-
-  const refreshChats = async () => {
-
-    try {
-      const config = {
-        headers: {
-          token: localStorage.getItem('token')
-        }
-      }
-
-      const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
-
-      if (res.status === 401) HandleLogout()
-
-      const json = await res.json();
-
-      if (!json.status) return showToast("Error", json.message, "error", 3000)
-
-      setChats(json.chats);
-
-    } catch (error) {
-      return showToast("Error", error.message, "error", 3000)
-    }
-
-  }
   useEffect(() => {
     notificationsCompare = notifications
 

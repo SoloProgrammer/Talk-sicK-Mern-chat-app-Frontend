@@ -20,7 +20,36 @@
     transform: scale(.8);
 
 }
+.chat_menu{
+    position:absolute;
+    background:white;
+    top:1px; 
+    left:-8.2rem; 
+    z-index:1; 
+    box-shadow: 0 0 3px rgba(0, 0, 0, .2);
+    border-radius: .1rem;
+    transition: .2s all ;
+    transform-origin: top right;
+    transform: scale(0);
+}
 
+
+.menu_open{
+    transform: scale(1);
+}
+
+.chat_menu span{
+    width: 100%;
+    padding: .5rem 1rem !important;
+    justify-content: space-between;
+    gap: .5rem;
+    font-size: .8rem;
+    font-weight: 500;
+}
+
+.chat_menu span:hover{
+    background: #ebeff0b0;
+}
 
 @keyframes float {
 

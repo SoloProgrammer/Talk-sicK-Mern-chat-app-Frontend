@@ -93,6 +93,7 @@ function MessageBox({ messages, setMessages }) {
       if (window.innerWidth < 770 && avatarUser._id === user._id) setSelectedChat(null)
     }
     else {
+      setSelectedChat(null)
       let isChat = false
       chats.forEach((c, i) => {
         if (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(avatarUser._id) && !c.isGroupchat) {

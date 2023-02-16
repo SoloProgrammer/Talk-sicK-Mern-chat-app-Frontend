@@ -6,6 +6,7 @@ import ChatsTopBar from './Materials/ChatsTopBar'
 import ProfileDrawer from './Materials/ProfileDrawer'
 import { ChatState } from '../Context/ChatProvider'
 import { useNavigate } from 'react-router-dom'
+import ChatMenuBox from './Materials/ChatMenuBox'
 
 
 function ChatsBox() {
@@ -24,7 +25,7 @@ function ChatsBox() {
     } else if (window.innerWidth > 1000 && window.innerWidth < 1300) {
       trimInd = 30
     } else if (window.innerWidth <= 500 && window.innerWidth > 390) trimInd = 30
-      else if (window.innerWidth <= 390) trimInd = 26
+    else if (window.innerWidth <= 390) trimInd = 26
 
     return msg.length <= trimInd ? msg : msg.slice(0, trimInd).concat(".....")
   }
@@ -45,7 +46,7 @@ function ChatsBox() {
       if (dayDiff === 0) {
         DateTime = FormattedTime
       } else if (dayDiff === 1) DateTime = "Yesterday"
-      else if(dayDiff < 7) return weekDays[date.getDay()]
+      else if (dayDiff < 7) return weekDays[date.getDay()]
       else DateTime = FormattedDate
     }
     else {
@@ -73,7 +74,6 @@ function ChatsBox() {
     // eslint-disable-next-line
   }, [selectedChat?._id]);
 
-
   return (
     <Box pos={"relative"} display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
       <ChatsTopBar />
@@ -83,7 +83,8 @@ function ChatsBox() {
           <ProfileDrawer width="full" align="left" />
         }
         {
-          chats?.length === 0 ?
+          chats?.length === 0
+            ?
             <Box height={"100%"} display="flex" flexDir={"column"} justifyContent="center" alignItems={"center"}>
               <Image marginBottom={"4rem"} opacity=".3" width={{ base: "6rem", md: "10rem" }} src="https://cdn-icons-png.flaticon.com/512/3073/3073428.png"></Image>
               <Text fontWeight={"medium"} >Haven't Created your first Chat Yet?</Text>
@@ -109,6 +110,7 @@ function ChatsBox() {
                       alignItems={"center"}
                       className="singleChatBox"
                       cursor="pointer"
+                      pos={"relative"}
                       _hover={{ bg: "#2da89f61" }}
                     >
                       <Box maxWidth={"67px"} >
@@ -127,6 +129,7 @@ function ChatsBox() {
 
                         </Avatar>
                       </Box>
+
                       <Box width={{ base: "calc(100% - 15%)", md: "calc(100% - 12%)" }}>
                         <Box display={"flex"} justifyContent="space-between" width={"100%"}>
                           <Text fontSize={"1rem"} fontWeight="semibold">{getSender(chat, user)?.name}</Text>
@@ -157,6 +160,19 @@ function ChatsBox() {
                         </Text>
 
                       </Box>
+
+                      {
+                        chat.pinnedBy?.includes(user?._id)
+                        &&
+                        <Tooltip label="pinned" fontSize={".7rem"} placement="top">
+                          <Box pos={"absolute"} right="2rem" bottom={"6px"}>
+                            <Image width=".8rem" src="https://cdn-icons-png.flaticon.com/512/1274/1274749.png" />
+                          </Box>
+                        </Tooltip>
+                      }
+
+                      <ChatMenuBox chat={chat} i={i} />
+
                     </Box>
                   )
                 })
@@ -172,7 +188,7 @@ function ChatsBox() {
       </Box>
       <Box zIndex={10} background={"white"} pos={"absolute"} bottom="0" width="full" height="fit-content" padding={".7rem .6rem"} boxShadow="0 0 3px rgba(0,0,0,.3)">
         <Text margin={0} textAlign={"center"} fontSize={window.innerWidth > 770 ? ".9rem" : ".75rem"} fontWeight={"semibold"}>
-          Designed and Developed with ❤️ by Dev Shinde 🚩 {window.innerWidth < 770 ? <br/> : "|"} <span style={{ fontWeight: "lighter" }}>© Copyright 2023</span>
+          Designed and Developed with ❤️ by Dev Shinde 🚩 {window.innerWidth < 770 ? <br /> : "|"} <span style={{ fontWeight: "lighter" }}>© Copyright 2023</span>
         </Text>
       </Box>
     </Box>

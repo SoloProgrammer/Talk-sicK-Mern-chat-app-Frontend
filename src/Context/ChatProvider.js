@@ -140,10 +140,38 @@ const ChatProvider = ({ children }) => {
 
     }
 
+
+    const refreshChats = async () => {
+
+        try {
+            const config = {
+                headers: {
+                    token: localStorage.getItem('token')
+                }
+            }
+
+            const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
+
+            if (res.status === 401) HandleLogout()
+
+            const json = await res.json();
+
+            if (!json.status) return showToast("Error", json.message, "error", 3000)
+
+            setChats(json.chats);
+
+            console.log(json.chats);
+
+        } catch (error) {
+            return showToast("Error", error.message, "error", 3000)
+        }
+
+    }
+
     useEffect(() => {
 
         // whenever new message recives and user is on another chat so all the chats will be fetch again and to stay the user on the same chat he is before refrshing the chats this logic is used!
-        if (selectedChat) {
+        if (selectedChat && notifications.length) {
             chats && setSelectedChat(chats.filter(chat => chat._id === selectedChat._id)[0])
         }
         // eslint-disable-next-line
@@ -151,10 +179,10 @@ const ChatProvider = ({ children }) => {
 
     const [notifications, setNotifications] = useState([])
 
-    const [newCreatedChat,setNewCreatedChat] = useState(null)
+    const [newCreatedChat, setNewCreatedChat] = useState(null)
 
     return (
-        <ChatContext.Provider value={{ CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser,newCreatedChat,setNewCreatedChat }}>
+        <ChatContext.Provider value={{ refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, newCreatedChat, setNewCreatedChat }}>
             {children}
         </ChatContext.Provider>
     )

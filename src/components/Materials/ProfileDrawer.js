@@ -186,7 +186,7 @@ function ProfileDrawer({ width, align = "right" }) {
     useEffect(() => {
         setTimeout(() => {
             document.querySelector('.DrawerInner')?.classList.remove('TopHide')
-        }, 250)
+        }, 380)
     }, [profile]);
 
     const [onHover, setOnHover] = useState(false);

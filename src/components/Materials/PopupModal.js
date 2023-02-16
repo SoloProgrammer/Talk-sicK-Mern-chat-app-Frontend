@@ -231,7 +231,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                                 <Image width={"1.8rem"} src='https://cdn-icons-png.flaticon.com/512/1531/1531117.png' />
                                 <Text fontWeight={'medium'} fontSize="lg">Search Member</Text>
                             </Box>
-                            <Input value={search} onChange={HandleSearch} variant='flushed' placeholder='Eg :- Rohan, Mohan or Sohan ...' />
+                            <Input value={search} onChange={HandleSearch} variant='flushed' placeholder='Type Name or Email.....' />
                         </Box>
 
                     </ModalBody>
