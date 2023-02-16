@@ -1,12 +1,12 @@
 import { Box, Image } from '@chakra-ui/react'
 import React from 'react'
-import { server } from '../../configs/serverURl';
-import { HandleLogout } from '../../configs/userConfigs';
+// import { server } from '../../configs/serverURl';
+// import { HandleLogout } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
 
 function ChatMenuBox({ chat, i }) {
 
-    let { user, showToast, chats, setChats } = ChatState();
+    let { user,handlePinOrUnpinChat } = ChatState();
 
     const handleChatMenuIconClick = (e, i) => {
         e.stopPropagation();
@@ -21,46 +21,6 @@ function ChatMenuBox({ chat, i }) {
         elm.classList.add('menu_open')
     }
 
-    const handlePinOrUnpinChat = async () => {
-        setTimeout(() => {
-            document.body.click()
-        },250);
-        let updatedChats = chats.map(c => {
-            if (c._id === chat._id) {
-                if (!c.pinnedBy.includes(user?._id)) {
-                    c.pinnedBy.push(user._id)
-                }
-                else {
-                    c.pinnedBy =  c.pinnedBy.filter(UId => UId !== user._id)
-                }
-            }
-            return c;
-        });
-
-        setChats(updatedChats)
-        try {
-            let config = {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    token: localStorage.getItem('token')
-                },
-                body: JSON.stringify({ chatId: chat._id })
-            }
-
-            let res = await fetch(`${server.URL.production}/api/chat/pinORunpinchat`, config);
-
-            if (res.status === "401") HandleLogout()
-
-            let json = await res.json();
-
-            if (!json.status) return showToast("Error", json.message, "error", 3000);
-
-        } catch (error) {
-
-        }
-    }
-
     return (
         <>
             <Box id={`chatMenuIcon${i}`} className='chatMenuIcon arrowIcon' pos={"absolute"} right="6px" bottom={"4px"} cursor="pointer" onClick={(e) => handleChatMenuIconClick(e, i)}>
@@ -72,7 +32,7 @@ function ChatMenuBox({ chat, i }) {
                             <Image width="1.1rem" src={`${chat.isGroupchat ? "https://cdn-icons-png.flaticon.com/512/8914/8914318.png" : "https://cdn-icons-png.flaticon.com/512/5165/5165608.png"}`} />
                         </span>
                         <span className='flex' onClick={(e) => {
-                            handlePinOrUnpinChat();
+                            handlePinOrUnpinChat(chat);
                             e.stopPropagation();
                         }}>
                             {chat.pinnedBy?.includes(user?._id) ? "Unpin Chat" : "Pin Chat"}

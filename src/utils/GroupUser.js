@@ -166,7 +166,7 @@ function GroupUser({ u }) {
                         ((selectedChat?.groupAdmin.map(u => u._id).includes(user?._id)) || u?._id === user?._id)
                         &&
                         (!removeUserLoading ?
-                            <Tooltip label={u?._id === user._id ? "Left group" : "Remove from group"} placement="top">
+                            <Tooltip label={u?._id === user._id ? "Leave group" : "Remove from group"} placement="top">
                                 <Image onClick={() => handleRemoveFromGroup(u?._id)} cursor={"pointer"} width="1.35rem" height={"1.35rem"} src="https://cdn-icons-png.flaticon.com/512/9404/9404050.png" />
                             </Tooltip>
                             :

@@ -9,7 +9,7 @@ import GroupMembersBox from '../GroupMembersBox'
 
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { setSelectedChat, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats } = ChatState();
+    const { setSelectedChat, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = ChatState();
 
     // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
 
@@ -433,7 +433,33 @@ function ProfileDrawer({ width, align = "right" }) {
                     (profile?._id !== user?._id && !profile?.isGrpProfile)
                     &&
                     <Box width={"100%"} marginTop={".5rem"} padding={{ base: "0 .8rem", md: "0 1.1rem" }} display="flex" flexDir={"column"} gap=".2rem">
-                        <DeleteChat/>
+                        <DeleteChat />
+                    </Box>
+                }
+
+                {
+                    (profile?._id !== user?._id)
+                    &&
+                    <Box padding={{ base: "0 .8rem", md: "0 1.1rem" }} width={"100%"}>
+                        <Box
+                            onClick={() => handlePinOrUnpinChat(selectedChat)}
+                            _hover={{ bg: "gray.200", boxShadow: "0 0 2px rgba(0,0,0,.1)" }}
+                            padding=".4rem"
+                            className='flex'
+                            border={"1px solid rgba(0,0,0,.1)"}
+                            transition=".4s all"
+                            cursor={"pointer"}>
+                            <Text className='flex' gap={".6rem"} color="blue.500" fontWeight={"medium"}>
+                                <Image width="1.1rem" src={`${selectedChat?.pinnedBy?.includes(user?._id) ? "https://cdn-icons-png.flaticon.com/512/1274/1274749.png" : "https://cdn-icons-png.flaticon.com/512/1274/1274786.png"}`} />
+                                {
+                                    selectedChat?.pinnedBy.includes(user?._id)
+                                        ?
+                                        "Unpin chat"
+                                        :
+                                        "Pin chat"
+                                }
+                            </Text>
+                        </Box>
                     </Box>
                 }
 

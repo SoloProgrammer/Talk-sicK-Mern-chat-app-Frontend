@@ -53,19 +53,22 @@ function DeleteChat() {
 
     return (
         <>
-            {(delConfirm && !delLoading) && <Text marginBottom={".4rem"} fontSize=".85rem">Are you sure you want to delete chat with <b>{getSender(selectedChat, user).name.split(" ")[0]} !</b> </Text>}
+            {(delConfirm && !delLoading) 
+            && 
+            <Text marginBottom={".4rem"} fontSize=".85rem">Are you sure you want to delete chat with <b>{getSender(selectedChat, user).name.split(" ")[0]} !</b> </Text>}
             <Box
-                _hover={{ bg: "gray.200", boxShadow: "0 0 2px rgba(0,0,0,.4)" }}
+                _hover={{ bg: "gray.200", boxShadow: "0 0 2px rgba(0,0,0,.2)" }}
                 transition=".4s all"
+                border={"1px solid rgba(0,0,0,.1)"}
                 cursor={!delLoading && "pointer"}
-                border={"1px solid gray.500"}
+                // border={"1px solid gray.500"}
                 fontWeight={"medium"}
                 className="flex"
                 alignItems={"start"}
                 boxShadow={(delLoading || delConfirm) && "0 0 2px rgba(0,0,0,.4)"}
                 gap=".3rem"
                 background={(delConfirm || delLoading) && "gray.200"}
-                padding=".4rem .4rem"
+                padding=".4rem"
                 onClick={() => setDelConfirm(true)}
                 color={"red.400"}>
                 {

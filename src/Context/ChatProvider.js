@@ -107,6 +107,46 @@ const ChatProvider = ({ children }) => {
 
     }
 
+    const handlePinOrUnpinChat = async (chat) => {
+        setTimeout(() => {
+            document.body.click()
+        },250);
+        let updatedChats = chats.map(c => {
+            if (c._id === chat._id) {
+                if (!c.pinnedBy.includes(user?._id)) {
+                    c.pinnedBy.push(user._id)
+                }
+                else {
+                    c.pinnedBy =  c.pinnedBy.filter(UId => UId !== user._id)
+                }
+            }
+            return c;
+        });
+
+        setChats(updatedChats)
+        try {
+            let config = {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    token: localStorage.getItem('token')
+                },
+                body: JSON.stringify({ chatId: chat._id })
+            }
+
+            let res = await fetch(`${server.URL.production}/api/chat/pinORunpinchat`, config);
+
+            if (res.status === "401") HandleLogout()
+
+            let json = await res.json();
+
+            if (!json.status) return showToast("Error", json.message, "error", 3000);
+
+        } catch (error) {
+
+        }
+    }
+
     const seenlstMessage = async (msgId) => {
 
         try {
@@ -139,7 +179,6 @@ const ChatProvider = ({ children }) => {
         }
 
     }
-
 
     const refreshChats = async () => {
 
@@ -182,7 +221,7 @@ const ChatProvider = ({ children }) => {
     const [newCreatedChat, setNewCreatedChat] = useState(null)
 
     return (
-        <ChatContext.Provider value={{ refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, newCreatedChat, setNewCreatedChat }}>
+        <ChatContext.Provider value={{ refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage,handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, newCreatedChat, setNewCreatedChat }}>
             {children}
         </ChatContext.Provider>
     )
