@@ -51,7 +51,7 @@ function SideDrawer({ isOpen, onClose }) {
                             token: localStorage.getItem('token')
                         }
                     }
-                    const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config)
+                    const res = await fetch(`${server.URL.local}/api/user/searchuser?search=${search}`, config)
                     const json = await res.json()
         
                     if (!json.status) HandleLogout()
@@ -76,7 +76,7 @@ function SideDrawer({ isOpen, onClose }) {
                 },
                 body: JSON.stringify({ userId: user._id })
             }
-            let res = await fetch(`${server.URL.production}/api/chat`, config)
+            let res = await fetch(`${server.URL.local}/api/chat`, config)
 
             if (res.status === 401) HandleLogout();
 

@@ -168,7 +168,7 @@ function MessagesBox() {
         body: JSON.stringify({ chatId: selectedChat?._id, content: { message: messageText } })
       }
 
-      let res = await fetch(`${server.URL.production}/api/message/sendmessage`, config);
+      let res = await fetch(`${server.URL.local}/api/message/sendmessage`, config);
 
       if (res.status === 401) return HandleLogout()
 

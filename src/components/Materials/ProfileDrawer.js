@@ -52,7 +52,7 @@ function ProfileDrawer({ width, align = "right" }) {
                 body: JSON.stringify(detailsToUpdate)
             }
 
-            let res = await fetch(`${server.URL.production}/api/user/updateuser`, config);
+            let res = await fetch(`${server.URL.local}/api/user/updateuser`, config);
 
             if (res.status === "401") return HandleLogout();
 
@@ -88,7 +88,7 @@ function ProfileDrawer({ width, align = "right" }) {
                 body: JSON.stringify({ chatId: selectedChat._id, detailsToUpdate })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/updategroup`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/updategroup`, config);
 
             if (res.status === "401") HandleLogout();
 

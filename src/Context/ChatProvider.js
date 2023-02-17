@@ -28,7 +28,7 @@ const ChatProvider = ({ children }) => {
                 'token': localStorage.getItem('token')
             }
         }
-        const res = await fetch(`${server.URL.production}/api/user/getuser`, config);
+        const res = await fetch(`${server.URL.local}/api/user/getuser`, config);
         return res.json()
     }
 
@@ -40,7 +40,7 @@ const ChatProvider = ({ children }) => {
 
     // const ENDPOINT = "http://localhost:8001"
 
-    const ENDPOINT = server.URL.production
+    const ENDPOINT = server.URL.local
 
     const [socket, setSocket] = useState(null);
 
@@ -87,7 +87,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ userId })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat`, config);
+            let res = await fetch(`${server.URL.local}/api/chat`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -108,9 +108,11 @@ const ChatProvider = ({ children }) => {
     }
 
     const handlePinOrUnpinChat = async (chat) => {
+        
         setTimeout(() => {
             document.body.click()
         },250);
+
         let updatedChats = chats.map(c => {
             if (c._id === chat._id) {
                 if (!c.pinnedBy.includes(user?._id)) {
@@ -122,6 +124,8 @@ const ChatProvider = ({ children }) => {
             }
             return c;
         });
+        
+        (selectedChat && selectedChat._id === chat._id) &&  setSelectedChat(chats.filter(c => c._id === chat._id)[0]);
 
         setChats(updatedChats)
         try {
@@ -134,7 +138,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ chatId: chat._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/pinORunpinchat`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/pinORunpinchat`, config);
 
             if (res.status === "401") HandleLogout()
 
@@ -160,7 +164,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ msgId })
             }
 
-            let res = await fetch(`${server.URL.production}/api/message/seenMessage`, config);
+            let res = await fetch(`${server.URL.local}/api/message/seenMessage`, config);
 
             if (res.status === 401) return HandleLogout();
 
@@ -189,7 +193,7 @@ const ChatProvider = ({ children }) => {
                 }
             }
 
-            const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
+            const res = await fetch(`${server.URL.local}/api/chat/allchats`, config);
 
             if (res.status === 401) HandleLogout()
 

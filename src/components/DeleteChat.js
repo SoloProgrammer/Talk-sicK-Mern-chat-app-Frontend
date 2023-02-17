@@ -27,14 +27,14 @@ function DeleteChat() {
                 body: JSON.stringify({ chatId: selectedChat?._id })
             }
 
-            const res = await fetch(`${server.URL.production}/api/chat/deletechat`, config);
+            const res = await fetch(`${server.URL.local}/api/chat/deletechat`, config);
 
             if (res.status === 401) HandleLogout();
-
+            
+            const json = await res.json();
+            
             setDelLoading(false);
             setDelConfirm(false);
-
-            const json = await res.json();
 
             if (!json.status) return showToast("Error", json.message, "error", 3000);
 

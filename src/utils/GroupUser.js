@@ -36,7 +36,7 @@ function GroupUser({ u }) {
                 body: JSON.stringify({ userId, chatId: selectedChat?._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/${action}`, config)
+            let res = await fetch(`${server.URL.local}/api/chat/${action}`, config)
 
             if (res.status === 401) HandleLogout()
 
@@ -59,7 +59,7 @@ function GroupUser({ u }) {
             showToast("Error", error.message, "error", 3000)
         }
     }
-    
+
     const handleRemoveFromGroup = async (userId) => {
         if (selectedChat?.groupAdmin.map(u => u._id).includes(userId) && selectedChat?.groupAdmin.length === 1) {
             return showToast("Error", "Plz first add some one as GroupAdmin if you wish to leave this group.!", "error", 3000)
@@ -76,7 +76,7 @@ function GroupUser({ u }) {
                 body: JSON.stringify({ chatId: selectedChat?._id, userId })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/groupremove`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/groupremove`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -86,7 +86,7 @@ function GroupUser({ u }) {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-            // checking if the logged in user is not in the return chat from server that means he is from that chat successfully and then to dispaly the change we can refetch the all chats from server!
+            // checking if the logged in user is not in the return chat from server that means he is removed from that chat successfully and then to dispaly the change we can refetch the all chats from server!
             if (!(json.chat.users.map(u => u._id).includes(user?._id))) {
                 setSelectedChat(null)
                 setProfile(null) // setting profile to null if it is not!
@@ -99,8 +99,9 @@ function GroupUser({ u }) {
                 setChats(json.chats)
                 showToast("Success", json.message, "success", 3000)
             }
-
+            
         } catch (error) {
+            setRemoveUserLoading(false)
             return showToast("Error", error.message, "error", 3000)
         }
     }
