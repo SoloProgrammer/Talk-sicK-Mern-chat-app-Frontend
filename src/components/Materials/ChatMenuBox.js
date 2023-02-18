@@ -31,9 +31,12 @@ function ChatMenuBox({ chat, i }) {
 
     const [loading, setLoading] = useState(false);
 
+    const [isClosable,setIsClosable] = useState(true)
+
     const handleDeleteChat = async () => {
         try {
             setLoading(true)
+            setIsClosable(false)
             let config = {
                 method: "PUT",
                 headers: {
@@ -50,7 +53,7 @@ function ChatMenuBox({ chat, i }) {
             const json = await res.json();
 
             setLoading(false);
-
+            setIsClosable(true);
             onClose();
 
             if (!json.status) return showToast("Error", json.message, "error", 3000);
@@ -70,6 +73,7 @@ function ChatMenuBox({ chat, i }) {
     const handleLeaveChat = async () => {
         try {
             setLoading(true)
+            setIsClosable(false)
             let config = {
                 method: 'POST',
                 headers: {
@@ -85,7 +89,8 @@ function ChatMenuBox({ chat, i }) {
 
             let json = await res.json();
 
-            setLoading(false)
+            setLoading(false);
+            setIsClosable(true);
             onClose();
             if (!json.status) return showToast("Error", json.message, "error", 3000);
 
@@ -109,7 +114,7 @@ function ChatMenuBox({ chat, i }) {
                 <Box pos={"relative"}>
                     <Box id={`chatmenu${i}`} className='chat_menu flex' flexDir={"column"}>
 
-                        <ConfirmBoxModal handleFunc={chat.isGroupchat ? handleLeaveChat : handleDeleteChat} isOpen={isOpen} onClose={onClose} modalDetail={{ chat: chat, index: i }} loading={loading}>
+                        <ConfirmBoxModal isClosable={isClosable} handleFunc={chat.isGroupchat ? handleLeaveChat : handleDeleteChat} isOpen={isOpen} onClose={onClose} modalDetail={{ chat: chat, index: i }} loading={loading}>
                             <span
                                 onClick={onOpen}
                                 className='flex'>

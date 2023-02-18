@@ -3,10 +3,13 @@ import { useToast } from '@chakra-ui/react'
 import { server } from '../configs/serverURl';
 import { HandleLogout } from '../configs/userConfigs';
 import io from 'socket.io-client'
+import { useNavigate } from 'react-router-dom';
 
 const ChatContext = createContext();
 
 const ChatProvider = ({ children }) => {
+
+    const navigate = useNavigate();
 
     const toast = useToast();
     function showToast(title, msg, status, time, pos = "bottom-center") {
@@ -97,7 +100,7 @@ const ChatProvider = ({ children }) => {
 
             setChats(json.chats)
             setChatsLoading(false)
-            setSelectedChat(json.chat)
+            navigate(`/chats/chat/${json.chat._id}`)
             setProfile(null)
 
         } catch (error) {

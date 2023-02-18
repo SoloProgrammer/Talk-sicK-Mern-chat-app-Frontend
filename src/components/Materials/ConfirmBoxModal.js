@@ -14,17 +14,18 @@ import {
 import { getSender } from '../../configs/userConfigs'
 import { ChatState } from '../../Context/ChatProvider'
 
-function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, loading }) {
+function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, loading,isClosable }) {
 
   const { user } = ChatState();
 
   useEffect(() => {
     !isOpen && document.body.click()
-  }, [isOpen])
+  }, [isOpen]);
+
   return (
     <>
       {children}
-      <Modal onClose={onClose} isOpen={isOpen} isCentered>
+      <Modal onClose={onClose} isOpen={isOpen} isCentered closeOnOverlayClick={isClosable} > 
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -45,11 +46,11 @@ function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, l
               </Text>
             </Text>
           </ModalHeader>
-          <ModalCloseButton top={"2px"} right="2px" />
+          <ModalCloseButton top={"2px"} right="2px" disabled={!isClosable} />
           <ModalBody>
           </ModalBody>
           <ModalFooter>
-            <Button marginRight={"1rem"} onClick={onClose}>Close</Button>
+            <Button marginRight={"1rem"} onClick={onClose} disabled={!isClosable}>Close</Button>
 
             <Button
               color={"red"}
