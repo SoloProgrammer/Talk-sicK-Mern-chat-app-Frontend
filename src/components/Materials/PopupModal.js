@@ -14,7 +14,7 @@ import {
     Image,
     Avatar
 } from '@chakra-ui/react'
-import Loading from './Loading'
+import { Loading } from './Loading'
 import { ChatState } from '../../Context/ChatProvider'
 import UserListItem from '../../utils/UserListItem'
 import EmptySearch from '../EmptySearch'

@@ -16,12 +16,12 @@ html,body {
 .left0{
     left: 0 !important;
 }
-.allchats::-webkit-scrollbar{
+.allchatsBox::-webkit-scrollbar{
     width: .7rem;
     background: transparent;
     display: none;
 }
-.allchats::-webkit-scrollbar-thumb{
+.allchatsBox::-webkit-scrollbar-thumb{
     background: rgba(209, 209, 209, 0.644);
     border-radius: 2rem;
 }
@@ -62,6 +62,9 @@ html,body {
 }
 .hidetop{
     transform: translateY(-200px);
+}
+.translateY200{
+    transform: translateY(200px);
 }
 .chaticon{
     width: 60px;

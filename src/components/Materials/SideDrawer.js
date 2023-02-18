@@ -65,7 +65,6 @@ function SideDrawer({ isOpen, onClose }) {
     }
 
     const CreateChat = async (user) => {
-        console.log("isyudg")
         setChatsLoading(true)
         try {
             let config = {
@@ -101,6 +100,9 @@ function SideDrawer({ isOpen, onClose }) {
     const handleAccesschat = async (user) => {
         onClose()
         if (!user) return showToast("Error", "Something went wrong", "error", 3000)
+
+        if(chats.length === 0) return CreateChat(user)
+
         let ischat = false
 
         chats?.map((chat, i) => {

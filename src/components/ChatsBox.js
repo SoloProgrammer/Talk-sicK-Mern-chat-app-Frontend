@@ -8,6 +8,7 @@ import { ChatState } from '../Context/ChatProvider'
 import { useNavigate } from 'react-router-dom'
 import ChatMenuBox from './Materials/ChatMenuBox'
 import ChatFooter from './ChatFooter'
+import { ChatsSkeleton } from './Materials/Loading'
 
 
 function ChatsBox() {
@@ -78,15 +79,15 @@ function ChatsBox() {
   return (
     <Box pos={"relative"} display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
       <ChatsTopBar />
-      <Box overflowY={"auto"} pos={"relative"} transition={".6s"} height={"calc(100vh - 7.3rem)"} className='allchats hidetop'>
+      <Box overflowY={"auto"} pos={"relative"}  height={"calc(100vh - 7.3rem)"} className="allchatsBox">
         {
           profile && profile._id === user._id &&
           <ProfileDrawer width="full" align="left" />
         }
         {
-          chats?.length === 0
+          !chatsLoading && chats?.length === 0
             ?
-            <Box height={"100%"} display="flex" flexDir={"column"} justifyContent="center" alignItems={"center"}>
+            <Box height={"100%"} display="flex" flexDir={"column"} justifyContent="center" alignItems={"center"} className='allchats hidetop' transition={".6s"}>
               <Image marginBottom={"4rem"} opacity=".3" width={{ base: "6rem", md: "10rem" }} src="https://cdn-icons-png.flaticon.com/512/3073/3073428.png"></Image>
               <Text fontWeight={"medium"} >Haven't Created your first Chat Yet?</Text>
               <Text>No Problem!</Text>
@@ -94,8 +95,8 @@ function ChatsBox() {
               <Text textAlign={"center"} fontWeight={"hairline"} >Let's go ahead and Search Users to Start your First Chat with them</Text>
             </Box>
             :
-            !chatsLoading &&
-            <Box display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" paddingBottom={window.innerWidth > 770 ? "4rem" : "3.2rem"} >
+            (!chatsLoading && chats?.length > 0) &&
+            <Box display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" paddingBottom={window.innerWidth > 770 ? "4rem" : "3.2rem"} className='allchats hidetop' transition={".6s"}>
               {
                 chats?.map((chat, i) => {
                   return (
@@ -182,13 +183,13 @@ function ChatsBox() {
         }
         {
           chatsLoading &&
-          <Box display={"flex"} justifyContent="center" alignItems={"center"} height={"100%"}>
-            <Image width={"12rem"} src='https://miro.medium.com/max/600/1*beQRWt1uWdnQM_nqCwhJnA.gif' />
+          <Box height={"100%"} marginTop=".4em" >
+            <ChatsSkeleton/>
           </Box>
         }
       </Box>
-      
-      <ChatFooter/>
+
+      <ChatFooter />
     </Box>
   )
 }
