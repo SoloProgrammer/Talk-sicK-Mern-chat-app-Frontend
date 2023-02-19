@@ -10,9 +10,9 @@ import ConfirmBoxModal from './ConfirmBoxModal';
 
 function ChatMenuBox({ chat, i }) {
 
-    let { user, handlePinOrUnpinChat, chats, setChats, showToast, setSelectedChat } = ChatState();
+    let { user, handlePinOrUnpinChat, chats, setChats, showToast, setSelectedChat, notifications, setNotifications } = ChatState();
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const handleChatMenuIconClick = (e, i) => {
         e.stopPropagation();
@@ -31,7 +31,7 @@ function ChatMenuBox({ chat, i }) {
 
     const [loading, setLoading] = useState(false);
 
-    const [isClosable,setIsClosable] = useState(true)
+    const [isClosable, setIsClosable] = useState(true)
 
     const handleDeleteChat = async () => {
         try {
@@ -59,6 +59,10 @@ function ChatMenuBox({ chat, i }) {
             if (!json.status) return showToast("Error", json.message, "error", 3000);
 
             setChats(chats.filter(c => c._id !== chat._id));
+
+
+            // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat parallelly..!!
+            setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
 
             navigate('/chats');
 
@@ -96,12 +100,15 @@ function ChatMenuBox({ chat, i }) {
 
             setChats(chats.filter(c => c._id !== chat._id));
 
+            // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat parallelly..!!
+            setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
+
             showToast("Success", `You left ${chat.chatName}`, "success", 3000)
-            
+
             setSelectedChat(null)
 
             navigate('/chats');
-            
+
         } catch (error) {
 
         }

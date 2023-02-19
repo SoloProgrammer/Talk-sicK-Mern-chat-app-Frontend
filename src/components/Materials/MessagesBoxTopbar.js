@@ -1,7 +1,7 @@
 import { Avatar, Box, Image, Text, Tooltip } from '@chakra-ui/react'
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
-import { getSender, GroupMembers } from '../../configs/userConfigs';
+import { getSender, GroupMembers, isUserOnline } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
 
 function MessagesBoxTopbar() {
@@ -45,12 +45,16 @@ function MessagesBoxTopbar() {
                             </Box>
                         </Tooltip>}
 
-                    {isTyping
-                        &&
-                        <Text pos={"absolute"} bottom=".3rem" fontSize={".85rem"} color="floralwhite" letterSpacing=".01rem" left={"5rem"}>
-                            {selectedChat.isGroupchat && typingUser.split(" ")[0] + " is "}
-                            typing.....
-                        </Text>}
+                    <Text pos={"absolute"} bottom=".3rem" fontSize={".8rem"} color="floralwhite" letterSpacing=".01rem" left={"5rem"}>
+                        {isTyping
+                            ?
+                            selectedChat.isGroupchat ? (typingUser.split(" ")[0] + "is typing....." ) : "typing....."
+                            :
+                            !selectedChat?.isGroupchat
+                            &&
+                            isUserOnline(getSender(selectedChat, user)) && "online"
+                        }
+                    </Text>
                 </Box>
                 <Box className='msgrightTop'>
                     {

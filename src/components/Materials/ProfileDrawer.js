@@ -463,8 +463,6 @@ function ProfileDrawer({ width, align = "right" }) {
                     </Box>
                 }
 
-
-
             </Box>
         </Box>
     )

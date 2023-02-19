@@ -96,7 +96,7 @@ function ChatsBox() {
             </Box>
             :
             (!chatsLoading && chats?.length > 0) &&
-            <Box display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" paddingBottom={window.innerWidth > 770 ? "4rem" : "3.2rem"} className='allchats hidetop' transition={".6s"}>
+            <Box display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" paddingBottom={window.innerWidth > 770 ? "4.3rem" : "4.8rem"} className='allchats ' transition={".6s"}>
               {
                 chats?.map((chat, i) => {
                   return (
@@ -105,7 +105,7 @@ function ChatsBox() {
                       onClick={() => { handleChatClick(chat, i) }}
                       display={"flex"}
                       width="100%"
-                      bg={selectedChat?._id === chat?._id ? "#2da89f61" : "#e9e9e99e"}
+                      bg={selectedChat?._id === chat?._id ? "#2da89f61" : "rgb(241,243,244)"}
                       boxShadow={selectedChat?._id === chat?._id && "inset 0 0 0 1.1px #2baca1;"}
                       padding={"0.7rem 0.5rem"}
                       gap="1rem"

@@ -23,7 +23,7 @@ import { useNavigate } from 'react-router-dom'
 
 function SideDrawer({ isOpen, onClose }) {
 
-    const { showToast, setProfile, chats, setChats, setChatsLoading } = ChatState();
+    const { showToast, setProfile, chats, CreateChat } = ChatState();
 
     const [search, setSearch] = useState("")
     const [loading, setLoading] = useState(false)
@@ -41,59 +41,26 @@ function SideDrawer({ isOpen, onClose }) {
     }, [isOpen])
 
     const handleSearch = async (e) => {
-        if(e.key === "Enter" || e.target.type === "button"){
-                if (search === "") return showToast("*Required", "Please Enter Something to Search", "error", 3000, "top-left");
-        
-                try {
-                    setLoading(true)
-                    let config = {
-                        headers: {
-                            token: localStorage.getItem('token')
-                        }
+        if (e.key === "Enter" || e.target.type === "button") {
+            if (search === "") return showToast("*Required", "Please Enter Something to Search", "error", 3000, "top-left");
+
+            try {
+                setLoading(true)
+                let config = {
+                    headers: {
+                        token: localStorage.getItem('token')
                     }
-                    const res = await fetch(`${server.URL.local}/api/user/searchuser?search=${search}`, config)
-                    const json = await res.json()
-        
-                    if (!json.status) HandleLogout()
-        
-                    setResults(json.searchResults)
-                    setLoading(false)
-                } catch (error) {
-                    showToast("Error", error.message, "error", 3000)
                 }
-        }
-    }
+                const res = await fetch(`${server.URL.local}/api/user/searchuser?search=${search}`, config)
+                const json = await res.json()
 
-    const CreateChat = async (user) => {
-        setChatsLoading(true)
-        try {
-            let config = {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    token: localStorage.getItem('token')
-                },
-                body: JSON.stringify({ userId: user._id })
+                if (!json.status) HandleLogout()
+
+                setResults(json.searchResults)
+                setLoading(false)
+            } catch (error) {
+                showToast("Error", error.message, "error", 3000)
             }
-            let res = await fetch(`${server.URL.local}/api/chat`, config)
-
-            if (res.status === 401) HandleLogout();
-
-            let json = await res.json();
-
-            if (!json.status) return showToast("Error", json.message, "error", 3000)
-
-            if (json.status) {
-                setChatsLoading(false)
-                setChats(json.chats)
-                navigate(`/chats/chat/${json.chat._id}`)
-                setProfile(null)
-                return showToast("Congratulations 🎉", json.message, "success", 3000)
-            }
-           
-
-        } catch (error) {
-            return showToast('Error', error.message, "error", 3000)
         }
     }
 
@@ -101,7 +68,7 @@ function SideDrawer({ isOpen, onClose }) {
         onClose()
         if (!user) return showToast("Error", "Something went wrong", "error", 3000)
 
-        if(chats.length === 0) return CreateChat(user)
+        if (chats.length === 0) return CreateChat(user)
 
         let ischat = false
 
@@ -128,10 +95,10 @@ function SideDrawer({ isOpen, onClose }) {
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerHeader>Search or Start a New Chat..!</DrawerHeader>
+                    <DrawerHeader fontFamily={"sans-serif"} color="lightslategray" textDecor={"underline"}>Search or Start a New Chat..!</DrawerHeader>
                     <DrawerBody>
                         <Box >
-                            <FormControl width={"full"} display="flex" justifyContent={"space-between"} alignItems="center" gap={".5rem"}  onKeyDown={handleSearch}>
+                            <FormControl width={"full"} display="flex" justifyContent={"space-between"} alignItems="center" gap={".5rem"} onKeyDown={handleSearch}>
                                 <Input value={search} onChange={handleOnchange} variant={"filled"} placeholder='Search here... Eg = John' />
                                 <Button onClick={handleSearch}>
                                     <SearchIcon fontSize={"2lg"} m={1} />

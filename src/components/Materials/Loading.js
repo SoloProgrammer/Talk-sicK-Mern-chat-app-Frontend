@@ -19,8 +19,8 @@ export const ChatsSkeleton = () => {
                 {
                     chatsCount.map((_, i) => {
                         return (
-                            <Box display={"flex"} gap={".8rem !important"} width={"100%"} alignItems="center" marginTop={"0px !important"} padding={".4rem .2rem"} background="#e9e9e99e">
-                                <SkeletonCircle size={window.innerWidth < 770 ? 12 : 14} />
+                            <Box display={"flex"} gap={".8rem !important"} width={"100%"} alignItems="center" marginTop={"0px !important"} padding={".4rem .2rem"} background="rgb(241,243,244)">
+                                <SkeletonCircle size={14}/>
                                 <Box display={"flex"} flexDir="column" gap={".6rem"} width={`${window.innerWidth < 770 ? "82%" : "90%"}`}>
                                     <Skeleton height='19px' w={"100%"}/>
                                     <Skeleton height='15px' w={"100%"}/>

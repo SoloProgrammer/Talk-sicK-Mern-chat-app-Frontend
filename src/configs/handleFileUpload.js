@@ -22,7 +22,8 @@ export const handleFileUpload = async (e, setLoading, showToast) => {
             let json = await res.json();
             setLoading(false);
 
-            return json.url.toString()
+            return json.url.toString();
+            
         } catch (error) {
             setLoading(false)
             return showToast("Seems some suspicious*", "Some error occured try again later", "error", 3000)

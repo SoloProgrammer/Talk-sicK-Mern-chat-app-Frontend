@@ -96,7 +96,7 @@ function GroupMembersBox() {
                         </Box>
                     </PopupModal>}
             </Box>
-            <Box className='GroupUsersBox' height={{ base: 'calc(100vh - 30rem)', md: 'calc(100vh - 28.5rem)' }} width="100%" overflowY="auto" >
+            <Box className='GroupUsersBox' maxHeight={'calc(100vh - 28.5rem)' } width="100%" overflowY="auto" >
                 {
                     groupUsers.map(u => {
                         return <GroupUser key={u._id} u={u} />

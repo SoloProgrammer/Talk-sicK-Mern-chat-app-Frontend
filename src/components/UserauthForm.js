@@ -1,4 +1,4 @@
-import { Box, Input, Stack, Button, Text, InputGroup, InputRightElement, Avatar } from '@chakra-ui/react';
+import { Box, Input, Stack, Button, Text, InputGroup, InputRightElement, Avatar, FormControl } from '@chakra-ui/react';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { ChatState } from '../Context/ChatProvider';
@@ -25,46 +25,49 @@ function Login({ value, inputValues, setInputValues }) {
     setPic(avatar)
   }
 
-  const handleSubmit = async () => {
-    const { name, email, password, confpass } = inputValues
+  const handleSubmit = async (e) => {
 
-    if ((value !== "login" && (!name || !confpass)) || !email || !password) {
-      return showToast("*Required", "Please fill all the fields marked with *", "error", 3000)
-    }
-    if (!email.includes("@gmail.com")) return showToast("*Invalid", "Email must be valid!", "error", 3000)
-
-    if (value !== "login" && (password !== confpass)) {
-      return showToast("*Missmathched", "Password and ConfirmPassword must be same.", "error", 3000)
-    }
-
-    try {
-      setLoading(true)
-      let avatar = pic ? pic : ""
-      let payload = value === "login" ? JSON.stringify({ email, password }) : JSON.stringify({ name, email, password, avatar })
-      const config = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: payload
-      }
-      let res = await fetch(`${server.URL.local}/api/user/${value === "login" ? "login" : "createuser"}`, config);
-      let json = await res.json();
-
-      if (!json.status) {
-        showToast("Alert!", json.message, "error", 4000)
-      } else {
-        value !== "login" ?
-          showToast("Whooho!", "We've created an account for your welcome to [Talk-o-Meter]", "success", 4000)
-          : showToast("Welcome", json.message, "success", 4000)
-        localStorage.setItem('token', json.token)
-        navigate('/chats')
-      }
-
-      setLoading(false)
-    } catch (error) {
-      showToast("Seems some suspicious*", "Some error occured try again later", "error", 3000)
-      setLoading(false)
+    if(e.key === "Enter" || e.target.type === "button"){
+        const { name, email, password, confpass } = inputValues
+    
+        if ((value !== "login" && (!name || !confpass)) || !email || !password) {
+          return showToast("*Required", "Please fill all the fields marked with *", "error", 3000)
+        }
+        if (!email.includes("@gmail.com")) return showToast("*Invalid", "Email must be valid!", "error", 3000)
+    
+        if (value !== "login" && (password !== confpass)) {
+          return showToast("*Missmathched", "Password and ConfirmPassword must be same.", "error", 3000)
+        }
+    
+        try {
+          setLoading(true)
+          let avatar = pic ? pic : ""
+          let payload = value === "login" ? JSON.stringify({ email, password }) : JSON.stringify({ name, email, password, avatar })
+          const config = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: payload
+          }
+          let res = await fetch(`${server.URL.local}/api/user/${value === "login" ? "login" : "createuser"}`, config);
+          let json = await res.json();
+    
+          if (!json.status) {
+            showToast("Alert!", json.message, "error", 4000)
+          } else {
+            value !== "login" ?
+              showToast("Whooho!", "We've created an account for your welcome to [Talk-o-Meter]", "success", 4000)
+              : showToast("Welcome", json.message, "success", 4000)
+            localStorage.setItem('token', json.token)
+            navigate('/chats')
+          }
+    
+          setLoading(false)
+        } catch (error) {
+          showToast("Seems some suspicious*", "Some error occured try again later", "error", 3000)
+          setLoading(false)
+        }
     }
 
   }
@@ -73,8 +76,9 @@ function Login({ value, inputValues, setInputValues }) {
   const handleClick = () => setShow(!show)
 
   return (
-    <Box display={"flex"} flexDir="column" gap={7} paddingBottom="1.5rem">
+    <Box  paddingBottom="1.5rem">
       <Stack spacing={6}>
+      <FormControl onKeyDown={handleSubmit} display={"flex"} flexDir="column" gap={7}>
         {value !== "login" && <Box>
           <label style={{ margin: "20px 3px", fontSize: "1rem", fontWeight: "300", color: "grey" }} htmlFor="pass "><span className='red'>*</span> Fullname</label>
           <Input onChange={handleChange} value={inputValues?.name || ""} id="pass" name='name' variant='filled' placeholder='Fullname' />
@@ -133,9 +137,10 @@ function Login({ value, inputValues, setInputValues }) {
               <img width={30} src="https://cdn-icons-png.flaticon.com/512/1177/1177911.png" alt="Upload pic" /></label>
           </Box>
         </>}
-        <Button isLoading={loading} onClick={handleSubmit} colorScheme='teal' size='md'>
-          {value === "login" ? "Login" : "SignUp"}
-        </Button>
+          <Button width={"100%"} isLoading={loading} onClick={handleSubmit} colorScheme='teal' size='md'>
+            {value === "login" ? "Login" : "SignUp"}
+          </Button>
+        </FormControl>
       </Stack>
       <Box display="flex" flexDir="column" alignItems="center" gap={20} marginTop="30px">
         <Text position="relative" borderBottom="1px solid" w="100%" paddingBottom="1rem">

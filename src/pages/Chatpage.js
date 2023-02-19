@@ -9,8 +9,8 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat } = ChatState()
-
+  const { getUser, setUser, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat } = ChatState();
+  
   const navigate = useNavigate();
   const locaObj = useLocation();
 

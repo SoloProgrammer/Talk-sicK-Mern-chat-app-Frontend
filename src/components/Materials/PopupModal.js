@@ -21,6 +21,7 @@ import EmptySearch from '../EmptySearch'
 import { defaultPic, HandleLogout, UserChip } from '../../configs/userConfigs'
 import { server } from '../../configs/serverURl'
 import { useNavigate } from 'react-router-dom'
+import { handleFileUpload } from '../../configs/handleFileUpload'
 
 function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmemberLoading }) {
 
@@ -102,13 +103,17 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
         setSelectedUsers(selectedUsers.filter(u => u._id !== user._id))
     }
 
-    const [creategroupLoading, setCreategroupLoading] = useState(false)
+    const [creategroupLoading, setCreategroupLoading] = useState(false);
+    const [isClosable,setIsClosable] = useState(true)
+
     const handleCreateGroup = async () => {
+
         let users = selectedUsers.map(u => u._id)
         if (groupName === "") return showToast("Required*", "Please Provide a groupName!", "error", 3000)
 
         try {
-            setCreategroupLoading(true)
+            setCreategroupLoading(true);
+            setIsClosable(false)
             let config = {
                 method: "POST",
                 headers: {
@@ -132,11 +137,12 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
             setChats(json.chats)
             setSelectedChat(json.Fullgroup)
             navigate(`/chats/chat/${json.Fullgroup._id}`)
-
+            setIsClosable(true)
 
             onClose()
 
         } catch (error) {
+            setIsClosable(true)
             return showToast("Error", error.message, "error", 3000)
         }
 
@@ -147,44 +153,15 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
     const HandleUpload = async (e) => {
 
-        let pics = e.target.files[0]
-
-        if (pics === undefined) {
-            setPic(null)
-            return showToast("Not Selected", "Please select an Image file", "warning", 3000)
-        }
-        if (pics.type === 'image/jpeg' || pics.type === 'image/png' || pics.type === 'image/jpg') {
-            setUploadloading(true)
-            const data = new FormData();
-            data.append('file', pics);
-            data.append('upload_preset', "Talk-o-Meter");
-            data.append('cloud_name', "dvzjzf36i");
-
-            const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dvzjzf36i/image/upload"
-            let config = {
-                method: "POST",
-                body: data
-            }
-            try {
-                let res = await fetch(CLOUDINARY_URL, config)
-                let json = await res.json();
-                setPic(json.url.toString())
-                setUploadloading(false)
-            } catch (error) {
-                setUploadloading(false)
-                return showToast("Seems some suspicious*", "Some error occured try again later", "error", 3000)
-            }
-        }
-        else {
-            return showToast("*Not accepted", "Please select an Image file", "warning", 3000)
-        }
+        let avatar = await handleFileUpload(e, setUploadloading, showToast)
+        setPic(avatar)
 
     }
 
     return (
         <>
             {children}
-            <Modal size={'md'} isOpen={isOpen} onClose={onClose} isCentered>
+            <Modal size={'md'} isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick={isClosable}>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader>
@@ -196,7 +173,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
                         </Box>
                     </ModalHeader>
-                    <ModalCloseButton />
+                    <ModalCloseButton disabled={!isClosable}/>
                     <ModalBody>
                         {!addMember && <Box display={"flex"} gap=".3rem" alignItems={{ base: "normal", md: "center" }} flexDir={{ base: "column", md: "row" }}>
                             <Box>
