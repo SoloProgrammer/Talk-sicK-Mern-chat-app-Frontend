@@ -78,9 +78,15 @@ const ChatProvider = ({ children }) => {
 
     const [chatsLoading, setChatsLoading] = useState(false)
 
-    const CreateChat = async (userId) => {
+    const [isChatCreating,setIsChatCreating] = useState(null)
+
+    const CreateChat = async (userId,userName) => {
+        
         try {
-            setChatsLoading(true)
+            setChatsLoading(true);
+
+            // this state helps to notify user that the chat is creating via showing loader with information that chat is creating with this user..!
+            setIsChatCreating({createdWith:userName.split(" ")[0]})
             let config = {
                 method: 'POST',
                 headers: {
@@ -100,6 +106,7 @@ const ChatProvider = ({ children }) => {
 
             setChats(json.chats)
             setChatsLoading(false)
+            setIsChatCreating(null)
             navigate(`/chats/chat/${json.chat._id}`)
             setProfile(null)
 
@@ -228,7 +235,7 @@ const ChatProvider = ({ children }) => {
     const [newCreatedChat, setNewCreatedChat] = useState(null)
 
     return (
-        <ChatContext.Provider value={{ refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage,handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, newCreatedChat, setNewCreatedChat }}>
+        <ChatContext.Provider value={{ isChatCreating,refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage,handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, newCreatedChat, setNewCreatedChat }}>
             {children}
         </ChatContext.Provider>
     )

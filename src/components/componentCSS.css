@@ -242,6 +242,10 @@
     opacity: 0;
     transform: translateY(-300px);
 }
+
+.transformCenter{
+    transform: translate(-50%,-50%);
+}
 .maxWidth520 {
     max-width: 520px !important;
 }

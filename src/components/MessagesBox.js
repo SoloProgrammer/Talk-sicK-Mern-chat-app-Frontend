@@ -31,13 +31,12 @@ function MessageBox({ messages, setMessages }) {
     }
     // setMessagesLoading(true)
     let isChatMsg = false
-    chatMessages.map((chatMsg, i) => {
+    chatMessages.forEach((chatMsg, _) => {
       // console.log(Object.keys(chatMsg),selectedChat?._id);
       if (chatMsg.chatId === selectedChat?._id) {
         setMessages(chatMsg.messages)
         isChatMsg = true
       }
-      return 1
     });
 
     if (isChatMsg) return
@@ -106,7 +105,7 @@ function MessageBox({ messages, setMessages }) {
 
             // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
             if (window.innerWidth < 770) setSelectedChat(null)
-            CreateChat(avatarUser._id)
+            CreateChat(avatarUser._id,avatarUser.name)
           }
         }
       })

@@ -37,9 +37,13 @@ function SideDrawer({ isOpen, onClose }) {
     }
     useEffect(() => {
         setResults(null)
-        setSearch("")
-    }, [isOpen])
+        setSearch("");
 
+        setTimeout(() => {
+            document.querySelector('.SearchInput')?.focus()
+        }, 0);
+    }, [isOpen])
+    
     const handleSearch = async (e) => {
         if (e.key === "Enter" || e.target.type === "button") {
             if (search === "") return showToast("*Required", "Please Enter Something to Search", "error", 3000, "top-left");
@@ -65,10 +69,11 @@ function SideDrawer({ isOpen, onClose }) {
     }
 
     const handleAccesschat = async (user) => {
+        console.log(user);
         onClose()
         if (!user) return showToast("Error", "Something went wrong", "error", 3000)
 
-        if (chats.length === 0) return CreateChat(user)
+        if (chats.length === 0) return CreateChat(user._id,user.name)
 
         let ischat = false
 
@@ -79,7 +84,7 @@ function SideDrawer({ isOpen, onClose }) {
                 ischat = true
             }
             // if index of map reaches the length of the chats that means the chat has not yet created with the user so we are creating the chat now with that user!
-            if (i === chats.length - 1 && !ischat) CreateChat(user)
+            if (i === chats.length - 1 && !ischat) CreateChat(user._id,user.name)
             return 1
         })
     }
@@ -99,7 +104,7 @@ function SideDrawer({ isOpen, onClose }) {
                     <DrawerBody>
                         <Box >
                             <FormControl width={"full"} display="flex" justifyContent={"space-between"} alignItems="center" gap={".5rem"} onKeyDown={handleSearch}>
-                                <Input value={search} onChange={handleOnchange} variant={"filled"} placeholder='Search here... Eg = John' />
+                                <Input className='SearchInput' value={search} onChange={handleOnchange} variant={"filled"} placeholder='Search with Email or Name' />
                                 <Button onClick={handleSearch}>
                                     <SearchIcon fontSize={"2lg"} m={1} />
                                 </Button>

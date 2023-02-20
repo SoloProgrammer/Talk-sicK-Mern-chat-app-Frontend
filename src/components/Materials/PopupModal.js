@@ -104,7 +104,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
     }
 
     const [creategroupLoading, setCreategroupLoading] = useState(false);
-    const [isClosable,setIsClosable] = useState(true)
+    const [isClosable, setIsClosable] = useState(true)
 
     const handleCreateGroup = async () => {
 
@@ -152,10 +152,8 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
     const [uploadloading, setUploadloading] = useState(false)
 
     const HandleUpload = async (e) => {
-
         let avatar = await handleFileUpload(e, setUploadloading, showToast)
         setPic(avatar)
-
     }
 
     return (
@@ -173,7 +171,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
                         </Box>
                     </ModalHeader>
-                    <ModalCloseButton disabled={!isClosable}/>
+                    <ModalCloseButton disabled={!isClosable} />
                     <ModalBody>
                         {!addMember && <Box display={"flex"} gap=".3rem" alignItems={{ base: "normal", md: "center" }} flexDir={{ base: "column", md: "row" }}>
                             <Box>

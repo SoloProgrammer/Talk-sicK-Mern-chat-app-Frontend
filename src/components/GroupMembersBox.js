@@ -33,7 +33,7 @@ function GroupMembersBox() {
 
     const [loading, setLoading] = useState(false)
     const hanldeAddmember = async (users) => {
-        console.log(users)
+       
         users = users.map(u => u._id)
         setLoading(true)
         try {
@@ -63,8 +63,6 @@ function GroupMembersBox() {
             setLoading(false)
         }
     }
-
-
 
     return (
         <Box width={"100%"} >

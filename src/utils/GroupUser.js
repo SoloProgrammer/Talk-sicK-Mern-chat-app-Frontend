@@ -127,7 +127,7 @@ function GroupUser({ u }) {
 
                         // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
                         if (window.innerWidth < 770) setSelectedChat(null)
-                        CreateChat(U._id)
+                        CreateChat(U._id,U.name)
                     }
                 }
             })

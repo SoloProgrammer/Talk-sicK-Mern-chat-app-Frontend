@@ -7,9 +7,11 @@ function UserListItem({ user, handleFunc }) {
     <Box
       display={"flex"}
       gap="1rem"
+      transition={".1s all"}
       padding={".2rem .3rem"}
       cursor={"pointer"}
       bg={"#EDF2F7"}
+      _active={{transform:"translateX(10px)"}}
       borderRadius=".3rem"
       onClick={() => handleFunc(user)}
       _hover={{ bg: "#24baaf", color: "white" }}
