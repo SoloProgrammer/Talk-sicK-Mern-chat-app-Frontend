@@ -78,15 +78,19 @@ const ChatProvider = ({ children }) => {
 
     const [chatsLoading, setChatsLoading] = useState(false)
 
-    const [isChatCreating,setIsChatCreating] = useState(null)
+    const [isChatCreating, setIsChatCreating] = useState(null);
 
-    const CreateChat = async (userId,userName) => {
-        
+    const [archivedChats, setArchivedChats] = useState([]);
+
+    const [viewArchivedChats, setViewArchivedChats] = useState(false);
+
+    const CreateChat = async (userId, userName) => {
+
         try {
             setChatsLoading(true);
 
             // this state helps to notify user that the chat is creating via showing loader with information that chat is creating with this user..!
-            setIsChatCreating({createdWith:userName.split(" ")[0]})
+            setIsChatCreating({ createdWith: userName.split(" ")[0] })
             let config = {
                 method: 'POST',
                 headers: {
@@ -118,10 +122,10 @@ const ChatProvider = ({ children }) => {
     }
 
     const handlePinOrUnpinChat = async (chat) => {
-        
+
         setTimeout(() => {
             document.body.click()
-        },250);
+        }, 250);
 
         let updatedChats = chats.map(c => {
             if (c._id === chat._id) {
@@ -129,13 +133,13 @@ const ChatProvider = ({ children }) => {
                     c.pinnedBy.push(user._id)
                 }
                 else {
-                    c.pinnedBy =  c.pinnedBy.filter(UId => UId !== user._id)
+                    c.pinnedBy = c.pinnedBy.filter(UId => UId !== user._id)
                 }
             }
             return c;
         });
-        
-        (selectedChat && selectedChat._id === chat._id) &&  setSelectedChat(chats.filter(c => c._id === chat._id)[0]);
+
+        (selectedChat && selectedChat._id === chat._id) && setSelectedChat(chats.filter(c => c._id === chat._id)[0]);
 
         setChats(updatedChats)
         try {
@@ -183,7 +187,10 @@ const ChatProvider = ({ children }) => {
             // ToDo gave an appropiatiate msg for the bad response from the server!
             if (!json.status) return
 
-            setChats(json.chats) // refresing the chats whenever a new or lastemessgge seen by user to show him in the chat that he has seen the latestmessage!
+            // refresing the chats whenever a new or lastemessgge seen by user to show him in the chat that he has seen the latestmessage!
+            setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))));
+
+            setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
 
         } catch (error) {
             setSelectedChat(null)
@@ -194,7 +201,7 @@ const ChatProvider = ({ children }) => {
 
     }
 
-    const refreshChats = async () => {
+    const refreshChats = async (u = user) => {
 
         try {
             const config = {
@@ -211,14 +218,55 @@ const ChatProvider = ({ children }) => {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-            setChats(json.chats);
+            setChats(json.chats.filter(c => !(c.archivedBy.includes(u?._id))));
 
-            console.log(json.chats);
+            setArchivedChats(json.chats.filter(c => c.archivedBy.includes(u?._id)))
 
         } catch (error) {
             return showToast("Error", error.message, "error", 3000)
         }
 
+    }
+
+    const hanldeArchiveChatAction = async (chat) => {
+
+        if ((selectedChat?._id === chat._id)) {
+            setSelectedChat(null)
+            navigate('/chats')
+        }
+
+        if (archivedChats.map(c => c._id).includes(chat._id)) {
+            setArchivedChats(archivedChats.filter(c => c._id !== chat._id));
+            setChats([chat, ...chats])
+        }
+        else {
+            setArchivedChats([...archivedChats, chat]);
+            setChats(chats.filter(c => c._id !== chat._id));
+        }
+
+        if (archivedChats.filter(c => c._id !== chat._id).length < 1) {
+            setViewArchivedChats(false)
+        }
+        setTimeout(() => {
+            document.body.click()
+        }, 100);
+
+        try {
+            let config = {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    token: localStorage.getItem('token')
+                },
+                body: JSON.stringify({ chatId: chat._id })
+            }
+            let res = await fetch(`${server.URL.local}/api/chat/archiveOrUnarchiveChat`, config);
+
+            if (res.status === "401") HandleLogout();
+
+        } catch (error) {
+
+        }
     }
 
     useEffect(() => {
@@ -232,10 +280,10 @@ const ChatProvider = ({ children }) => {
 
     const [notifications, setNotifications] = useState([])
 
-    const [newCreatedChat, setNewCreatedChat] = useState(null)
+    const [newCreatedChat, setNewCreatedChat] = useState(null);
 
     return (
-        <ChatContext.Provider value={{ isChatCreating,refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage,handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, newCreatedChat, setNewCreatedChat }}>
+        <ChatContext.Provider value={{ isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, newCreatedChat, setNewCreatedChat, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction }}>
             {children}
         </ChatContext.Provider>
     )

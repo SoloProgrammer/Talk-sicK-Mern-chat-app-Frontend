@@ -20,7 +20,7 @@ var chatMessagesCompare;
 
 function MessagesBox() {
 
-  const { user,setChats,refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser } = ChatState()
+  const { user, setChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -63,7 +63,7 @@ function MessagesBox() {
   useEffect(() => {
     if (socket) {
       socket.on("typing", (u, room) => {
-        if (u !== user?.name && room === selectedChatCompare._id) {
+        if (selectedChatCompare && (u !== user?.name && room === selectedChatCompare._id)) {
           setIsTyping(true);
           setTypingUser(u)
         }
@@ -99,7 +99,7 @@ function MessagesBox() {
   useEffect(() => {
 
     // this useEFfect will run whenever socket sends a new message.................................. to recieved it!
-    socket?.on("message recieved", (newMessageRecieved, Previousmessages) => {
+    socket?.on("message recieved", (newMessageRecieved, Previousmessages, user) => {
 
       if (!selectedChatCompare || selectedChatCompare?._id !== newMessageRecieved.chat._id) {
         // give notification
@@ -107,21 +107,20 @@ function MessagesBox() {
         else {
 
           if ((notificationsCompare.length === 0) || (notificationsCompare.length > 0 && !(notificationsCompare.map(noti => noti.chat._id).includes(newMessageRecieved.chat._id)))) {
-            setNotifications([newMessageRecieved, ...notificationsCompare]);
+
+            !newMessageRecieved.chat.archivedBy.includes(user._id) && setNotifications([newMessageRecieved, ...notificationsCompare]);
             // console.log(".................", selectedChatCompare);
             setChatMessages(chatMessagesCompare.filter(chatM => chatM.chatId !== newMessageRecieved.chat._id))
             notificationBeep.play()
-
-            console.log("..",newMessageRecieved)
           }
 
         }
-        refreshChats();
+        refreshChats(user);
       }
       else {
         setMessages([...Previousmessages, newMessageRecieved]);
         seenlstMessage(newMessageRecieved._id);
-        refreshChats();
+        refreshChats(user);
 
         // console.log("outside",chatMessages);
 
@@ -178,7 +177,7 @@ function MessagesBox() {
 
       messageSentBeep?.play();
 
-      socket.emit('new message', json.fullmessage, messages)
+      socket.emit('new message', json.fullmessage, messages, user)
 
       setMessages([...messages, json.fullmessage]);
 
@@ -192,7 +191,7 @@ function MessagesBox() {
         return 1
       })
 
-      setChats(json.chats);
+      setChats(json.chats.filter(c => !c.archivedBy.includes(user?._id)));
 
       setLoading(false);
     } catch (error) {

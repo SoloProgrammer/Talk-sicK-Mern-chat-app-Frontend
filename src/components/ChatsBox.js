@@ -13,7 +13,7 @@ import { ChatsSkeleton } from './Materials/Loading'
 
 function ChatsBox() {
 
-  const { chats, chatsLoading, user, selectedChat, setProfile, profile, seenlstMessage, notifications, setNotifications } = ChatState()
+  const { chats, archivedChats, viewArchivedChats, chatsLoading, user, selectedChat, setProfile, profile, seenlstMessage, notifications, setNotifications } = ChatState()
 
   const navigate = useNavigate();
 
@@ -79,13 +79,25 @@ function ChatsBox() {
   return (
     <Box pos={"relative"} display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
       <ChatsTopBar />
-      <Box overflowY={"auto"} pos={"relative"}  height={"calc(100vh - 7.3rem)"} className="allchatsBox">
+      <Box overflowY={"auto"} pos={"relative"} height={"calc(100vh - 7.3rem)"} className="allchatsBox">
         {
           profile && profile._id === user._id &&
           <ProfileDrawer width="full" align="left" />
         }
         {
-          !chatsLoading && chats?.length === 0
+          (!chatsLoading && !viewArchivedChats && (archivedChats.length > 0 && chats.length < 1)) &&
+          <Box textAlign={"center"} marginTop="7rem">
+            <Text fontSize={'1.4rem'}>
+              {"You have " + archivedChats.length + " Archived chat"}
+            </Text>
+            <br />
+            <Text padding={"0 .3rem"}>
+              Click  on  the  <b>Archived</b>  button  to the top left  corner  to  view  them
+            </Text>
+          </Box>
+        }
+        {
+          (!chatsLoading && chats?.length === 0 && archivedChats.length === 0)
             ?
             <Box height={"100%"} display="flex" flexDir={"column"} justifyContent="center" alignItems={"center"} className='allchats hidetop' transition={".6s"}>
               <Image marginBottom={"4rem"} opacity=".3" width={{ base: "6rem", md: "10rem" }} src="https://cdn-icons-png.flaticon.com/512/3073/3073428.png"></Image>
@@ -95,10 +107,10 @@ function ChatsBox() {
               <Text textAlign={"center"} fontWeight={"hairline"} >Let's go ahead and Search Users to Start your First Chat with them</Text>
             </Box>
             :
-            (!chatsLoading && chats?.length > 0) &&
+            (!chatsLoading && (chats?.length > 0 || archivedChats.length > 0)) &&
             <Box display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" paddingBottom={window.innerWidth > 770 ? "4.3rem" : "4.8rem"} className='allchats ' transition={".6s"}>
               {
-                chats?.map((chat, i) => {
+                (archivedChats.length && viewArchivedChats ? archivedChats : chats)?.map((chat, i) => {
                   return (
                     <Box
                       key={i}
@@ -184,7 +196,7 @@ function ChatsBox() {
         {
           chatsLoading &&
           <Box height={"100%"} marginTop=".4em" >
-            <ChatsSkeleton/>
+            <ChatsSkeleton />
           </Box>
         }
       </Box>

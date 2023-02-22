@@ -9,7 +9,7 @@ function DeleteChat() {
 
     const navigate = useNavigate()
 
-    const { user, selectedChat, setChats, chats, showToast } = ChatState()
+    const { user, selectedChat, setChats, chats, showToast,archivedChats,setArchivedChats,setViewArchivedChats } = ChatState()
 
     const [delConfirm, setDelConfirm] = useState(false);
 
@@ -38,7 +38,12 @@ function DeleteChat() {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000);
 
-            setChats(chats.filter(chat => chat._id !== selectedChat._id));
+            if (archivedChats.map(c => c._id).includes(selectedChat._id)) {
+                setArchivedChats(archivedChats.filter(c => c._id !== selectedChat._id))
+            }
+            else setChats(chats.filter(c => c._id !== selectedChat._id));
+
+            if(archivedChats.filter(c => c._id !== selectedChat._id).length < 1) setViewArchivedChats(false)
 
             navigate('/chats');
 

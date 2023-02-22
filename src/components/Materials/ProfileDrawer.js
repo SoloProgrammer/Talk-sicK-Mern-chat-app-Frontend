@@ -9,7 +9,7 @@ import GroupMembersBox from '../GroupMembersBox'
 
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { setSelectedChat, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = ChatState();
+    const { setSelectedChat,archivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = ChatState();
 
     // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
 
@@ -438,7 +438,7 @@ function ProfileDrawer({ width, align = "right" }) {
                 }
 
                 {
-                    (profile?._id !== user?._id)
+                    (profile?._id !== user?._id && !archivedChats.map(c => c._id).includes(selectedChat?._id))
                     &&
                     <Box padding={{ base: "0 .8rem", md: "0 1.1rem" }} width={"100%"}>
                         <Box

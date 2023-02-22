@@ -10,7 +10,7 @@ import ConfirmBoxModal from './ConfirmBoxModal';
 
 function ChatMenuBox({ chat, i }) {
 
-    let { user, handlePinOrUnpinChat, chats, setChats, showToast, setSelectedChat, notifications, setNotifications } = ChatState();
+    let { user, handlePinOrUnpinChat, hanldeArchiveChatAction,setViewArchivedChats, setArchivedChats, archivedChats, chats, setChats, showToast, setSelectedChat, notifications, setNotifications } = ChatState();
 
     const navigate = useNavigate();
 
@@ -58,8 +58,12 @@ function ChatMenuBox({ chat, i }) {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000);
 
-            setChats(chats.filter(c => c._id !== chat._id));
+            if (archivedChats.map(c => c._id).includes(chat._id)) {
+                setArchivedChats(archivedChats.filter(c => c._id !== chat._id))
+            }
+            else setChats(chats.filter(c => c._id !== chat._id));
 
+            if(archivedChats.filter(c => c._id !== chat._id).length < 1) setViewArchivedChats(false)
 
             // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat parallelly..!!
             setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
@@ -75,6 +79,11 @@ function ChatMenuBox({ chat, i }) {
     }
 
     const handleLeaveChat = async () => {
+        if (chat?.groupAdmin.map(u => u._id).includes(user._id) && chat?.groupAdmin.length === 1) {
+            onClose()
+            return showToast("Error", "Plz first add some one as GroupAdmin if you wish to leave this group.!", "error", 3000)
+        }
+
         try {
             setLoading(true)
             setIsClosable(false)
@@ -98,7 +107,10 @@ function ChatMenuBox({ chat, i }) {
             onClose();
             if (!json.status) return showToast("Error", json.message, "error", 3000);
 
-            setChats(chats.filter(c => c._id !== chat._id));
+            if (archivedChats.map(c => c._id).includes(chat._id)) {
+                setArchivedChats(archivedChats.filter(c => c._id !== chat._id))
+            }
+            else setChats(chats.filter(c => c._id !== chat._id));
 
             // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat parallelly..!!
             setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
@@ -119,7 +131,7 @@ function ChatMenuBox({ chat, i }) {
             <Box id={`chatMenuIcon${i}`} className='chatMenuIcon arrowIcon' pos={"absolute"} right="6px" bottom={"4px"} cursor="pointer" onClick={(e) => handleChatMenuIconClick(e, i)}>
                 <Image width={"1rem"} src='https://cdn-icons-png.flaticon.com/512/137/137519.png' />
                 <Box pos={"relative"}>
-                    <Box id={`chatmenu${i}`} className='chat_menu flex' flexDir={"column"}>
+                    <Box id={`chatmenu${i}`} className='chat_menu flex' flexDir={"column"} width="9.7rem">
 
                         <ConfirmBoxModal isClosable={isClosable} handleFunc={chat.isGroupchat ? handleLeaveChat : handleDeleteChat} isOpen={isOpen} onClose={onClose} modalDetail={{ chat: chat, index: i }} loading={loading}>
                             <span
@@ -130,18 +142,31 @@ function ChatMenuBox({ chat, i }) {
                             </span>
                         </ConfirmBoxModal>
 
-                        <span className='flex' onClick={(e) => {
+                        {!archivedChats.map(c => c._id).includes(chat._id) && <span className='flex' onClick={(e) => {
                             handlePinOrUnpinChat(chat);
                             e.stopPropagation();
                         }}>
                             {chat.pinnedBy?.includes(user?._id) ? "Unpin Chat" : "Pin Chat"}
                             <Image width="1.1rem" src={`${chat.pinnedBy?.includes(user?._id) ? "https://cdn-icons-png.flaticon.com/512/1274/1274749.png" : "https://cdn-icons-png.flaticon.com/512/1274/1274786.png"}`} />
+                        </span>}
+
+                        <span className='flex' onClick={(e) => {
+                            hanldeArchiveChatAction(chat);
+                            e.stopPropagation();
+                        }} >
+                            {archivedChats.map(c => c._id).includes(chat._id) ? "Unarchive Chat" : "Archive Chat"}
+
+                            {archivedChats.map(c => c._id).includes(chat._id)
+                                ?
+                                <Image src='https://cdn-icons-png.flaticon.com/512/5774/5774826.png' width="1rem" />
+                                :
+                                <Image width="1.1rem" src='https://cdn-icons-png.flaticon.com/512/8138/8138776.png' />}
                         </span>
 
-                        <span className='flex'>
-                            Archive Chat
-                            <Image width="1.1rem" src='https://cdn-icons-png.flaticon.com/512/8138/8138776.png' />
-                        </span>
+                        {!archivedChats.map(c => c._id).includes(chat._id) && <span className='flex'>
+                            Mute notification
+                            <Image width="1.1rem" src='https://cdn-icons-png.flaticon.com/512/7233/7233618.png' />
+                        </span>}
                     </Box>
                 </Box>
             </Box>

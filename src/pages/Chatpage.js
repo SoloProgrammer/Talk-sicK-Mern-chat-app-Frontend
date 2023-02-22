@@ -9,8 +9,8 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat } = ChatState();
-  
+  const { getUser, setUser, archivedChats,setArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat } = ChatState();
+
   const navigate = useNavigate();
   const locaObj = useLocation();
 
@@ -19,12 +19,18 @@ function Chatpage() {
   if (Object.keys(params).length < 1) params = null;
 
   useEffect(() => {
-    if (params && !(chats?.map(chat => chat._id).includes(chatId))) {
+    if (params && !(chats?.map(chat => chat._id).includes(chatId)) && !archivedChats?.map(c => c._id).includes(chatId)) {
       navigate('/chats')
       setSelectedChat(null)
     }
     else {
-      chats && setSelectedChat(chats?.filter(chat => chat._id === chatId)[0])
+
+      if(archivedChats?.map(c => c._id).includes(chatId)){
+        setSelectedChat(archivedChats?.filter(chat => chat._id === chatId)[0])
+      }
+      else{
+        setSelectedChat(chats?.filter(chat => chat._id === chatId)[0])
+      }
       setProfile(null);
     }
 
@@ -75,14 +81,15 @@ function Chatpage() {
 
       if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-      setChats(json.chats);
+      setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))));
+      setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
       setChatsLoading(false);
       isfetchChats && setIsfetchChats(false)
 
       if (json.chats) {
         let UnseenMsgnotifications = []
         json.chats.map(chat => {
-          if (user && chat.latestMessage && !(chat.latestMessage?.seenBy.includes(user._id))) {
+          if (user && chat.latestMessage && !chat.archivedBy.includes(user._id) && !(chat.latestMessage?.seenBy.includes(user._id))) {
             UnseenMsgnotifications.push(chat.latestMessage)
           }
           return 1

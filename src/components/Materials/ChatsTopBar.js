@@ -14,7 +14,7 @@ import NotificationsMenu from './NotificationsMenu';
 
 function ChatsTopBar() {
 
-    const { user, setProfile, profile, notifications, setNotifications, chats } = ChatState();
+    const { user, setProfile, profile, notifications, setNotifications, setSelectedChat, chats, archivedChats, viewArchivedChats, setViewArchivedChats } = ChatState();
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -77,7 +77,7 @@ function ChatsTopBar() {
 
                             {notifications.length > 0
                                 ?
-                                <NotificationsMenu chats={chats} setNotifications={setNotifications} navigate={navigate} defaultPic={defaultPic} notifications={notifications}/>
+                                <NotificationsMenu chats={chats} setNotifications={setNotifications} navigate={navigate} defaultPic={defaultPic} notifications={notifications} />
                                 :
                                 <MenuItem>No messages</MenuItem>
                             }
@@ -89,8 +89,33 @@ function ChatsTopBar() {
                 <CreateGroupChat />
 
             </Box>
-            <Box padding={".3rem"} borderBottom="2px solid darkcyan" background={"aliceblue"} pos="inherit" zIndex={1}>
-                <Text textAlign={"center"} textTransform="uppercase" fontStyle={"italic"} fontWeight="hairline">My chats</Text>
+
+
+            <Box padding={".3rem"} borderBottom="2px solid darkcyan" background={"aliceblue"} pos="relative" zIndex={1}>
+                {
+                    archivedChats.length > 0 &&
+                    <Box position={'absolute'} left="0" marginLeft={".4rem"} marginTop=".08rem" cursor={"pointer"}>
+                        {
+                            !viewArchivedChats
+                                ?
+                                <Box display={"flex"} gap=".3rem" alignItems={"center"} onClick={() => setViewArchivedChats(true)}>
+                                    <Image src='https://cdn-icons-png.flaticon.com/512/8138/8138776.png' width={"1.1rem"} />
+                                    <Text userSelect={"none"} fontWeight={"semibold"} fontSize=".86rem" >Archived</Text>
+                                </Box>
+                                :
+                                <Image onClick={() => {
+                                    setViewArchivedChats(false);
+                                    setSelectedChat(null);
+                                    navigate('/chats')
+                                }} src='https://cdn-icons-png.flaticon.com/512/8979/8979605.png' width={"1.2rem"} />
+                        }
+                    </Box>
+                }
+                <Text textAlign={"center"} textTransform="uppercase" fontStyle={"italic"} fontWeight="hairline">
+                    {
+                        viewArchivedChats ? "Archived chats" : "My chats"
+                    }
+                </Text>
             </Box>
         </>
     )

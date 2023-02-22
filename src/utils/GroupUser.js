@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 
 function GroupUser({ u }) {
 
-    const { user, selectedChat, showToast, setSelectedChat, setChats, setProfile, chats, CreateChat } = ChatState()
+    const { user, selectedChat, showToast, setSelectedChat,archivedChats,setArchivedChats, setChats, setProfile, chats, CreateChat } = ChatState()
 
     const [addAdminLoading, setAddAdminLoading] = useState(false)
     const [removeAdminLoading, setRemoveAdminLoading] = useState(false)
@@ -91,7 +91,14 @@ function GroupUser({ u }) {
                 setSelectedChat(null)
                 setProfile(null) // setting profile to null if it is not!
                 showToast("Success", `You left ${json.chat.chatName}`, "success", 3000)
-                chats && setChats(chats.filter(chat => chat._id !== selectedChat?._id))
+
+                if(chats) {
+                    if (archivedChats.map(c => c._id).includes(selectedChat._id)) {
+                        setArchivedChats(archivedChats.filter(c => c._id !== selectedChat._id))
+                    }
+                    else setChats(chats.filter(c => c._id !== selectedChat._id));
+                }
+
                 navigate('/chats')
             }
             else {
