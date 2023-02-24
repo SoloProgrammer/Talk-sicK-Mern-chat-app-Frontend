@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 
 function GroupUser({ u }) {
 
-    const { user, selectedChat, showToast, setSelectedChat,archivedChats,setArchivedChats, setChats, setProfile, chats, CreateChat } = ChatState()
+    const { user, selectedChat, showToast, setSelectedChat, archivedChats, setArchivedChats, setViewArchivedChats, setChats, setProfile, chats, CreateChat } = ChatState()
 
     const [addAdminLoading, setAddAdminLoading] = useState(false)
     const [removeAdminLoading, setRemoveAdminLoading] = useState(false)
@@ -86,13 +86,13 @@ function GroupUser({ u }) {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-            // checking if the logged in user is not in the return chat from server that means he is removed from that chat successfully and then to dispaly the change we can refetch the all chats from server!
+            // checking if the logged in user is not in the return chat from server that means he is removed from that chat successfully and then to dispaly the change we can refetch chats in the frontend which received from the server..!
             if (!(json.chat.users.map(u => u._id).includes(user?._id))) {
                 setSelectedChat(null)
                 setProfile(null) // setting profile to null if it is not!
                 showToast("Success", `You left ${json.chat.chatName}`, "success", 3000)
 
-                if(chats) {
+                if (chats) {
                     if (archivedChats.map(c => c._id).includes(selectedChat._id)) {
                         setArchivedChats(archivedChats.filter(c => c._id !== selectedChat._id))
                     }
@@ -103,10 +103,11 @@ function GroupUser({ u }) {
             }
             else {
                 setSelectedChat(json.chat);
-                setChats(json.chats)
+                setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
+                setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)))
                 showToast("Success", json.message, "success", 3000)
             }
-            
+
         } catch (error) {
             setRemoveUserLoading(false)
             return showToast("Error", error.message, "error", 3000)
@@ -123,21 +124,36 @@ function GroupUser({ u }) {
         else {
             setSelectedChat(null)
             let isChat = false
-            chats.forEach((c, i) => {
-                if (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(U._id) && !c.isGroupchat) {
+
+            // this logic is used for checking if the chat is present in the archived chats of user with the user on which he clicks 
+            archivedChats.forEach((c, i) => {
+                if (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(U._id)) {
                     navigate(`/chats/chat/${c._id}`);
                     setProfile(null);
+                    setViewArchivedChats(true)
                     isChat = true
                 }
-                else {
-                    if (i === (chats.length - 1) && !isChat) {
-
-                        // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
-                        if (window.innerWidth < 770) setSelectedChat(null)
-                        CreateChat(U._id,U.name)
-                    }
-                }
             })
+
+            // if not then check in the mychats array of users
+            if (!isChat) {
+                chats.forEach((c, i) => {
+                    if (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(U._id) && !c.isGroupchat) {
+                        navigate(`/chats/chat/${c._id}`);
+                        setProfile(null);
+                        isChat = true
+                    }
+                    else {
+                        if (i === (chats.length - 1) && !isChat) {
+
+                            // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
+                            if (window.innerWidth < 770) setSelectedChat(null)
+                            CreateChat(U._id, U.name)
+                        }
+                    }
+                })
+            }
+
         }
     }
 

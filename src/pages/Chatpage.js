@@ -9,7 +9,7 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, archivedChats,setArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat } = ChatState();
+  const { getUser, setUser, archivedChats,setArchivedChats,setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat } = ChatState();
 
   const navigate = useNavigate();
   const locaObj = useLocation();
@@ -19,6 +19,14 @@ function Chatpage() {
   if (Object.keys(params).length < 1) params = null;
 
   useEffect(() => {
+
+    if(locaObj.pathname === "/chats" || chats?.map(c => c._id).includes(chatId)){
+      setViewArchivedChats(false)
+    }
+    else if(locaObj.pathname === "/chats/archived" || archivedChats.map(c => c._id).includes(chatId)) setViewArchivedChats(true)
+    
+    // if(chats?.map(c => c._id).includes(chatId)) setViewArchivedChats(false)
+
     if (params && !(chats?.map(chat => chat._id).includes(chatId)) && !archivedChats?.map(c => c._id).includes(chatId)) {
       navigate('/chats')
       setSelectedChat(null)

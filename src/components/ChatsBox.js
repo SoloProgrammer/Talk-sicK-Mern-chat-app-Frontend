@@ -107,7 +107,10 @@ function ChatsBox() {
               <Text textAlign={"center"} fontWeight={"hairline"} >Let's go ahead and Search Users to Start your First Chat with them</Text>
             </Box>
             :
-            (!chatsLoading && (chats?.length > 0 || archivedChats.length > 0)) &&
+            (
+              !chatsLoading && ((chats?.length > 0) || (archivedChats.length > 0))
+            )
+            &&
             <Box display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" paddingBottom={window.innerWidth > 770 ? "4.3rem" : "4.8rem"} className='allchats ' transition={".6s"}>
               {
                 (archivedChats.length && viewArchivedChats ? archivedChats : chats)?.map((chat, i) => {
@@ -125,7 +128,7 @@ function ChatsBox() {
                       className="singleChatBox"
                       cursor="pointer"
                       pos={"relative"}
-                      _hover={{ bg: "#2da89f61" }}
+                      _hover={{ base: { bg: "transperent" }, md: { bg: "#2da89f61" } }}
                     >
                       <Box maxWidth={"67px"} >
                         <Avatar boxShadow={"0 0 0 3px #27aea4"} src={getSender(chat, user)?.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} >

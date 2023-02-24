@@ -108,10 +108,12 @@ function MessagesBox() {
 
           if ((notificationsCompare.length === 0) || (notificationsCompare.length > 0 && !(notificationsCompare.map(noti => noti.chat._id).includes(newMessageRecieved.chat._id)))) {
 
-            !newMessageRecieved.chat.archivedBy.includes(user._id) && setNotifications([newMessageRecieved, ...notificationsCompare]);
+            if (!newMessageRecieved.chat.archivedBy.includes(user._id)) {
+              setNotifications([newMessageRecieved, ...notificationsCompare]);
+              notificationBeep.play()
+            }
             // console.log(".................", selectedChatCompare);
             setChatMessages(chatMessagesCompare.filter(chatM => chatM.chatId !== newMessageRecieved.chat._id))
-            notificationBeep.play()
           }
 
         }

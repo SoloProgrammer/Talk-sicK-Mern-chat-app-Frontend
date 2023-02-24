@@ -11,7 +11,7 @@ import ProfileDrawer from './Materials/ProfileDrawer'
 function MessageBox({ messages, setMessages }) {
 
 
-  const { profile, chatMessages, setChatMessages, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket } = ChatState();
+  const { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket } = ChatState();
 
   const navigate = useNavigate();
 
@@ -84,31 +84,45 @@ function MessageBox({ messages, setMessages }) {
     // eslint-disable-next-line
   }, [selectedChat?._id])
 
+
   const handleMessageAvatarClick = (avatarUser) => {
 
-    // if user click on his own avatar then display his profile other then else start a chat with that user avatar click!
+    // if user click on his own avatar and if the chat is not a group chat then display his or that user avatar click profile other then else start a chat with that user avatar click!
     if (!(selectedChat?.isGroupchat) || avatarUser._id === user?._id) {
       setProfile(avatarUser)
       if (window.innerWidth < 770 && avatarUser._id === user._id) setSelectedChat(null)
     }
     else {
+
+      // this else part will only run for the Group chat because in Group chat after click onto user avatar a chat will start with him other wise in personal chat we will se profile of the user avatar click 
       setSelectedChat(null)
       let isChat = false
-      chats.forEach((c, i) => {
-        if (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(avatarUser._id) && !c.isGroupchat) {
+
+      archivedChats.forEach((c, i) => {
+        if (!c.isGroupchat && (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(avatarUser._id))) {
           navigate(`/chats/chat/${c._id}`);
           setProfile(null);
           isChat = true
         }
-        else {
-          if (i === (chats.length - 1) && !isChat) {
-
-            // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
-            if (window.innerWidth < 770) setSelectedChat(null)
-            CreateChat(avatarUser._id,avatarUser.name)
-          }
-        }
       })
+
+      if (!isChat) {
+        chats.forEach((c, i) => {
+          if (!c.isGroupchat && (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(avatarUser._id))) {
+            navigate(`/chats/chat/${c._id}`);
+            setProfile(null);
+            isChat = true
+          }
+          else {
+            if (i === (chats.length - 1) && !isChat) {
+
+              // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
+              if (window.innerWidth < 770) setSelectedChat(null)
+              CreateChat(avatarUser._id, avatarUser.name)
+            }
+          }
+        })
+      }
     }
   }
 

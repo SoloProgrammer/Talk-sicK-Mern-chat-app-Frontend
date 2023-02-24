@@ -9,7 +9,7 @@ import GroupMembersBox from '../GroupMembersBox'
 
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { setSelectedChat,archivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = ChatState();
+    const { setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = ChatState();
 
     // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
 
@@ -104,7 +104,11 @@ function ProfileDrawer({ width, align = "right" }) {
 
             setSelectedChat({ ...selectedChat, ...detailsToUpdate });
 
-            setChats(json.chats);
+            // if the group to update is archived then update the archived chats
+            setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
+
+            // updating chats if group is not archived!
+            setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))));
 
             showToast("Success", json.message, "success", 3000)
 

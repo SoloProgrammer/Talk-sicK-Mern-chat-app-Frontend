@@ -98,16 +98,21 @@ function ChatsTopBar() {
                         {
                             !viewArchivedChats
                                 ?
-                                <Box display={"flex"} gap=".3rem" alignItems={"center"} onClick={() => setViewArchivedChats(true)}>
+                                <Box display={"flex"} gap=".3rem" alignItems={"center"} onClick={() => {
+                                    setViewArchivedChats(true);
+                                    navigate('/chats/archived')
+                                }}>
                                     <Image src='https://cdn-icons-png.flaticon.com/512/8138/8138776.png' width={"1.1rem"} />
                                     <Text userSelect={"none"} fontWeight={"semibold"} fontSize=".86rem" >Archived</Text>
                                 </Box>
                                 :
-                                <Image onClick={() => {
-                                    setViewArchivedChats(false);
-                                    setSelectedChat(null);
-                                    navigate('/chats')
-                                }} src='https://cdn-icons-png.flaticon.com/512/8979/8979605.png' width={"1.2rem"} />
+                                <Box padding={".1rem .7rem"} background={"#c5eaff"} borderRadius=".2rem" border={"1px solid #31bac3"}>
+                                    <Image onClick={() => {
+                                        setViewArchivedChats(false);
+                                        setSelectedChat(null);
+                                        navigate('/chats')
+                                    }} src='https://cdn-icons-png.flaticon.com/512/8979/8979605.png' width={"1.2rem"} />
+                                </Box>
                         }
                     </Box>
                 }

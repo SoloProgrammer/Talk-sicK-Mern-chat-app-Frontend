@@ -9,7 +9,7 @@ import { server } from '../configs/serverURl'
 
 function GroupMembersBox() {
 
-    const { selectedChat, showToast, setChats, setSelectedChat } = ChatState()
+    const { selectedChat, showToast,user, setChats, setSelectedChat,archivedChats,setArchivedChats } = ChatState()
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -56,7 +56,10 @@ function GroupMembersBox() {
 
             showToast("Great!", json.message, "success", 3000)
             setSelectedChat(json.chat)
-            setChats(json.chats)
+
+            setChats(json.chats.filter(c => (!c.archivedBy.includes(user?._id))))
+            setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)));
+            
             onClose()
         } catch (error) {
             showToast("Error", error.message, "error", 3000)
