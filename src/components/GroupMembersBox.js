@@ -9,7 +9,7 @@ import { server } from '../configs/serverURl'
 
 function GroupMembersBox() {
 
-    const { selectedChat, showToast,user, setChats, setSelectedChat,archivedChats,setArchivedChats } = ChatState()
+    const { selectedChat, showToast, user, setChats, setSelectedChat, archivedChats, setArchivedChats, setIsClosable } = ChatState()
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -33,9 +33,12 @@ function GroupMembersBox() {
 
     const [loading, setLoading] = useState(false)
     const hanldeAddmember = async (users) => {
-       
+
+        // making array of user Ids...!
         users = users.map(u => u._id)
+
         setLoading(true)
+        setIsClosable(false)
         try {
             let config = {
                 method: "POST",
@@ -45,13 +48,14 @@ function GroupMembersBox() {
                 },
                 body: JSON.stringify({ chatId: selectedChat._id, users })
             }
-            let res = await fetch(`${server.URL.local}/api/chat/groupadd`, config)
+            let res = await fetch(`${server.URL.production}/api/chat/groupadd`, config)
 
             if (res.status === 401) HandleLogout()
 
             let json = await res.json();
 
             setLoading(false)
+            setIsClosable(true)
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
             showToast("Great!", json.message, "success", 3000)
@@ -59,11 +63,12 @@ function GroupMembersBox() {
 
             setChats(json.chats.filter(c => (!c.archivedBy.includes(user?._id))))
             setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)));
-            
+
             onClose()
         } catch (error) {
             showToast("Error", error.message, "error", 3000)
             setLoading(false)
+            setIsClosable(true)
         }
     }
 
@@ -97,7 +102,7 @@ function GroupMembersBox() {
                         </Box>
                     </PopupModal>}
             </Box>
-            <Box className='GroupUsersBox' maxHeight={'calc(100vh - 28.5rem)' } width="100%" overflowY="auto" >
+            <Box className='GroupUsersBox' maxHeight={'calc(100vh - 28.5rem)'} width="100%" overflowY="auto" >
                 {
                     groupUsers.map(u => {
                         return <GroupUser key={u._id} u={u} />

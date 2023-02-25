@@ -10,7 +10,7 @@ import ConfirmBoxModal from './ConfirmBoxModal';
 
 function ChatMenuBox({ chat, i }) {
 
-    let { user, handlePinOrUnpinChat, hanldeArchiveChatAction,setViewArchivedChats, setArchivedChats, archivedChats, chats, setChats, showToast, setSelectedChat, notifications, setNotifications } = ChatState();
+    let { user, handlePinOrUnpinChat, hanldeArchiveChatAction, setArchivedChats, archivedChats, chats, setChats, showToast, notifications, setNotifications } = ChatState();
 
     const navigate = useNavigate();
 
@@ -46,7 +46,7 @@ function ChatMenuBox({ chat, i }) {
                 body: JSON.stringify({ chatId: chat?._id })
             }
 
-            const res = await fetch(`${server.URL.local}/api/chat/deletechat`, config);
+            const res = await fetch(`${server.URL.production}/api/chat/deletechat`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -58,19 +58,17 @@ function ChatMenuBox({ chat, i }) {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000);
 
-            if (archivedChats.map(c => c._id).includes(chat._id)) {
-                setArchivedChats(archivedChats.filter(c => c._id !== chat._id))
-            }
-            else setChats(chats.filter(c => c._id !== chat._id));
-
-            if(archivedChats.filter(c => c._id !== chat._id).length < 1) setViewArchivedChats(false)
+            setArchivedChats(archivedChats.filter(c => c._id !== chat._id));
+            setChats(chats.filter(c => c._id !== chat._id));
 
             // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat parallelly..!!
             setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
 
-            navigate('/chats');
-
             showToast(json.message, '', "success", 3000)
+
+            if (!(archivedChats.map(c => c._id).includes(chat._id)) || archivedChats.filter(c => c._id !== chat._id).length < 1) navigate('/chats');
+            else navigate('/chats/archived')
+
         } catch (error) {
             showToast("Error", error.message, "error", 3000)
             setLoading(false)
@@ -96,7 +94,7 @@ function ChatMenuBox({ chat, i }) {
                 body: JSON.stringify({ chatId: chat?._id, userId: user?._id })
             }
 
-            let res = await fetch(`${server.URL.local}/api/chat/groupremove`, config);
+            let res = await fetch(`${server.URL.production}/api/chat/groupremove`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -107,22 +105,21 @@ function ChatMenuBox({ chat, i }) {
             onClose();
             if (!json.status) return showToast("Error", json.message, "error", 3000);
 
-            if (archivedChats.map(c => c._id).includes(chat._id)) {
-                setArchivedChats(archivedChats.filter(c => c._id !== chat._id))
-            }
-            else setChats(chats.filter(c => c._id !== chat._id));
+            setArchivedChats(archivedChats.filter(c => c._id !== chat._id))
+            setChats(chats.filter(c => c._id !== chat._id));
 
             // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat parallelly..!!
             setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
 
             showToast("Success", `You left ${chat.chatName}`, "success", 3000)
 
-            setSelectedChat(null)
-
-            navigate('/chats');
+            if (!(archivedChats.map(c => c._id).includes(chat._id)) || archivedChats.filter(c => c._id !== chat._id).length < 1) navigate('/chats');
+            else navigate('/chats/archived')
 
         } catch (error) {
-
+            showToast("Error", error.message, "error", 3000)
+            setLoading(false)
+            onClose();
         }
     }
 

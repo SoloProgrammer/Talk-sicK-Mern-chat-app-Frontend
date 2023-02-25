@@ -23,7 +23,7 @@ import { useNavigate } from 'react-router-dom'
 
 function SideDrawer({ isOpen, onClose }) {
 
-    const { showToast, setProfile, chats, CreateChat } = ChatState();
+    const { showToast, setProfile, chats, CreateChat, archivedChats } = ChatState();
 
     const [search, setSearch] = useState("")
     const [loading, setLoading] = useState(false)
@@ -40,10 +40,10 @@ function SideDrawer({ isOpen, onClose }) {
         setSearch("");
 
         setTimeout(() => {
-            document.querySelector('.SearchInput')?.focus()
+            isOpen && document.querySelector('.SearchInput')?.focus()
         }, 0);
     }, [isOpen])
-    
+
     const handleSearch = async (e) => {
         if (e.key === "Enter" || e.target.type === "button") {
             if (search === "") return showToast("*Required", "Please Enter Something to Search", "error", 3000, "top-left");
@@ -55,7 +55,7 @@ function SideDrawer({ isOpen, onClose }) {
                         token: localStorage.getItem('token')
                     }
                 }
-                const res = await fetch(`${server.URL.local}/api/user/searchuser?search=${search}`, config)
+                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config)
                 const json = await res.json()
 
                 if (!json.status) HandleLogout()
@@ -69,24 +69,35 @@ function SideDrawer({ isOpen, onClose }) {
     }
 
     const handleAccesschat = async (user) => {
-        console.log(user);
+
         onClose()
         if (!user) return showToast("Error", "Something went wrong", "error", 3000)
 
-        if (chats.length === 0) return CreateChat(user._id,user.name)
+        if (chats.length === 0) return CreateChat(user._id, user.name)
 
-        let ischat = false
+        let isChat = false
 
-        chats?.map((chat, i) => {
+        archivedChats.forEach((chat, _) => {
             if (!(chat.isGroupchat) && chat.users.map(u => u._id).includes(user._id)) {
                 navigate(`/chats/chat/${chat._id}`)
                 setProfile(null)
-                ischat = true
+                isChat = true
             }
-            // if index of map reaches the length of the chats that means the chat has not yet created with the user so we are creating the chat now with that user!
-            if (i === chats.length - 1 && !ischat) CreateChat(user._id,user.name)
-            return 1
         })
+
+        if (!isChat) {
+
+            chats?.forEach((chat, i) => {
+                if (!(chat.isGroupchat) && chat.users.map(u => u._id).includes(user._id)) {
+                    navigate(`/chats/chat/${chat._id}`)
+                    setProfile(null)
+                    isChat = true
+                }
+                // if index of map reaches the length of the chats that means the chat has not yet created with the user so we are creating the chat now with that user!
+                if (i === chats.length - 1 && !isChat) CreateChat(user._id, user.name)
+            })
+        }
+
     }
 
     return (

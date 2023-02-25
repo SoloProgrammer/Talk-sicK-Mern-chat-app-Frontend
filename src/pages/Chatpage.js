@@ -25,8 +25,6 @@ function Chatpage() {
     }
     else if(locaObj.pathname === "/chats/archived" || archivedChats.map(c => c._id).includes(chatId)) setViewArchivedChats(true)
     
-    // if(chats?.map(c => c._id).includes(chatId)) setViewArchivedChats(false)
-
     if (params && !(chats?.map(chat => chat._id).includes(chatId)) && !archivedChats?.map(c => c._id).includes(chatId)) {
       navigate('/chats')
       setSelectedChat(null)
@@ -81,7 +79,7 @@ function Chatpage() {
           token: localStorage.getItem('token')
         }
       }
-      const res = await fetch(`${server.URL.local}/api/chat/allchats`, config);
+      const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
 
       if (res.status === 401) HandleLogout()
 

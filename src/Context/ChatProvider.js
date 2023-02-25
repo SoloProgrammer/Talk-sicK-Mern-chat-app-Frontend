@@ -31,7 +31,7 @@ const ChatProvider = ({ children }) => {
                 'token': localStorage.getItem('token')
             }
         }
-        const res = await fetch(`${server.URL.local}/api/user/getuser`, config);
+        const res = await fetch(`${server.URL.production}/api/user/getuser`, config);
         return res.json()
     }
 
@@ -43,7 +43,7 @@ const ChatProvider = ({ children }) => {
 
     // const ENDPOINT = "http://localhost:8001"
 
-    const ENDPOINT = server.URL.local
+    const ENDPOINT = server.URL.production
 
     const [socket, setSocket] = useState(null);
 
@@ -84,6 +84,8 @@ const ChatProvider = ({ children }) => {
 
     const [viewArchivedChats, setViewArchivedChats] = useState(false);
 
+    const [notifications, setNotifications] = useState([])
+
     const CreateChat = async (userId, userName) => {
 
         try {
@@ -100,7 +102,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ userId })
             }
 
-            let res = await fetch(`${server.URL.local}/api/chat`, config);
+            let res = await fetch(`${server.URL.production}/api/chat`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -108,7 +110,7 @@ const ChatProvider = ({ children }) => {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-            setChats(json.chats)
+            setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
             setChatsLoading(false)
             setIsChatCreating(null)
             navigate(`/chats/chat/${json.chat._id}`)
@@ -152,7 +154,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ chatId: chat._id })
             }
 
-            let res = await fetch(`${server.URL.local}/api/chat/pinORunpinchat`, config);
+            let res = await fetch(`${server.URL.production}/api/chat/pinORunpinchat`, config);
 
             if (res.status === "401") HandleLogout()
 
@@ -178,7 +180,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ msgId })
             }
 
-            let res = await fetch(`${server.URL.local}/api/message/seenMessage`, config);
+            let res = await fetch(`${server.URL.production}/api/message/seenMessage`, config);
 
             if (res.status === 401) return HandleLogout();
 
@@ -210,7 +212,7 @@ const ChatProvider = ({ children }) => {
                 }
             }
 
-            const res = await fetch(`${server.URL.local}/api/chat/allchats`, config);
+            const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
 
             if (res.status === 401) HandleLogout()
 
@@ -228,25 +230,27 @@ const ChatProvider = ({ children }) => {
 
     }
 
+    // This function is responsible to archive chat and if it is already archived then remove it from archived chats!
     const hanldeArchiveChatAction = async (chat) => {
-
+        
         if ((selectedChat?._id === chat._id)) {
             setSelectedChat(null)
             navigate('/chats')
         }
 
+        // this logic will remove chat from archived if it presents and puch back to not archived chats of users
         if (archivedChats.map(c => c._id).includes(chat._id)) {
             setArchivedChats(archivedChats.filter(c => c._id !== chat._id));
             setChats([chat, ...chats])
         }
-        else {
+        // this logic will add chat into archived if not present and remove from chats of users
+        else {   
             setArchivedChats([...archivedChats, chat]);
             setChats(chats.filter(c => c._id !== chat._id));
         }
 
-        if (archivedChats.filter(c => c._id !== chat._id).length < 1) {
-            setViewArchivedChats(false)
-        }
+        if (archivedChats.filter(c => c._id !== chat._id).length < 1) navigate('/chats')
+        
         setTimeout(() => {
             document.body.click()
         }, 100);
@@ -260,7 +264,7 @@ const ChatProvider = ({ children }) => {
                 },
                 body: JSON.stringify({ chatId: chat._id })
             }
-            let res = await fetch(`${server.URL.local}/api/chat/archiveOrUnarchiveChat`, config);
+            let res = await fetch(`${server.URL.production}/api/chat/archiveOrUnarchiveChat`, config);
 
             if (res.status === "401") HandleLogout();
 
@@ -278,12 +282,12 @@ const ChatProvider = ({ children }) => {
         // eslint-disable-next-line
     }, [chats])
 
-    const [notifications, setNotifications] = useState([])
 
-    const [newCreatedChat, setNewCreatedChat] = useState(null);
+    // state for determining all the popups in the app should be able to closed or not..! 
+    const [isClosable, setIsClosable] = useState(true)
 
     return (
-        <ChatContext.Provider value={{ isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, newCreatedChat, setNewCreatedChat, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction }}>
+        <ChatContext.Provider value={{ isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction }}>
             {children}
         </ChatContext.Provider>
     )

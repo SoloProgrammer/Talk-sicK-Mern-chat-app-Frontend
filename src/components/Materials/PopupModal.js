@@ -25,7 +25,7 @@ import { handleFileUpload } from '../../configs/handleFileUpload'
 
 function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmemberLoading }) {
 
-    const { showToast, selectedChat, setChats, setSelectedChat } = ChatState()
+    const { showToast, selectedChat, setChats, setSelectedChat, isClosable, setIsClosable,user } = ChatState()
 
     const [selectedUsers, setSelectedUsers] = useState([])
     const [searchResults, setSearchResults] = useState(null)
@@ -49,7 +49,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                         token: localStorage.getItem('token')
                     }
                 }
-                const res = await fetch(`${server.URL.local}/api/user/searchuser?search=${search}`, config);
+                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config);
                 const json = await res.json();
 
                 // let result = result1.filter(o1 => !result2.some(o2 => o1.id === o2.id));
@@ -104,7 +104,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
     }
 
     const [creategroupLoading, setCreategroupLoading] = useState(false);
-    const [isClosable, setIsClosable] = useState(true)
+
 
     const handleCreateGroup = async () => {
 
@@ -122,7 +122,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                 },
                 body: JSON.stringify({ users, groupName, groupAvatar: pic })
             }
-            let res = await fetch(`${server.URL.local}/api/chat/creategroup`, config)
+            let res = await fetch(`${server.URL.production}/api/chat/creategroup`, config)
 
             if (res.status === 401) HandleLogout();
 
@@ -134,7 +134,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
             showToast("Success", "New Group Created Sucessfully", "success", 3000);
             setCreategroupLoading(false);
-            setChats(json.chats)
+            setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
             setSelectedChat(json.Fullgroup)
             navigate(`/chats/chat/${json.Fullgroup._id}`)
             setIsClosable(true)

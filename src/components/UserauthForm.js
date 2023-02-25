@@ -50,7 +50,7 @@ function Login({ value, inputValues, setInputValues }) {
             },
             body: payload
           }
-          let res = await fetch(`${server.URL.local}/api/user/${value === "login" ? "login" : "createuser"}`, config);
+          let res = await fetch(`${server.URL.production}/api/user/${value === "login" ? "login" : "createuser"}`, config);
           let json = await res.json();
     
           if (!json.status) {
