@@ -88,6 +88,8 @@ const ChatProvider = ({ children }) => {
 
     const CreateChat = async (userId, userName) => {
 
+        navigate('/chats')
+
         try {
             setChatsLoading(true);
 
@@ -232,7 +234,7 @@ const ChatProvider = ({ children }) => {
 
     // This function is responsible to archive chat and if it is already archived then remove it from archived chats!
     const hanldeArchiveChatAction = async (chat) => {
-        
+
         if ((selectedChat?._id === chat._id)) {
             setSelectedChat(null)
             navigate('/chats')
@@ -244,13 +246,16 @@ const ChatProvider = ({ children }) => {
             setChats([chat, ...chats])
         }
         // this logic will add chat into archived if not present and remove from chats of users
-        else {   
+        else {
             setArchivedChats([...archivedChats, chat]);
             setChats(chats.filter(c => c._id !== chat._id));
         }
 
         if (archivedChats.filter(c => c._id !== chat._id).length < 1) navigate('/chats')
-        
+
+        // Remove notification of this chat from notifications array when the chat is archived
+        setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
+
         setTimeout(() => {
             document.body.click()
         }, 100);
@@ -269,7 +274,97 @@ const ChatProvider = ({ children }) => {
             if (res.status === "401") HandleLogout();
 
         } catch (error) {
+            return showToast("Error", error.message, "error", 3000)
+        }
+    }
 
+    const handleLeaveGrp = async (chat, onClose, setLoading) => {
+        if (chat?.groupAdmin.map(u => u._id).includes(user._id) && chat?.groupAdmin.length === 1) {
+            onClose()
+            return showToast("Error", "Plz first add some one as GroupAdmin if you wish to leave this group.!", "error", 3000)
+        }
+
+        try {
+            setLoading(true)
+            setIsClosable(false)
+            let config = {
+                method: 'POST',
+                headers: {
+                    "Content-Type": 'application/json',
+                    token: localStorage.getItem('token')
+                },
+                body: JSON.stringify({ chatId: chat?._id, userId: user?._id })
+            }
+
+            let res = await fetch(`${server.URL.production}/api/chat/groupremove`, config);
+
+            if (res.status === 401) HandleLogout();
+
+            let json = await res.json();
+
+            setLoading(false);
+            setIsClosable(true);
+            onClose();
+            if (!json.status) return showToast("Error", json.message, "error", 3000);
+
+            setArchivedChats(archivedChats.filter(c => c._id !== chat._id))
+            setChats(chats.filter(c => c._id !== chat._id));
+
+            // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat parallelly..!!
+            setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
+
+            showToast("Success", `You left ${chat.chatName}`, "success", 3000)
+
+            if (!(archivedChats.map(c => c._id).includes(chat._id)) || archivedChats.filter(c => c._id !== chat._id).length < 1) navigate('/chats');
+            else navigate('/chats/archived')
+
+        } catch (error) {
+            showToast("Error", error.message, "error", 3000)
+            setLoading(false)
+            onClose();
+        }
+    }
+
+    const handleDeleteChat = async (chat, onClose, setLoading) => {
+        try {
+            setLoading(true)
+            setIsClosable(false)
+            let config = {
+                method: "PUT",
+                headers: {
+                    token: localStorage.getItem('token'),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ chatId: chat?._id })
+            }
+
+            const res = await fetch(`${server.URL.production}/api/chat/deletechat`, config);
+
+            if (res.status === 401) HandleLogout();
+
+            const json = await res.json();
+
+            setLoading(false);
+            setIsClosable(true);
+            onClose();
+
+            if (!json.status) return showToast("Error", json.message, "error", 3000);
+
+            setArchivedChats(archivedChats.filter(c => c._id !== chat._id));
+            setChats(chats.filter(c => c._id !== chat._id));
+
+            // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat parallelly..!!
+            setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
+
+            showToast(json.message, '', "success", 3000)
+
+            if (!(archivedChats.map(c => c._id).includes(chat._id)) || archivedChats.filter(c => c._id !== chat._id).length < 1) navigate('/chats');
+            else navigate('/chats/archived')
+
+        } catch (error) {
+            showToast("Error", error.message, "error", 3000)
+            setLoading(false)
+            onClose();
         }
     }
 
@@ -287,7 +382,7 @@ const ChatProvider = ({ children }) => {
     const [isClosable, setIsClosable] = useState(true)
 
     return (
-        <ChatContext.Provider value={{ isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction }}>
+        <ChatContext.Provider value={{ isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp,handleDeleteChat }}>
             {children}
         </ChatContext.Provider>
     )

@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Image, Input, Spinner, Text, Tooltip } from '@chakra-ui/react'
+import { Avatar, Box, Button, Image, Input, Spinner, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
 import React, { useState, useEffect } from 'react'
 import { handleFileUpload } from '../../configs/handleFileUpload'
 import { server } from '../../configs/serverURl'
@@ -6,10 +6,11 @@ import { HandleLogout } from '../../configs/userConfigs'
 import { ChatState } from '../../Context/ChatProvider'
 import DeleteChat from '../DeleteChat'
 import GroupMembersBox from '../GroupMembersBox'
+import ConfirmBoxModal from './ConfirmBoxModal'
 
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = ChatState();
+    const { handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = ChatState();
 
     // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
 
@@ -123,11 +124,17 @@ function ProfileDrawer({ width, align = "right" }) {
         let isChanged = false;
 
         Object.keys(profileDetail).forEach(key => {
-            if(key !== "phone"){
-                if (profileDetail[key].replace(regx, "") !== profile[key]) isChanged = true
+
+            if (profile.isGrpProfile) {
+                if (profileDetail['name'].replace(regx, "") !== profile['name']) isChanged = true
             }
-            else{
-                if(profileDetail[key] !== profile[key]) isChanged = true
+            else {
+                if (key !== "phone") {
+                    if (profileDetail[key].replace(regx, "") !== profile[key]) isChanged = true
+                }
+                else {
+                    if (profileDetail[key] !== profile[key]) isChanged = true
+                }
             }
         })
 
@@ -168,27 +175,25 @@ function ProfileDrawer({ width, align = "right" }) {
         }
         else {
             setIsEdit(false);
-            setProfileDetail({ ...profileDetail, about: profileDetail.about.replace(regx, " ") })
+            !profile.isGrpProfile && setProfileDetail({ ...profileDetail, about: profileDetail.about.replace(regx, " ") })
         }
     }
 
     useEffect(() => {
-        if (isedit) {
-            showToast("Edit Access", "Now you can edit details by clicking onto particular one!", "success", 3000)
-        }
-        allInpts.forEach(inpt => inpt.classList.remove('active'))
+        !isedit && allInpts.forEach(inpt => inpt.classList.remove('active'))
         // eslint-disable-next-line
     }, [isedit]);
 
     const handleSetEdit = () => {
         setIsEdit(true)
         setTimeout(() => {
-            let allInpts = document.querySelectorAll('.InptBox')
             document.querySelector('.nameInpt')?.focus()
             allInpts.forEach(inpt => inpt.classList.add('active'));
 
             let elm = document.getElementById('profileDetailInpt_about')
-            elm.style.height = `${elm?.scrollHeight}px`
+            if (elm) {
+                elm.style.height = `${elm?.scrollHeight}px`
+            }
         }, 10);
     }
 
@@ -218,6 +223,10 @@ function ProfileDrawer({ width, align = "right" }) {
             }
         }
     }
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
+    const [loading, setLoading] = useState(false);
 
     return (
         <Box
@@ -444,6 +453,29 @@ function ProfileDrawer({ width, align = "right" }) {
                     <Box width={"100%"} marginTop={".5rem"} padding={{ base: "0 .8rem", md: "0 1.1rem" }} display="flex" flexDir={"column"} gap=".2rem">
                         <DeleteChat />
                     </Box>
+                }
+
+                {
+                    (profile?._id !== user?._id && profile.isGrpProfile)
+                    &&
+                    <ConfirmBoxModal handleFunc={() => handleLeaveGrp(selectedChat, onClose, setLoading)} isOpen={isOpen} onClose={onClose} 
+                    modalDetail={{ chat: selectedChat, subtext: "Are you Sure You want to Leave",btnCopy:"Leave" }} loading={loading}>
+                        <Box padding={{ base: "0 .8rem", md: "0 1.1rem" }} width={"100%"}>
+                            <Box
+                                _hover={{ bg: "gray.200", boxShadow: "0 0 2px rgba(0,0,0,.1)" }}
+                                padding=".4rem"
+                                className='flex'
+                                border={"1px solid rgba(0,0,0,.1)"}
+                                transition=".4s all"
+                                onClick={onOpen}
+                                cursor={"pointer"}>
+                                <Text className='flex' gap={".6rem"} color="red.400" fontWeight={"medium"}>
+                                    <Image width="1.1rem" src="https://cdn-icons-png.flaticon.com/512/8914/8914318.png" />
+                                    Leave Group
+                                </Text>
+                            </Box>
+                        </Box>
+                    </ConfirmBoxModal>
                 }
 
                 {

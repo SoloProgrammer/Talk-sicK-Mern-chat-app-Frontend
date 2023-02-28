@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
-import { Avatar, AvatarBadge, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, Box, Image, Spinner, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
 import { ChatState } from '../Context/ChatProvider'
 import { HandleLogout, isUserOnline } from '../configs/userConfigs'
 import { server } from '../configs/serverURl'
 import { useNavigate } from 'react-router-dom'
+import ConfirmBoxModal from '../components/Materials/ConfirmBoxModal'
 
 
 function GroupUser({ u }) {
 
-    const { user, selectedChat, showToast, setSelectedChat, archivedChats, setArchivedChats, setViewArchivedChats, setChats, setProfile, chats, CreateChat } = ChatState()
+    const { user, selectedChat,setIsClosable, showToast, setSelectedChat, archivedChats, setArchivedChats, setViewArchivedChats, setChats, setProfile, chats, CreateChat } = ChatState()
 
     const [addAdminLoading, setAddAdminLoading] = useState(false)
     const [removeAdminLoading, setRemoveAdminLoading] = useState(false)
@@ -46,7 +47,10 @@ function GroupUser({ u }) {
 
             if (json.chat && json.chats) {
                 setSelectedChat(json.chat)
-                setChats(json.chats)
+
+                setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
+                setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
+
                 if (action === "removegroupAdmin") {
                     if (!(json.chat?.groupAdmin.map(u => u._id).includes(user?._id))) {
                         return showToast("Success", "You are removed from the groupAdmin", "success", 3000)
@@ -61,11 +65,10 @@ function GroupUser({ u }) {
     }
 
     const handleRemoveFromGroup = async (userId) => {
-        if (selectedChat?.groupAdmin.map(u => u._id).includes(userId) && selectedChat?.groupAdmin.length === 1) {
-            return showToast("Error", "Plz first add some one as GroupAdmin if you wish to leave this group.!", "error", 3000)
-        }
 
         setRemoveUserLoading(true)
+        setIsClosable(false)
+
         try {
             let config = {
                 method: 'POST',
@@ -83,33 +86,18 @@ function GroupUser({ u }) {
             let json = await res.json();
 
             setRemoveUserLoading(false)
+            setIsClosable(true)
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
-
-            // checking if the logged in user is not in the return chat from server that means he is removed from that chat successfully and then to dispaly the change we can refetch chats in the frontend which received from the server..!
-            if (!(json.chat.users.map(u => u._id).includes(user?._id))) {
-                setSelectedChat(null)
-                setProfile(null) // setting profile to null if it is not!
-                showToast("Success", `You left ${json.chat.chatName}`, "success", 3000)
-
-                if (chats) {
-                    if (archivedChats.map(c => c._id).includes(selectedChat._id)) {
-                        setArchivedChats(archivedChats.filter(c => c._id !== selectedChat._id))
-                    }
-                    else setChats(chats.filter(c => c._id !== selectedChat._id));
-                }
-
-                navigate('/chats')
-            }
-            else {
-                setSelectedChat(json.chat);
-                setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
-                setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)))
-                showToast("Success", json.message, "success", 3000)
-            }
+            
+            setSelectedChat(json.chat);
+            setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
+            setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)))
+            showToast("Success", json.message, "success", 3000)
 
         } catch (error) {
             setRemoveUserLoading(false)
+            setIsClosable(true)
             return showToast("Error", error.message, "error", 3000)
         }
     }
@@ -157,6 +145,8 @@ function GroupUser({ u }) {
         }
     }
 
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
     return (
         <Box
             margin={".4rem 0"}
@@ -187,14 +177,14 @@ function GroupUser({ u }) {
                 <Box display={"flex"} gap="1rem" alignItems={"center"}>
                     <b style={{ textTransform: "capitalize" }}>{u?._id === user?._id ? user.name : u?.name}</b>
                     {
-                        ((selectedChat?.groupAdmin.map(u => u._id).includes(user?._id)) || u?._id === user?._id)
+                        u?._id !== user._id 
                         &&
-                        (!removeUserLoading ?
-                            <Tooltip label={u?._id === user._id ? "Leave group" : "Remove from group"} placement="top">
-                                <Image onClick={() => handleRemoveFromGroup(u?._id)} cursor={"pointer"} width="1.35rem" height={"1.35rem"} src="https://cdn-icons-png.flaticon.com/512/9404/9404050.png" />
+                         <ConfirmBoxModal handleFunc={() => handleRemoveFromGroup(u?._id)} isOpen={isOpen} onClose={onClose} 
+                         modalDetail={{ chat: selectedChat, subtext: `Are you sure you want to remove (${u.name}) from `,btnCopy:"Remove" }} loading={removeUserLoading}>
+                            <Tooltip label={"Remove from group"} placement="top">
+                                <Image onClick={onOpen} cursor={"pointer"} width="1.35rem" height={"1.35rem"} src="https://cdn-icons-png.flaticon.com/512/9404/9404050.png" />
                             </Tooltip>
-                            :
-                            <Spinner color='#3e97bb' size="sm" />)
+                         </ConfirmBoxModal>
                     }
                 </Box>
                 <Text marginTop={".2rem"} wordBreak={"break-word"} fontSize={"sm"}>Email: {u.email}</Text>

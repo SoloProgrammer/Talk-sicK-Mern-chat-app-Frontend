@@ -1,4 +1,4 @@
-import React, { useEffect,useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   Modal,
   ModalOverlay,
@@ -15,21 +15,15 @@ import {
 import { getSender } from '../../configs/userConfigs'
 import { ChatState } from '../../Context/ChatProvider'
 
-function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, loading, isClosable }) {
+function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, loading }) {
 
-  const { user } = ChatState();
+  const { user, isClosable } = ChatState();
 
   useEffect(() => {
     !isOpen && document.body.click()
   }, [isOpen]);
 
-  const handleOnKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleFunc();
-    }
-  }
-
-  const handleFocus =() =>{
+  const handleFocus = () => {
     let elm = document.querySelector('.actionBtn')
     elm.style.boxShadow = "0 0 0 2px #ff6a6a"
   }
@@ -39,7 +33,7 @@ function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, l
   return (
     <>
       {children}
-      <Modal onClose={onClose} isOpen={isOpen} isCentered closeOnOverlayClick={isClosable} initialFocusRef={initialRef}>
+      <Modal onClose={onClose} isOpen={isOpen} isCentered closeOnOverlayClick={isClosable} initialFocusRef={initialRef} motionPreset='scale'>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -50,11 +44,11 @@ function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, l
                   !(modalDetail.chat.isGroupchat)
                     ?
                     <>
-                      Are you Sure You want to Delete Chat with  <b>{getSender(modalDetail.chat, user).name}!</b>
+                      {modalDetail.subtext} <b>{getSender(modalDetail.chat, user).name}!</b>
                     </>
                     :
                     <>
-                      Are you Sure You want to Leave   <b>{modalDetail.chat.chatName}!</b>
+                      {modalDetail.subtext}  <b>{modalDetail.chat.chatName}!</b>
                     </>
                 }
               </Text>
@@ -65,18 +59,16 @@ function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, l
           </ModalBody>
           <ModalFooter>
 
-            <FormControl onKeyDown={handleOnKeyDown} width="100%" display={"flex"} justifyContent="end">
+            <FormControl width="100%" display={"flex"} justifyContent="end">
               <Button marginRight={"1rem"} onClick={onClose} disabled={!isClosable}>Close</Button>
               <Button
-              ref={initialRef}
-              className='actionBtn'
+                ref={initialRef}
+                className='actionBtn'
                 color={"red"}
                 onFocus={handleFocus}
                 isLoading={loading}
                 onClick={handleFunc}>
-                {
-                  !(modalDetail.chat.isGroupchat) ? "Delete" : "Leave"
-                }
+                {modalDetail.btnCopy}
               </Button>
             </FormControl>
           </ModalFooter>

@@ -9,7 +9,7 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, archivedChats,setArchivedChats,setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat } = ChatState();
+  const { getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat } = ChatState();
 
   const navigate = useNavigate();
   const locaObj = useLocation();
@@ -20,21 +20,23 @@ function Chatpage() {
 
   useEffect(() => {
 
-    if(locaObj.pathname === "/chats" || chats?.map(c => c._id).includes(chatId)){
+    if (locaObj.pathname === "/chats" || chats?.map(c => c._id).includes(chatId)) {
       setViewArchivedChats(false)
     }
-    else if(locaObj.pathname === "/chats/archived" || archivedChats.map(c => c._id).includes(chatId)) setViewArchivedChats(true)
-    
+    else if ((locaObj.pathname === "/chats/archived" || archivedChats.map(c => c._id).includes(chatId)) && archivedChats.length > 0) setViewArchivedChats(true)
+
+    else if (archivedChats.length < 1) navigate('/chats')
+
     if (params && !(chats?.map(chat => chat._id).includes(chatId)) && !archivedChats?.map(c => c._id).includes(chatId)) {
       navigate('/chats')
       setSelectedChat(null)
     }
     else {
 
-      if(archivedChats?.map(c => c._id).includes(chatId)){
+      if (archivedChats?.map(c => c._id).includes(chatId)) {
         setSelectedChat(archivedChats?.filter(chat => chat._id === chatId)[0])
       }
-      else{
+      else {
         setSelectedChat(chats?.filter(chat => chat._id === chatId)[0])
       }
       setProfile(null);
@@ -130,7 +132,7 @@ function Chatpage() {
 
   return (
     <Box className={`mainChatBox hideleft`} width="100%" display="flex" justifyContent={"center"} alignItems="center" transition={".5s"}>
-      <Box width={{ base: "95%", md: "95%" }} height={{ base: "98vh", md: "97vh" }} background={"white"} display="flex" overflow={"hidden"}>
+      <Box width={"95%"} height={{ base: "98vh", md: "97vh" }} background={"white"} display="flex" overflow={"hidden"}>
         <ChatsBox />
         <MessageBox />
       </Box>

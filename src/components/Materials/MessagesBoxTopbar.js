@@ -48,7 +48,7 @@ function MessagesBoxTopbar() {
                     <Text pos={"absolute"} bottom=".3rem" fontSize={".8rem"} color="floralwhite" letterSpacing=".01rem" left={"5rem"}>
                         {isTyping
                             ?
-                            selectedChat.isGroupchat ? (typingUser.split(" ")[0] + "is typing....." ) : "typing....."
+                            selectedChat.isGroupchat ? (typingUser.split(" ")[0] + " is typing....." ) : "typing....."
                             :
                             !selectedChat?.isGroupchat
                             &&

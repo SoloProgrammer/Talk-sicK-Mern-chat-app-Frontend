@@ -1,18 +1,11 @@
 import { Box, Image, useDisclosure } from '@chakra-ui/react'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import { server } from '../../configs/serverURl';
-import { HandleLogout } from '../../configs/userConfigs';
-// import { server } from '../../configs/serverURl';
-// import { HandleLogout } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
 import ConfirmBoxModal from './ConfirmBoxModal';
 
 function ChatMenuBox({ chat, i }) {
 
-    let { user, handlePinOrUnpinChat, hanldeArchiveChatAction, setArchivedChats, archivedChats, chats, setChats, showToast, notifications, setNotifications } = ChatState();
-
-    const navigate = useNavigate();
+    let { handleLeaveGrp, handleDeleteChat, user, handlePinOrUnpinChat, hanldeArchiveChatAction, archivedChats } = ChatState();
 
     const handleChatMenuIconClick = (e, i) => {
         e.stopPropagation();
@@ -31,98 +24,6 @@ function ChatMenuBox({ chat, i }) {
 
     const [loading, setLoading] = useState(false);
 
-    const [isClosable, setIsClosable] = useState(true)
-
-    const handleDeleteChat = async () => {
-        try {
-            setLoading(true)
-            setIsClosable(false)
-            let config = {
-                method: "PUT",
-                headers: {
-                    token: localStorage.getItem('token'),
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ chatId: chat?._id })
-            }
-
-            const res = await fetch(`${server.URL.production}/api/chat/deletechat`, config);
-
-            if (res.status === 401) HandleLogout();
-
-            const json = await res.json();
-
-            setLoading(false);
-            setIsClosable(true);
-            onClose();
-
-            if (!json.status) return showToast("Error", json.message, "error", 3000);
-
-            setArchivedChats(archivedChats.filter(c => c._id !== chat._id));
-            setChats(chats.filter(c => c._id !== chat._id));
-
-            // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat parallelly..!!
-            setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
-
-            showToast(json.message, '', "success", 3000)
-
-            if (!(archivedChats.map(c => c._id).includes(chat._id)) || archivedChats.filter(c => c._id !== chat._id).length < 1) navigate('/chats');
-            else navigate('/chats/archived')
-
-        } catch (error) {
-            showToast("Error", error.message, "error", 3000)
-            setLoading(false)
-            onClose();
-        }
-    }
-
-    const handleLeaveChat = async () => {
-        if (chat?.groupAdmin.map(u => u._id).includes(user._id) && chat?.groupAdmin.length === 1) {
-            onClose()
-            return showToast("Error", "Plz first add some one as GroupAdmin if you wish to leave this group.!", "error", 3000)
-        }
-
-        try {
-            setLoading(true)
-            setIsClosable(false)
-            let config = {
-                method: 'POST',
-                headers: {
-                    "Content-Type": 'application/json',
-                    token: localStorage.getItem('token')
-                },
-                body: JSON.stringify({ chatId: chat?._id, userId: user?._id })
-            }
-
-            let res = await fetch(`${server.URL.production}/api/chat/groupremove`, config);
-
-            if (res.status === 401) HandleLogout();
-
-            let json = await res.json();
-
-            setLoading(false);
-            setIsClosable(true);
-            onClose();
-            if (!json.status) return showToast("Error", json.message, "error", 3000);
-
-            setArchivedChats(archivedChats.filter(c => c._id !== chat._id))
-            setChats(chats.filter(c => c._id !== chat._id));
-
-            // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat parallelly..!!
-            setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
-
-            showToast("Success", `You left ${chat.chatName}`, "success", 3000)
-
-            if (!(archivedChats.map(c => c._id).includes(chat._id)) || archivedChats.filter(c => c._id !== chat._id).length < 1) navigate('/chats');
-            else navigate('/chats/archived')
-
-        } catch (error) {
-            showToast("Error", error.message, "error", 3000)
-            setLoading(false)
-            onClose();
-        }
-    }
-
     return (
         <>
             <Box id={`chatMenuIcon${i}`} className='chatMenuIcon arrowIcon' pos={"absolute"} right="6px" bottom={"4px"} cursor="pointer" onClick={(e) => handleChatMenuIconClick(e, i)}>
@@ -130,7 +31,18 @@ function ChatMenuBox({ chat, i }) {
                 <Box pos={"relative"}>
                     <Box id={`chatmenu${i}`} className='chat_menu flex' flexDir={"column"} width="9.7rem">
 
-                        <ConfirmBoxModal isClosable={isClosable} handleFunc={chat.isGroupchat ? handleLeaveChat : handleDeleteChat} isOpen={isOpen} onClose={onClose} modalDetail={{ chat: chat, index: i }} loading={loading}>
+                        <ConfirmBoxModal
+                            handleFunc={() => chat.isGroupchat ? handleLeaveGrp(chat, onClose, setLoading) : handleDeleteChat(chat, onClose, setLoading)}
+                            isOpen={isOpen}
+                            onClose={onClose}
+                            modalDetail={
+                                {
+                                    chat: chat,
+                                    subtext: !chat.isGroupchat ? "Are you Sure You want to Delete Chat with" : "Are you Sure You want to Leave",
+                                    btnCopy: !chat.isGroupchat ? "Delete" : "Leave"
+                                }
+                            }
+                            loading={loading}>
                             <span
                                 onClick={onOpen}
                                 className='flex'>
