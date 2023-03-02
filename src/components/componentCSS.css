@@ -37,6 +37,9 @@
 .menu_open{
     transform: scale(1);
 }
+.chakra-alert{
+    border-radius: inherit !important;
+}
 
 .chat_menu span{
     width: 100%;

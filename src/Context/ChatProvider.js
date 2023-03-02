@@ -18,6 +18,7 @@ const ChatProvider = ({ children }) => {
             description: msg,
             status: status,
             duration: time,
+            variant: 'left-accent',
             isClosable: true,
             position: pos
         });

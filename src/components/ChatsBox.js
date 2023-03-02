@@ -25,11 +25,11 @@ function ChatsBox() {
     } else if (window.innerWidth > 770 && window.innerWidth < 1000) {
       trimInd = 25
     } else if (window.innerWidth > 1000 && window.innerWidth < 1300) {
-      trimInd = 30
-    } else if (window.innerWidth <= 500 && window.innerWidth > 390) trimInd = 30
-    else if (window.innerWidth <= 390) trimInd = 26
+      trimInd = 35
+    } else if (window.innerWidth <= 500 && window.innerWidth > 390) trimInd = 29
+    else if (window.innerWidth <= 390) trimInd = 23
 
-    return msg.length <= trimInd ? msg : msg.slice(0, trimInd).concat(".....")
+    return msg.length <= trimInd ? msg : msg.slice(0, trimInd).concat("...")
   }
 
   const getDateTime = (timeStamps) => {
@@ -149,7 +149,16 @@ function ChatsBox() {
 
                       <Box width={{ base: "calc(100% - 15%)", md: "calc(100% - 12%)" }}>
                         <Box display={"flex"} justifyContent="space-between" width={"100%"}>
-                          <Text fontSize={"1rem"} fontWeight="semibold">{getSender(chat, user)?.name}</Text>
+                          <Text fontSize={"1rem"} fontWeight="semibold">
+                            <Text className='flex' gap={".7rem"}>
+                              {getSender(chat, user)?.name}
+                              { chat.mutedNotificationBy.includes(user?._id) && 
+                              <Tooltip label="Notification muted" placement='top' fontSize={".8rem"}>
+                                <Image width={"1rem"} src='https://cdn-icons-png.flaticon.com/512/4175/4175297.png'/>
+                              </Tooltip>
+                              }
+                            </Text>
+                          </Text>
                           {chat.latestMessage &&
                             <>
                               <Text
@@ -157,7 +166,7 @@ function ChatsBox() {
                                 fontWeight="normal"
                                 id={`DateTime${chat._id}`}
                                 padding={".0 .3rem"}
-                                className={`latestMessageDateTime flex ${(chat.latestMessage?.seenBy.includes(user?._id) === false) && "unSeen"}`}>
+                                className={`latestMessageDateTime flex ${!(chat.latestMessage?.seenBy.includes(user?._id)) && "unSeen"}`}>
                                 <>{getDateTime(chat.latestMessage.createdAt)}</>
                               </Text>
 

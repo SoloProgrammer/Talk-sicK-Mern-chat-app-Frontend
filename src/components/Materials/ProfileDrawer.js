@@ -188,6 +188,8 @@ function ProfileDrawer({ width, align = "right" }) {
         setIsEdit(true)
         setTimeout(() => {
             document.querySelector('.nameInpt')?.focus()
+
+            let allInpts = document.querySelectorAll('.InptBox');
             allInpts.forEach(inpt => inpt.classList.add('active'));
 
             let elm = document.getElementById('profileDetailInpt_about')
@@ -323,11 +325,11 @@ function ProfileDrawer({ width, align = "right" }) {
                             {
                                 (profile.about) && (onlineUsers.map(U => U.userId).includes(profile._id)
                                     ?
-                                    <Text userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#29b764"} letterSpacing=".01rem" background="#d0ffde">
+                                    <Text userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#29b764"} letterSpacing=".01rem" background="#e4faec">
                                         online
                                     </Text>
                                     :
-                                    <Text userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#3e4240"} letterSpacing=".01rem" background="#e0e0e0">
+                                    <Text userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#3e4240"} letterSpacing=".01rem" background="rgb(241, 243, 244)">
                                         offline
                                     </Text>)
                             }
@@ -413,7 +415,6 @@ function ProfileDrawer({ width, align = "right" }) {
                                                         value={profileDetail.phone || ""}
                                                         className="profileDetailInpt "
                                                         autoComplete="off"
-                                                    // style={{ width: 12 + "ch" }}
                                                     />
                                                     :
                                                     <Text userSelect="none">
@@ -458,8 +459,8 @@ function ProfileDrawer({ width, align = "right" }) {
                 {
                     (profile?._id !== user?._id && profile.isGrpProfile)
                     &&
-                    <ConfirmBoxModal handleFunc={() => handleLeaveGrp(selectedChat, onClose, setLoading)} isOpen={isOpen} onClose={onClose} 
-                    modalDetail={{ chat: selectedChat, subtext: "Are you Sure You want to Leave",btnCopy:"Leave" }} loading={loading}>
+                    <ConfirmBoxModal handleFunc={() => handleLeaveGrp(selectedChat, onClose, setLoading)} isOpen={isOpen} onClose={onClose}
+                        modalDetail={{ chat: selectedChat, subtext: "Are you Sure You want to Leave", btnCopy: "Leave" }} loading={loading}>
                         <Box padding={{ base: "0 .8rem", md: "0 1.1rem" }} width={"100%"}>
                             <Box
                                 _hover={{ bg: "gray.200", boxShadow: "0 0 2px rgba(0,0,0,.1)" }}

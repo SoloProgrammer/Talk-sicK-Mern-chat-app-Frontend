@@ -108,7 +108,7 @@ function MessagesBox() {
 
           if ((notificationsCompare.length === 0) || (notificationsCompare.length > 0 && !(notificationsCompare.map(noti => noti.chat._id).includes(newMessageRecieved.chat._id)))) {
 
-            if (!newMessageRecieved.chat.archivedBy.includes(user._id)) {
+            if (!newMessageRecieved.chat.archivedBy.includes(user._id) && !newMessageRecieved.chat.mutedNotificationBy.includes(user?._id)){
               setNotifications([newMessageRecieved, ...notificationsCompare]);
               notificationBeep.play()
             }
