@@ -51,8 +51,8 @@ html,body {
     height: 100%;
     outline: none;
     border: none;
-    padding: 0 .5rem;
     color: black;
+    background-color: transparent;
     font-size: 1.15rem;
     padding:.6rem 0.5rem;
 }

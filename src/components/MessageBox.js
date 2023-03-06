@@ -27,7 +27,6 @@ function MessagesBox() {
   const sendBtn = "https://cdn-icons-png.flaticon.com/512/3060/3060014.png"
   const sendBtnActive = "https://cdn-icons-png.flaticon.com/512/3059/3059413.png"
 
-  const emojiIconActive = "https://cdn-icons-png.flaticon.com/512/166/166549.png"
   const emojiIcon = "https://cdn-icons-png.flaticon.com/512/9320/9320978.png"
 
   const handleMessageTyping = (e) => {
@@ -73,7 +72,11 @@ function MessagesBox() {
     }
   })
 
-  const [isEmojiPick, setIsEmojiPick] = useState(false)
+  const [isEmojiPick, setIsEmojiPick] = useState(false);
+
+  window.addEventListener('click', () => {
+    setIsEmojiPick(false)
+  })
 
   useEffect(() => {
     setMessageText("")
@@ -85,16 +88,16 @@ function MessagesBox() {
 
   const handleEmojiClick = (emoji) => {
     setMessageText(messageText.concat(emoji.emoji))
-    setIsEmojiPick(false)
   }
 
   useEffect(() => {
     notificationsCompare = notifications
-
     // eslint-disable-next-line 
   }, [notifications])
 
+
   let notificationBeep = new Audio(notifyAudio)
+
   // reciveing real time message from server with the help of socket!....................................................
   useEffect(() => {
 
@@ -108,7 +111,7 @@ function MessagesBox() {
 
           if ((notificationsCompare.length === 0) || (notificationsCompare.length > 0 && !(notificationsCompare.map(noti => noti.chat._id).includes(newMessageRecieved.chat._id)))) {
 
-            if (!newMessageRecieved.chat.archivedBy.includes(user._id) && !newMessageRecieved.chat.mutedNotificationBy.includes(user?._id)){
+            if (!newMessageRecieved.chat.archivedBy.includes(user._id) && !newMessageRecieved.chat.mutedNotificationBy.includes(user?._id)) {
               setNotifications([newMessageRecieved, ...notificationsCompare]);
               notificationBeep.play()
             }
@@ -288,13 +291,13 @@ function MessagesBox() {
               pos={"absolute"}
               bottom="0"
               className='messageTextbox'
-              width={"100%"}
+              width={"100%"} 
               minHeight="57px !important"
               boxShadow="0 -4px 4px -4px rgba(0,0,0,.3)">
-              <Box pos={"relative"} display="flex" height={"100%"} padding={{ base: ".3rem .9rem", md: ".3rem" }}>
+              <Box pos={"relative"} height={"100%"} padding=".3rem">
                 {
                   isEmojiPick &&
-                  <Box width={{ base: "315px", md: "360px" }} pos={"absolute"} bottom="4.2rem" >
+                  <Box width={{ base: "315px", md: "360px" }} pos={"absolute"} bottom="6.5rem" onClick={(e) => e.stopPropagation()} >
                     <EmojiPicker
                       onEmojiClick={handleEmojiClick}
                       width={"100%"}
@@ -305,15 +308,7 @@ function MessagesBox() {
                     />
                   </Box>
                 }
-                <Box className="emojiPickbtn flex" width={{ base: "8%", md: "5%" }} alignItems={"end"} paddingBottom=".5rem">
-                  <Image _hover={{ width: { base: "2rem", md: "1.6rem" } }}
-                    cursor={"pointer"}
-                    onClick={() => setIsEmojiPick(!isEmojiPick)}
-                    width={{ base: isEmojiPick ? "1.4rem !important" : "2rem", md: isEmojiPick ? "1.6rem !important" : "2rem" }}
-                    src={isEmojiPick ? emojiIconActive : emojiIcon}
-                    onMouseOver={(e) => e.target.src = emojiIconActive} onMouseOut={(e) => e.target.src = !isEmojiPick ? emojiIcon : emojiIconActive} />
-                </Box>
-                <FormControl onKeyDown={handleKeyDown} height={"3rem"} width={{ base: "84%", md: "90%" }}>
+                <FormControl width={"auto"} marginBottom=".5rem" onKeyDown={handleKeyDown} height={"3rem"} marginRight={{base:"0",md:".3rem"}}>
                   <input
                     onFocus={() => scrollBottom('messagesDisplay')}
                     className='MessageBoxInput'
@@ -323,22 +318,39 @@ function MessagesBox() {
                     value={messageText} onChange={handleMessageTyping}
                   />
                 </FormControl>
-                <Box className='flex' width={{ base: "8%", md: "5%" }} alignItems={"end"} paddingBottom=".5rem">
-                  {
-                    loading
-                      ?
-                      <Tooltip placement='top' label="sending...." isOpen>
-                        <Spinner size={"md"} color="#39b5ac" />
-                      </Tooltip>
-                      :
+                <Box className="flex" alignItems={"end"} paddingBottom=".5rem" justifyContent={'space-between'} padding="0 .5rem 0 0">
+                  <Box className='flex' gap={"1rem"}>
+                    <Tooltip placement='top' fontSize={".8rem"} label="Emoji">
                       <Image
-                        opacity={".5"}
-                        cursor={messageText !== "" && "pointer"}
-                        width={"2rem"}
-                        onClick={sendMessage}
-                        className={`${messageText.replace(regx, '').length > 0 && "sentBtn"}`}
-                        src={`${messageText.replace(regx, '').length !== 0 ? sendBtn : sendBtnActive}`} ></Image>
-                  }
+                        cursor={"pointer"}
+                        onClick={(e) => { setIsEmojiPick(!isEmojiPick); e.stopPropagation() }}
+                        width={{ base: "2rem" }}
+                        src={emojiIcon}
+                      />
+                    </Tooltip>
+                    <Tooltip placement='top' fontSize={".8rem"} label="Image">
+                      <Image cursor={"pointer"} src='https://cdn-icons-png.flaticon.com/512/4303/4303472.png' opacity={".5"} width={"1.7rem"} />
+                    </Tooltip>
+                  </Box>
+                  <Box className='flex' alignItems={"end"} justifyContent={"end"}>
+                    {
+                      loading
+                        ?
+                        <Tooltip placement='top' label="sending...." isOpen>
+                          <Spinner size={"lg"} color="#39b5ac" />
+                        </Tooltip>
+                        :
+                        <Tooltip placement='top' fontSize={".8rem"} label="Enter/Click to Send">
+                          <Image
+                            opacity={".5"}
+                            cursor={messageText !== "" && "pointer"}
+                            width={"2rem"}
+                            onClick={sendMessage}
+                            className={`${messageText.replace(regx, '').length > 0 && "sentBtn"}`}
+                            src={`${messageText.replace(regx, '').length !== 0 ? sendBtn : sendBtnActive}`} />
+                        </Tooltip>
+                    }
+                  </Box>
                 </Box>
               </Box>
             </Box>

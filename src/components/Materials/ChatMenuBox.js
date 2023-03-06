@@ -125,8 +125,8 @@ function ChatMenuBox({ chat, i }) {
                         {!archivedChats.map(c => c._id).includes(chat._id) 
                         && 
                         <span onClick={()=>handleNotificationAction(chat)} className='flex'>
-                             {chat.mutedNotificationBy.includes(user?._id) ? 'Unmute notific...' : "Mute notification"}
-                            <Image width={`${chat.mutedNotificationBy.includes(user?._id) ? "1.16rem" : "1.08rem"}`} src={`${chat.mutedNotificationBy.includes(user?._id) ? "https://cdn-icons-png.flaticon.com/512/4175/4175297.png" : "https://cdn-icons-png.flaticon.com/512/3239/3239952.png"} `} />
+                             {chat.mutedNotificationBy?.includes(user?._id) ? 'Unmute notific...' : "Mute notification"}
+                            <Image width={`${chat.mutedNotificationBy?.includes(user?._id) ? "1.16rem" : "1.08rem"}`} src={`${chat.mutedNotificationBy?.includes(user?._id) ? "https://cdn-icons-png.flaticon.com/512/4175/4175297.png" : "https://cdn-icons-png.flaticon.com/512/3239/3239952.png"} `} />
                         </span>}
                     </Box>
                 </Box>

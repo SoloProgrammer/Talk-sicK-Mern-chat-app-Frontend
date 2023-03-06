@@ -6,6 +6,7 @@ import { scrollBottom } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
 import { HandleLogout, islastMsgOfSender } from '../configs/userConfigs'
 import { ChatState } from '../Context/ChatProvider'
+import AvatarBox from './Materials/AvatarBox'
 import ProfileDrawer from './Materials/ProfileDrawer'
 
 function MessageBox({ messages, setMessages }) {
@@ -67,6 +68,9 @@ function MessageBox({ messages, setMessages }) {
 
       setChatMessages([...chatMessages, { chatId: selectedChat?._id, messages: json.allMessages }])
 
+      scrollBottom("messagesDisplay")
+
+
     } catch (error) {
       showToast("Error", error.message, "error", 3000)
     }
@@ -74,7 +78,10 @@ function MessageBox({ messages, setMessages }) {
   }
 
   useEffect(() => {
-    scrollBottom("messagesDisplay")
+    setTimeout(() => {
+
+      scrollBottom("messagesDisplay")
+    }, 20);
     // eslint-disable-next-line
   }, [messages])
 
@@ -84,8 +91,46 @@ function MessageBox({ messages, setMessages }) {
     // eslint-disable-next-line
   }, [selectedChat?._id])
 
+  let avatarBoxs = document.querySelectorAll('.avatarBox');
 
-  const handleMessageAvatarClick = (avatarUser) => {
+  function hideAvatarBoxs() {
+    avatarBoxs.forEach(elm => elm.style.display = 'none')
+  }
+
+  function startaChat(avatarUser) {
+    // this else part will only run for the Group chat because in Group chat after click onto user avatar a chat will start with him other wise in personal chat we will se profile of the user avatar click
+    setSelectedChat(null)
+    let isChat = false
+
+    archivedChats.forEach((c, i) => {
+      if (!c.isGroupchat && (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(avatarUser._id))) {
+        navigate(`/chats/chat/${c._id}`);
+        setProfile(null);
+        isChat = true
+      }
+    })
+
+    if (!isChat) {
+      chats.forEach((c, i) => {
+        if (!c.isGroupchat && (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(avatarUser._id))) {
+          navigate(`/chats/chat/${c._id}`);
+          setProfile(null);
+          isChat = true
+        }
+        else {
+          if (i === (chats.length - 1) && !isChat) {
+
+            // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
+            if (window.innerWidth < 770) setSelectedChat(null)
+            CreateChat(avatarUser._id, avatarUser.name)
+          }
+        }
+      })
+    }
+  }
+
+  window.addEventListener('click', hideAvatarBoxs)
+  const handleMessageAvatarClick = (avatarUser, i, e) => {
 
     // if user click on his own avatar and if the chat is not a group chat then display his or that user avatar click profile other then else start a chat with that user avatar click!
     if (!(selectedChat?.isGroupchat) || avatarUser._id === user?._id) {
@@ -93,41 +138,19 @@ function MessageBox({ messages, setMessages }) {
       if (window.innerWidth < 770 && avatarUser._id === user._id) setSelectedChat(null)
     }
     else {
+      hideAvatarBoxs();
+      e.stopPropagation()
+      let avatarBox = document.getElementById(`avatarBox${i}`)
+      avatarBox.style.display = "flex"
 
-      // this else part will only run for the Group chat because in Group chat after click onto user avatar a chat will start with him other wise in personal chat we will se profile of the user avatar click 
-      setSelectedChat(null)
-      let isChat = false
-
-      archivedChats.forEach((c, i) => {
-        if (!c.isGroupchat && (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(avatarUser._id))) {
-          navigate(`/chats/chat/${c._id}`);
-          setProfile(null);
-          isChat = true
-        }
-      })
-
-      if (!isChat) {
-        chats.forEach((c, i) => {
-          if (!c.isGroupchat && (c.users.map(u => u._id).includes(user?._id) && c.users.map(u => u._id).includes(avatarUser._id))) {
-            navigate(`/chats/chat/${c._id}`);
-            setProfile(null);
-            isChat = true
-          }
-          else {
-            if (i === (chats.length - 1) && !isChat) {
-
-              // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
-              if (window.innerWidth < 770) setSelectedChat(null)
-              CreateChat(avatarUser._id, avatarUser.name)
-            }
-          }
-        })
-      }
+      // startaChat(avatarUser)
     }
   }
 
+  const [isHoverDisable,setIsHoverDisable] = useState(false);
+
   return (
-    <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden">
+    <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
       {
         // profile?._id is same as profile && profile._id but in some instance we need to check the profile first and then the details inside it! it opens this profile drawer with profile?._id condition!
         profile && profile._id !== user?._id &&
@@ -169,8 +192,16 @@ function MessageBox({ messages, setMessages }) {
                           {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
                             (window.innerWidth < 770 || (islastMsgOfSender(messages, i, m.sender._id) || isLastMsgOfTheDay(m.createdAt, messages, i))) &&
                             <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
-                              <Tooltip hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : "Start a chat") : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
-                                <Avatar cursor={"pointer"} onClick={() => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender)} size={'sm'} name={m.sender.name} src={m.sender._id === user?._id ? user?.avatar : m.sender.avatar} />
+                              <Tooltip isDisabled={isHoverDisable} hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : m.sender.name) : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
+                              <Avatar
+                                onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}
+                                pos="relative" cursor={"pointer"} size={'sm'} name={m.sender.name} src={m.sender._id === user?._id ? user?.avatar : m.sender.avatar} >
+                                {
+                                  m.sender._id !== user?._id
+                                  &&
+                                  <AvatarBox m={m} startaChat={startaChat} setIsHoverDisable={setIsHoverDisable} i={i}/>
+                                }
+                              </Avatar>
                               </Tooltip>
                             </Box>
                           }
@@ -190,6 +221,7 @@ function MessageBox({ messages, setMessages }) {
                             borderBottomLeftRadius={".5rem"}
                             position="relative"
                             borderBottomRightRadius={(m.sender._id !== user?._id || (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))) && ".5rem"}
+                            minW={m.sender._id !== user?._id ? "80px" : "54px"}
 
                             marginLeft=
                             {window.innerWidth > 770
@@ -209,10 +241,32 @@ function MessageBox({ messages, setMessages }) {
 
                             textShadow={m.sender._id !== user?._id && "2px 2px 3px rgba(0,0,0,.3)"}
                             paddingBottom="1rem"
-                            paddingRight={"1rem"}
-                            paddingLeft={m.content.message.length === 1 && ".9rem"}
+                            paddingRight={".5rem"}
+                            paddingLeft={m.content?.message?.length === 1 && ".9rem"}
                           >
-                            {m.content.message}
+
+                            {
+                              selectedChat?.isGroupchat && m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id) &&
+                              <Text fontSize={".7rem"} fontWeight="normal">
+                                {m.sender.name.split(" ")[0]}
+                              </Text>
+                            }
+                            <Text paddingLeft={(m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id)) && ".0rem"}>
+                              {
+                                m.content.img
+                                  ?
+                                  <>
+                                    <Box maxW={"35rem"} minW="16.18rem" >
+                                      <Box width={"100%"} paddingBottom={".6rem"}>
+                                        <Image src={m.content.img} preload="none" width="100%" height={"100%"} objectFit={"cover"} maxH="34rem" />
+                                      </Box>
+                                      <Text>{m.content?.message}</Text>
+                                    </Box>
+                                  </>
+                                  :
+                                  m.content.message
+                              }
+                            </Text>
 
                             <Text pos={"absolute"} fontSize={".6rem"} right=".4rem" color={"black !important"} textShadow="none !important">
                               {getMsgTime(m.createdAt)}
@@ -235,7 +289,7 @@ function MessageBox({ messages, setMessages }) {
           </Box>
       }
 
-    </Box>
+    </Box >
   )
 }
 

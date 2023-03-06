@@ -152,7 +152,7 @@ function ChatsBox() {
                           <Text fontSize={"1rem"} fontWeight="semibold">
                             <Text className='flex' gap={".7rem"}>
                               {getSender(chat, user)?.name}
-                              { chat.mutedNotificationBy.includes(user?._id) && 
+                              { chat?.mutedNotificationBy?.includes(user?._id) && 
                               <Tooltip label="Notification muted" placement='top' fontSize={".8rem"}>
                                 <Image width={"1rem"} src='https://cdn-icons-png.flaticon.com/512/4175/4175297.png'/>
                               </Tooltip>

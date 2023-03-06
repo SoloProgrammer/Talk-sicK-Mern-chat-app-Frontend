@@ -177,7 +177,7 @@ function GroupUser({ u }) {
                 <Box display={"flex"} gap="1rem" alignItems={"center"}>
                     <b style={{ textTransform: "capitalize" }}>{u?._id === user?._id ? user.name : u?.name}</b>
                     {
-                        u?._id !== user._id 
+                        u?._id !== user?._id && selectedChat.groupAdmin.map(u => u._id).includes(user?._id)
                         &&
                          <ConfirmBoxModal handleFunc={() => handleRemoveFromGroup(u?._id)} isOpen={isOpen} onClose={onClose} 
                          modalDetail={{ chat: selectedChat, subtext: `Are you sure you want to remove (${u.name}) from `,btnCopy:"Remove" }} loading={removeUserLoading}>
