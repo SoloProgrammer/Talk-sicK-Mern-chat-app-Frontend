@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay } from '../configs/messageConfigs'
 import { scrollBottom } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
-import { HandleLogout, islastMsgOfSender } from '../configs/userConfigs'
+import { defaultPic, HandleLogout, islastMsgOfSender } from '../configs/userConfigs'
 import { ChatState } from '../Context/ChatProvider'
 import AvatarBox from './Materials/AvatarBox'
 import ProfileDrawer from './Materials/ProfileDrawer'
@@ -95,6 +95,7 @@ function MessageBox({ messages, setMessages }) {
 
   function hideAvatarBoxs() {
     avatarBoxs.forEach(elm => elm.style.display = 'none')
+    setAvatarBoxLoading(true)
   }
 
   function startaChat(avatarUser) {
@@ -129,25 +130,35 @@ function MessageBox({ messages, setMessages }) {
     }
   }
 
-  window.addEventListener('click', hideAvatarBoxs)
-  const handleMessageAvatarClick = (avatarUser, i, e) => {
+  window.addEventListener('click', hideAvatarBoxs);
 
+  const handleMessageAvatarClick = (avatarUser, i, e) => {
+        
     // if user click on his own avatar and if the chat is not a group chat then display his or that user avatar click profile other then else start a chat with that user avatar click!
     if (!(selectedChat?.isGroupchat) || avatarUser._id === user?._id) {
       setProfile(avatarUser)
       if (window.innerWidth < 770 && avatarUser._id === user._id) setSelectedChat(null)
     }
     else {
-      hideAvatarBoxs();
-      e.stopPropagation()
       let avatarBox = document.getElementById(`avatarBox${i}`)
-      avatarBox.style.display = "flex"
+      if(avatarBox.style.display === "flex") return
+      
+      // this function will hide all the visible avatar boxs open by users and setting avatarBoxloading to true..!
+      hideAvatarBoxs();
 
+      setTimeout(() => {
+        setAvatarBoxLoading(false)
+      }, Math.floor(Math.random(10) * 1000));
+
+      // and then only that avatar box will be visible on which user has clicked..!
+      avatarBox.style.display = "flex"
+      e.stopPropagation()
       // startaChat(avatarUser)
     }
   }
 
   const [isHoverDisable,setIsHoverDisable] = useState(false);
+  const [avatarBoxLoading,setAvatarBoxLoading] = useState(true)
 
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
@@ -195,11 +206,11 @@ function MessageBox({ messages, setMessages }) {
                               <Tooltip isDisabled={isHoverDisable} hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : m.sender.name) : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
                               <Avatar
                                 onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}
-                                pos="relative" cursor={"pointer"} size={'sm'} name={m.sender.name} src={m.sender._id === user?._id ? user?.avatar : m.sender.avatar} >
+                                pos="relative" cursor={"pointer"} size={'sm'} name={m.sender.name} src={m.sender._id === user?._id ? user?.avatar : m.sender.avatar || defaultPic} >
                                 {
                                   m.sender._id !== user?._id
                                   &&
-                                  <AvatarBox m={m} startaChat={startaChat} setIsHoverDisable={setIsHoverDisable} i={i}/>
+                                  <AvatarBox m={m} startaChat={startaChat} setIsHoverDisable={setIsHoverDisable} i={i} avatarBoxLoading={avatarBoxLoading}/>
                                 }
                               </Avatar>
                               </Tooltip>
@@ -207,7 +218,7 @@ function MessageBox({ messages, setMessages }) {
                           }
 
                           <Text
-                            padding=".3rem .5rem"
+                            padding={m.content.img ? ".3rem" : ".5rem"}
                             fontSize={"1rem"}
                             backgroundColor={m.sender._id !== user?._id ? "#56c8c0" : "#f8f8d9"}
                             key={i} pos="relative"
@@ -241,7 +252,6 @@ function MessageBox({ messages, setMessages }) {
 
                             textShadow={m.sender._id !== user?._id && "2px 2px 3px rgba(0,0,0,.3)"}
                             paddingBottom="1rem"
-                            paddingRight={".5rem"}
                             paddingLeft={m.content?.message?.length === 1 && ".9rem"}
                           >
 
@@ -256,9 +266,9 @@ function MessageBox({ messages, setMessages }) {
                                 m.content.img
                                   ?
                                   <>
-                                    <Box maxW={"35rem"} minW="16.18rem" >
+                                    <Box maxW={"35rem"} >
                                       <Box width={"100%"} paddingBottom={".6rem"}>
-                                        <Image src={m.content.img} preload="none" width="100%" height={"100%"} objectFit={"cover"} maxH="34rem" />
+                                        <Image borderRadius={".3rem"} src={m.content.img} preload="none" width="100%" height={"100%"} objectFit={"cover"} maxH="34rem" />
                                       </Box>
                                       <Text>{m.content?.message}</Text>
                                     </Box>
