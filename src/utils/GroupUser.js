@@ -4,7 +4,7 @@ import { ChatState } from '../Context/ChatProvider'
 import { HandleLogout, isUserOnline } from '../configs/userConfigs'
 import { server } from '../configs/serverURl'
 import { useNavigate } from 'react-router-dom'
-import ConfirmBoxModal from '../components/Materials/ConfirmBoxModal'
+import ConfirmBoxModal from '../components/Materials/Modals/ConfirmBoxModal'
 
 
 function GroupUser({ u }) {
@@ -37,7 +37,7 @@ function GroupUser({ u }) {
                 body: JSON.stringify({ userId, chatId: selectedChat?._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/${action}`, config)
+            let res = await fetch(`${server.URL.local}/api/chat/${action}`, config)
 
             if (res.status === 401) HandleLogout()
 
@@ -79,7 +79,7 @@ function GroupUser({ u }) {
                 body: JSON.stringify({ chatId: selectedChat?._id, userId })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/groupremove`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/groupremove`, config);
 
             if (res.status === 401) HandleLogout();
 

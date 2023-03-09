@@ -152,10 +152,13 @@ function ChatsBox() {
                           <Text fontSize={"1rem"} fontWeight="semibold">
                             <Text className='flex' gap={".7rem"}>
                               {getSender(chat, user)?.name}
-                              { chat?.mutedNotificationBy?.includes(user?._id) && 
-                              <Tooltip label="Notification muted" placement='top' fontSize={".8rem"}>
-                                <Image width={"1rem"} src='https://cdn-icons-png.flaticon.com/512/4175/4175297.png'/>
-                              </Tooltip>
+                              {chat?.mutedNotificationBy?.includes(user?._id)
+                                &&
+                                <Box>
+                                  <Tooltip label="Notification muted" placement='top' fontSize={".8rem"}>
+                                    <Image width={"1rem"} src='https://cdn-icons-png.flaticon.com/512/4175/4175297.png' />
+                                  </Tooltip>
+                                </Box>
                               }
                             </Text>
                           </Text>
@@ -181,8 +184,10 @@ function ChatsBox() {
                             {chat.latestMessage
                               &&
                               (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "}
+                            <Text display={"inline-block"} fontWeight="normal" fontSize={".87rem"}>
+                              {chat.latestMessage ? (chat.latestMessage.content.img ? <> <i class="fa-regular fa-image" /> image</> : Trimlastestmsg(chat.latestMessage?.content.message)) : "No message yet!"}
+                            </Text>
                           </Text>
-                          {Trimlastestmsg(chat.latestMessage?.content.message || "No message yet!")}
                         </Text>
 
                       </Box>

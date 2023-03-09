@@ -3,11 +3,11 @@ import React, { useState } from 'react'
 import { server } from '../../configs/serverURl';
 import { HandleLogout } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
-import ConfirmBoxModal from './ConfirmBoxModal';
+import ConfirmBoxModal from './Modals/ConfirmBoxModal';
 
 function ChatMenuBox({ chat, i }) {
 
-    let { handleLeaveGrp, handleDeleteChat, user,setChats,showToast, handlePinOrUnpinChat, hanldeArchiveChatAction, archivedChats,chats } = ChatState();
+    let { handleLeaveGrp, handleDeleteChat, user, setChats, showToast, handlePinOrUnpinChat, hanldeArchiveChatAction, archivedChats, chats } = ChatState();
 
     const handleChatMenuIconClick = (e, i) => {
         e.stopPropagation();
@@ -26,21 +26,21 @@ function ChatMenuBox({ chat, i }) {
 
     const [loading, setLoading] = useState(false);
 
-    const handleNotificationAction = async (chat) =>{
+    const handleNotificationAction = async (chat) => {
 
         setTimeout(() => {
             document.body.click()
-        }, 300);
-
+        }, 250);
+        
         let updatedChats = chats.map(c => {
-            if(c._id === chat._id){
-                if(!(c.mutedNotificationBy.includes(user?._id))){
+            if (c._id === chat._id) {
+                if (!(c.mutedNotificationBy.includes(user?._id))) {
                     c.mutedNotificationBy.push(user?._id)
-                    showToast("Notification muted","","info",2000)
+                    showToast("Notification muted", "", "info", 2000)
                 }
-                else{
+                else {
                     c.mutedNotificationBy = c.mutedNotificationBy.filter(uId => uId !== user?._id)
-                    showToast("Notification Unmuted","","info",2000)
+                    showToast("Notification Unmuted", "", "info", 2000)
                 }
             }
             return c
@@ -58,7 +58,7 @@ function ChatMenuBox({ chat, i }) {
                 body: JSON.stringify({ chatId: chat._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/muteOrUnmuteNotification`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/muteOrUnmuteNotification`, config);
 
             if (res.status === "401") HandleLogout()
 
@@ -70,16 +70,16 @@ function ChatMenuBox({ chat, i }) {
             setTimeout(() => {
                 window.location.reload(0)
             }, 2000);
-            return showToast("Error",error.message,"error",3000)
+            return showToast("Error", error.message, "error", 3000)
         }
-    }  
+    }
 
     return (
         <>
             <Box id={`chatMenuIcon${i}`} className='chatMenuIcon arrowIcon' pos={"absolute"} right="6px" bottom={"4px"} cursor="pointer" onClick={(e) => handleChatMenuIconClick(e, i)}>
                 <Image width={"1rem"} src='https://cdn-icons-png.flaticon.com/512/137/137519.png' />
                 <Box pos={"relative"}>
-                    <Box id={`chatmenu${i}`} className='chat_menu flex' flexDir={"column"} width="9.7rem">
+                    <Box id={`chatmenu${i}`} className='chat_menu flex' flexDir={"column"} width={"10.8rem"}>
 
                         <ConfirmBoxModal
                             handleFunc={() => chat.isGroupchat ? handleLeaveGrp(chat, onClose, setLoading) : handleDeleteChat(chat, onClose, setLoading)}
@@ -122,12 +122,12 @@ function ChatMenuBox({ chat, i }) {
                                 <Image width="1.1rem" src='https://cdn-icons-png.flaticon.com/512/8138/8138776.png' />}
                         </span>
 
-                        {!archivedChats.map(c => c._id).includes(chat._id) 
-                        && 
-                        <span onClick={()=>handleNotificationAction(chat)} className='flex'>
-                             {chat.mutedNotificationBy?.includes(user?._id) ? 'Unmute notific...' : "Mute notification"}
-                            <Image width={`${chat.mutedNotificationBy?.includes(user?._id) ? "1.16rem" : "1.08rem"}`} src={`${chat.mutedNotificationBy?.includes(user?._id) ? "https://cdn-icons-png.flaticon.com/512/4175/4175297.png" : "https://cdn-icons-png.flaticon.com/512/3239/3239952.png"} `} />
-                        </span>}
+                        {!archivedChats.map(c => c._id).includes(chat._id)
+                            &&
+                            <span onClick={() => handleNotificationAction(chat)} className='flex'>
+                                {chat.mutedNotificationBy?.includes(user?._id) ? 'Unmute notification' : "Mute notification"}
+                                <Image width={`${chat.mutedNotificationBy?.includes(user?._id) ? "1.16rem" : "1.08rem"}`} src={`${chat.mutedNotificationBy?.includes(user?._id) ? "https://cdn-icons-png.flaticon.com/512/4175/4175297.png" : "https://cdn-icons-png.flaticon.com/512/3239/3239952.png"} `} />
+                            </span>}
                     </Box>
                 </Box>
             </Box>

@@ -14,14 +14,14 @@ import {
     Image,
     Avatar
 } from '@chakra-ui/react'
-import { Loading } from './Loading'
-import { ChatState } from '../../Context/ChatProvider'
-import UserListItem from '../../utils/UserListItem'
-import EmptySearch from '../EmptySearch'
-import { defaultPic, HandleLogout, UserChip } from '../../configs/userConfigs'
-import { server } from '../../configs/serverURl'
+import { Loading } from '../Loading'
+import { ChatState } from '../../../Context/ChatProvider'
+import UserListItem from '../../../utils/UserListItem'
+import EmptySearch from '../../EmptySearch'
+import { defaultPic, HandleLogout, UserChip } from '../../../configs/userConfigs'
+import { server } from '../../../configs/serverURl'
 import { useNavigate } from 'react-router-dom'
-import { handleFileUpload } from '../../configs/handleFileUpload'
+import { handleFileUpload } from '../../../configs/handleFileUpload'
 
 function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmemberLoading }) {
 
@@ -49,7 +49,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                         token: localStorage.getItem('token')
                     }
                 }
-                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config);
+                const res = await fetch(`${server.URL.local}/api/user/searchuser?search=${search}`, config);
                 const json = await res.json();
 
                 // let result = result1.filter(o1 => !result2.some(o2 => o1.id === o2.id));
@@ -122,7 +122,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                 },
                 body: JSON.stringify({ users, groupName, groupAvatar: pic })
             }
-            let res = await fetch(`${server.URL.production}/api/chat/creategroup`, config)
+            let res = await fetch(`${server.URL.local}/api/chat/creategroup`, config)
 
             if (res.status === 401) HandleLogout();
 
@@ -162,7 +162,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
             <Modal size={'md'} isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick={isClosable}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>
+                    <ModalHeader fontFamily={"Roboto"} color="dimgray">
                         <Box className='flex' gap={".6rem"} justifyContent="start">
                             <Text textTransform={'capitalize'} fontSize="1.5rem">
                                 {addMember ? "Add a new group member" : "Create a Group"}

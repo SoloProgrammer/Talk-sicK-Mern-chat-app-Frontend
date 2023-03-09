@@ -1,7 +1,7 @@
 import { Box, Image, Text, useDisclosure } from '@chakra-ui/react';
 import React, { useState } from 'react'
 import { ChatState } from '../Context/ChatProvider';
-import ConfirmBoxModal from './Materials/ConfirmBoxModal';
+import ConfirmBoxModal from './Materials/Modals/ConfirmBoxModal';
 
 function DeleteChat() {
 

@@ -12,8 +12,8 @@ import {
   Image,
   FormControl,
 } from '@chakra-ui/react'
-import { getSender } from '../../configs/userConfigs'
-import { ChatState } from '../../Context/ChatProvider'
+import { getSender } from '../../../configs/userConfigs'
+import { ChatState } from '../../../Context/ChatProvider'
 
 function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, loading }) {
 
@@ -36,7 +36,7 @@ function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, l
       <Modal onClose={onClose} isOpen={isOpen} isCentered closeOnOverlayClick={isClosable} initialFocusRef={initialRef} motionPreset='scale'>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>
+          <ModalHeader fontFamily={"Roboto"} color="dimgray">
             <Text fontSize={"1rem"} textTransform="capitalize" fontWeight={"medium"} marginRight=".5rem" className='flex' gap={".7rem"} alignItems="start" justifyContent={"start"}>
               <Image marginTop={".2rem"} src="https://cdn-icons-png.flaticon.com/512/4842/4842436.png" width="1.2rem" />
               <Text>

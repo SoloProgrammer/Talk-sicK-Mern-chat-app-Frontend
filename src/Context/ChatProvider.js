@@ -32,7 +32,7 @@ const ChatProvider = ({ children }) => {
                 'token': localStorage.getItem('token')
             }
         }
-        const res = await fetch(`${server.URL.production}/api/user/getuser`, config);
+        const res = await fetch(`${server.URL.local}/api/user/getuser`, config);
         return res.json()
     }
 
@@ -44,7 +44,7 @@ const ChatProvider = ({ children }) => {
 
     // const ENDPOINT = "http://localhost:8001"
 
-    const ENDPOINT = server.URL.production
+    const ENDPOINT = server.URL.local
 
     const [socket, setSocket] = useState(null);
 
@@ -105,7 +105,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ userId })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat`, config);
+            let res = await fetch(`${server.URL.local}/api/chat`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -147,6 +147,7 @@ const ChatProvider = ({ children }) => {
         (selectedChat && selectedChat._id === chat._id) && setSelectedChat(chats.filter(c => c._id === chat._id)[0]);
 
         setChats(updatedChats)
+
         try {
             let config = {
                 method: "PUT",
@@ -157,7 +158,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ chatId: chat._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/pinORunpinchat`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/pinORunpinchat`, config);
 
             if (res.status === "401") HandleLogout()
 
@@ -183,7 +184,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ msgId })
             }
 
-            let res = await fetch(`${server.URL.production}/api/message/seenMessage`, config);
+            let res = await fetch(`${server.URL.local}/api/message/seenMessage`, config);
 
             if (res.status === 401) return HandleLogout();
 
@@ -215,7 +216,7 @@ const ChatProvider = ({ children }) => {
                 }
             }
 
-            const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
+            const res = await fetch(`${server.URL.local}/api/chat/allchats`, config);
 
             if (res.status === 401) HandleLogout()
 
@@ -270,7 +271,7 @@ const ChatProvider = ({ children }) => {
                 },
                 body: JSON.stringify({ chatId: chat._id })
             }
-            let res = await fetch(`${server.URL.production}/api/chat/archiveOrUnarchiveChat`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/archiveOrUnarchiveChat`, config);
 
             if (res.status === "401") HandleLogout();
 
@@ -297,7 +298,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ chatId: chat?._id, userId: user?._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/groupremove`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/groupremove`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -339,7 +340,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ chatId: chat?._id })
             }
 
-            const res = await fetch(`${server.URL.production}/api/chat/deletechat`, config);
+            const res = await fetch(`${server.URL.local}/api/chat/deletechat`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -369,6 +370,7 @@ const ChatProvider = ({ children }) => {
         }
     }
 
+    const [sendPic, setSendPic] = useState(null)
     useEffect(() => {
 
         // whenever new message recives and user is on another chat so all the chats will be fetch again and to stay the user on the same chat he is before refrshing the chats this logic is used!
@@ -376,14 +378,13 @@ const ChatProvider = ({ children }) => {
             chats && setSelectedChat(chats.filter(chat => chat._id === selectedChat._id)[0])
         }
         // eslint-disable-next-line
-    }, [chats])
-
+    }, [chats]);
 
     // state for determining all the popups in the app should be able to closed or not..! 
     const [isClosable, setIsClosable] = useState(true)
 
     return (
-        <ChatContext.Provider value={{ isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp,handleDeleteChat }}>
+        <ChatContext.Provider value={{ isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic }}>
             {children}
         </ChatContext.Provider>
     )

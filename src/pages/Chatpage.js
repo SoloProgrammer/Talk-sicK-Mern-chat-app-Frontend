@@ -9,7 +9,7 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat } = ChatState();
+  const { getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat,setSendPic } = ChatState();
 
   const navigate = useNavigate();
   const locaObj = useLocation();
@@ -63,6 +63,7 @@ function Chatpage() {
     if (!token) navigate('/')
     else GetuserInfo()
 
+    setSendPic(null)
     setTimeout(() => document.querySelector('.mainChatBox')?.classList.remove('hideleft'), 0);
     // setTimeout(() => document.querySelector('.allchats')?.classList.remove('hidetop'), 10);
     // eslint-disable-next-line
@@ -81,7 +82,7 @@ function Chatpage() {
           token: localStorage.getItem('token')
         }
       }
-      const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
+      const res = await fetch(`${server.URL.local}/api/chat/allchats`, config);
 
       if (res.status === 401) HandleLogout()
 

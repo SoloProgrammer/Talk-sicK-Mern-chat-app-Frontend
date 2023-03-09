@@ -2,7 +2,7 @@ import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay } from '../configs/messageConfigs'
-import { scrollBottom } from '../configs/scrollConfigs'
+import { scrollBottom, scrollTop } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
 import { defaultPic, HandleLogout, islastMsgOfSender } from '../configs/userConfigs'
 import { ChatState } from '../Context/ChatProvider'
@@ -51,7 +51,7 @@ function MessageBox({ messages, setMessages }) {
           token: localStorage.getItem('token')
         }
       }
-      let res = await fetch(`${server.URL.production}/api/message/fetchmessages/${selectedChat._id}`, config)
+      let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChat._id}`, config)
 
       if (res.status === 401) HandleLogout()
 
@@ -133,7 +133,7 @@ function MessageBox({ messages, setMessages }) {
   window.addEventListener('click', hideAvatarBoxs);
 
   const handleMessageAvatarClick = (avatarUser, i, e) => {
-        
+
     // if user click on his own avatar and if the chat is not a group chat then display his or that user avatar click profile other then else start a chat with that user avatar click!
     if (!(selectedChat?.isGroupchat) || avatarUser._id === user?._id) {
       setProfile(avatarUser)
@@ -141,8 +141,8 @@ function MessageBox({ messages, setMessages }) {
     }
     else {
       let avatarBox = document.getElementById(`avatarBox${i}`)
-      if(avatarBox.style.display === "flex") return
-      
+      if (avatarBox.style.display === "flex") return
+
       // this function will hide all the visible avatar boxs open by users and setting avatarBoxloading to true..!
       hideAvatarBoxs();
 
@@ -157,11 +157,37 @@ function MessageBox({ messages, setMessages }) {
     }
   }
 
-  const [isHoverDisable,setIsHoverDisable] = useState(false);
-  const [avatarBoxLoading,setAvatarBoxLoading] = useState(true)
+  const [isHoverDisable, setIsHoverDisable] = useState(false);
+  const [avatarBoxLoading, setAvatarBoxLoading] = useState(true);
+
+  const [scrollToTop, setScrollToTop] = useState(false);
+
+  
+  let elm = document.querySelector('#messagesDisplay')
+  let [lastScrollvalue,setLastScrollvalue] = useState(0);
+
+  elm?.addEventListener('scroll', () => {
+    const currScroll = elm?.scrollTop;
+
+    // if the user is at the top of messagesContainer then set scrolltotop to false as now user will scroll down!
+    if(currScroll === 0) return setScrollToTop(false)
+
+    // else if the user is at the extreme bottom of messagesContainer then set scrolltotop to true as now user will scroll up!
+    else if(currScroll >= elm?.scrollHeight - 800) return setScrollToTop(true)
+
+    //  user scrolls up show up arrow!
+    if (lastScrollvalue < currScroll ) {
+      setScrollToTop(false)
+    }
+    // else if show down arrow to go down!
+    else setScrollToTop(true)
+    setLastScrollvalue(currScroll);
+
+  })
 
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
+      
       {
         // profile?._id is same as profile && profile._id but in some instance we need to check the profile first and then the details inside it! it opens this profile drawer with profile?._id condition!
         profile && profile._id !== user?._id &&
@@ -179,7 +205,24 @@ function MessageBox({ messages, setMessages }) {
             </Tooltip>
           </Box>
           :
-          <Box id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".3rem .4rem"} paddingTop=".6rem">
+          <Box pos={"relative"} id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".3rem .4rem"} paddingTop=".6rem">
+
+            {
+              messages.length > 10 &&
+              <Box position={'sticky'} boxShadow="0 0 3px rgba(0,0,0,.3)" cursor={"pointer"} top="0px" right={"20px"} zIndex="1" padding={".7rem"} background="white" borderRadius={"50%"} w="fit-content">
+                <Image width={"1.1rem"} onClick={() => {
+                  if (scrollToTop) {
+                    scrollTop('messagesDisplay', 'smooth')
+                  }
+                  else {
+                    scrollBottom('messagesDisplay', 'auto')
+                  }
+                }}
+                  transition=".2s"
+                  transform={`rotate(${scrollToTop ? "180deg" : "0deg"})`}
+                  src="https://cdn-icons-png.flaticon.com/512/1621/1621216.png" />
+              </Box>
+            }
             {
               messages.length > 0
                 ?
@@ -204,15 +247,15 @@ function MessageBox({ messages, setMessages }) {
                             (window.innerWidth < 770 || (islastMsgOfSender(messages, i, m.sender._id) || isLastMsgOfTheDay(m.createdAt, messages, i))) &&
                             <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
                               <Tooltip isDisabled={isHoverDisable} hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : m.sender.name) : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
-                              <Avatar
-                                onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}
-                                pos="relative" cursor={"pointer"} size={'sm'} name={m.sender.name} src={m.sender._id === user?._id ? user?.avatar : m.sender.avatar || defaultPic} >
-                                {
-                                  m.sender._id !== user?._id
-                                  &&
-                                  <AvatarBox m={m} startaChat={startaChat} setIsHoverDisable={setIsHoverDisable} i={i} avatarBoxLoading={avatarBoxLoading}/>
-                                }
-                              </Avatar>
+                                <Avatar
+                                  onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}
+                                  pos="relative" cursor={"pointer"} size={'sm'} src={m.sender._id === user?._id ? user?.avatar : m.sender.avatar || defaultPic} >
+                                  {
+                                    m.sender._id !== user?._id
+                                    &&
+                                    <AvatarBox m={m} startaChat={startaChat} setIsHoverDisable={setIsHoverDisable} i={i} avatarBoxLoading={avatarBoxLoading} />
+                                  }
+                                </Avatar>
                               </Tooltip>
                             </Box>
                           }

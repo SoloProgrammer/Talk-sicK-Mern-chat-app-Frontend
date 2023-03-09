@@ -1,5 +1,5 @@
-import { Box, FormControl, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
-import React, { useState, useEffect } from 'react'
+import { Box, FormControl, Image, Spinner, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { ChatState } from '../Context/ChatProvider'
 import BrandLogo from '../utils/BrandLogo'
 import MessagesBoxTopbar from './Materials/MessagesBoxTopbar'
@@ -12,6 +12,7 @@ import sentAudio from '../../src/mp3/MessageSent.mp3'
 import notifyAudio from '../../src/mp3/Notification.mp3'
 import chat1_icon from "../Images/chat1.jpg"
 import chat2_icon from "../Images/chat2.png"
+import SendImageModal from './Materials/Modals/SendImageModal'
 
 
 var selectedChatCompare;
@@ -20,12 +21,12 @@ var chatMessagesCompare;
 
 function MessagesBox() {
 
-  const { user, setChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser } = ChatState()
+  const { user, setChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
-  const sendBtn = "https://cdn-icons-png.flaticon.com/512/3060/3060014.png"
-  const sendBtnActive = "https://cdn-icons-png.flaticon.com/512/3059/3059413.png"
+  const sendBtn = "https://cdn-icons-png.flaticon.com/512/3059/3059413.png"
+  const sendBtnActive = "https://cdn-icons-png.flaticon.com/512/3060/3060014.png"
 
   const emojiIcon = "https://cdn-icons-png.flaticon.com/512/9320/9320978.png"
 
@@ -156,12 +157,19 @@ function MessagesBox() {
   let messageSentBeep = new Audio(sentAudio)
 
   const sendMessage = async () => {
-    if (messageText.replace(regx, '').length === 0) return setMessageText("")
-
-    setMessageText("");
+    if (messageText.replace(regx, '').length === 0 && !sendPic) return setMessageText("")
     setLoading(true);
 
     try {
+
+      let content;
+
+      if (sendPic) {
+        content = { message: messageText, img: sendPic.picture }
+      }
+      else {
+        content = { message: messageText }
+      }
 
       let config = {
         method: 'POST',
@@ -169,10 +177,13 @@ function MessagesBox() {
           "Content-Type": "application/json",
           token: localStorage.getItem('token')
         },
-        body: JSON.stringify({ chatId: selectedChat?._id, content: { message: messageText } })
+        body: JSON.stringify({ chatId: selectedChat?._id, content })
       }
 
-      let res = await fetch(`${server.URL.production}/api/message/sendmessage`, config);
+      setMessageText("");
+      setSendPic(null)
+
+      let res = await fetch(`${server.URL.local}/api/message/sendmessage`, config);
 
       if (res.status === 401) return HandleLogout()
 
@@ -206,45 +217,22 @@ function MessagesBox() {
 
   const regx = / |\n/g
 
-  // const handleKeyDown = (e) => {
-
-
-  //   if (e.keyCode === 13 && !e.shiftKey) {
-  //     if (e.target.value.replace(regx, '').length > 0) {
-  //       console.log("Sending...")
-  //       setMessageText("")
-  //       e.target.value = ""
-  //       e.target.value = ""
-  //       return
-  //     }
-  //     else {
-  //       e.target.value = ""
-  //       setMessageText("")
-  //       return
-  //     }
-  //   }
-
-  //   ((e.target.value.replace(regx, '').length > 0 && e.keyCode !== 13) || (e.keyCode === 8)) && setMessageText(e.target.value);
-
-
-
-  //   if ((e.keyCode === 13 && e.shiftKey) || (e.keyCode === 8 && e.shiftKey) || ((e.keyCode !== 13 && e.keyCode !== 8) || (e.keyCode === 8) || messageText.replace(regx, "").length > 1)) {
-  //     if (e.target.scrollHeight < 150) {
-  //       e.target.style.height = "0"
-  //       e.target.style.height = e.target.scrollHeight + "px";
-  //       document.querySelector('.messageTextbox').style.height = e.target.scrollHeight + 8 + "px";
-  //     }
-
-  //     if (profile) setProfile(null);
-  //     if (isEmojiPick) setIsEmojiPick(false);
-
-  //   }
-
-  // }
-
   const handleKeyDown = (e) => {
     if (e.keyCode === 13) sendMessage()
   }
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const trimPicname = useCallback(name => {
+    if (window.innerWidth > 890) return name;
+    else if (name.slice(0, 15).length > 16) {
+      let nameSplit = name.split('.')
+      return name.slice(0, 15) + "..." + nameSplit[1]
+    }
+    else return name
+    // eslint-disable-next-line
+  }, [sendPic])
+
   return (
     <Box overflow={"hidden"} display={{ base: selectedChat ? "flex" : "none", md: "flex" }} className='messagesBox' width={{ base: "100%", md: "60%", lg: "64%" }}>
       {
@@ -291,7 +279,7 @@ function MessagesBox() {
               pos={"absolute"}
               bottom="0"
               className='messageTextbox'
-              width={"100%"} 
+              width={"100%"}
               minHeight="57px !important"
               boxShadow="0 -4px 4px -4px rgba(0,0,0,.3)">
               <Box pos={"relative"} height={"100%"} padding=".3rem">
@@ -308,11 +296,11 @@ function MessagesBox() {
                     />
                   </Box>
                 }
-                <FormControl width={"auto"} marginBottom=".5rem" onKeyDown={handleKeyDown} height={"3rem"} marginRight={{base:"0",md:".3rem"}}>
+                <FormControl width={"auto"} marginBottom=".5rem" onKeyDown={handleKeyDown} height={"3rem"} marginRight={{ base: "0", md: ".3rem" }}>
                   <input
                     onFocus={() => scrollBottom('messagesDisplay')}
                     className='MessageBoxInput'
-                    placeholder='Type your message......'
+                    placeholder={sendPic ? "Type your message OR Send Image...." : 'Type your message......'}
                     id='text'
                     type="text"
                     value={messageText} onChange={handleMessageTyping}
@@ -328,9 +316,23 @@ function MessagesBox() {
                         src={emojiIcon}
                       />
                     </Tooltip>
-                    <Tooltip placement='top' fontSize={".8rem"} label="Image">
-                      <Image cursor={"pointer"} src='https://cdn-icons-png.flaticon.com/512/4303/4303472.png' opacity={".5"} width={"1.7rem"} />
-                    </Tooltip>
+                    <SendImageModal isOpen={isOpen} onClose={onClose}>
+                      <Tooltip placement='top' fontSize={".8rem"} label="Image">
+                        <Image onClick={onOpen} cursor={"pointer"} src='https://cdn-icons-png.flaticon.com/512/4303/4303472.png' opacity={".5"} width={"1.7rem"} />
+                      </Tooltip>
+                    </SendImageModal>
+                    {
+                      sendPic
+                      &&
+                      <Box padding={".05rem 1rem"} background="gray.200" borderRadius={"1rem"} pos="relative">
+                        <Tooltip label="remove" fontSize={".7rem"} placement="top">
+                          <i className="fa-solid fa-xmark sendPicx-mark" onClick={() => setSendPic(null)} />
+                        </Tooltip>
+                        <Text fontSize={"1rem"}>
+                          {trimPicname(sendPic.picName)}
+                        </Text>
+                      </Box>
+                    }
                   </Box>
                   <Box className='flex' alignItems={"end"} justifyContent={"end"}>
                     {
@@ -343,11 +345,11 @@ function MessagesBox() {
                         <Tooltip placement='top' fontSize={".8rem"} label="Enter/Click to Send">
                           <Image
                             opacity={".5"}
-                            cursor={messageText !== "" && "pointer"}
+                            cursor={(messageText !== "" || sendPic) && "pointer"}
                             width={"2rem"}
                             onClick={sendMessage}
                             className={`${messageText.replace(regx, '').length > 0 && "sentBtn"}`}
-                            src={`${messageText.replace(regx, '').length !== 0 ? sendBtn : sendBtnActive}`} />
+                            src={`${messageText.replace(regx, '').length !== 0 || sendPic ? sendBtnActive : sendBtn}`} />
                         </Tooltip>
                     }
                   </Box>

@@ -2,7 +2,7 @@ import { Box, Image, Text, useDisclosure } from '@chakra-ui/react'
 import React, { useState, useEffect } from 'react'
 import GroupUser from '../utils/GroupUser'
 import { ChatState } from '../Context/ChatProvider'
-import PopupModal from './Materials/PopupModal'
+import PopupModal from './Materials/Modals/PopupModal'
 import { HandleLogout, isAdmin } from '../configs/userConfigs'
 import { server } from '../configs/serverURl'
 
@@ -48,7 +48,7 @@ function GroupMembersBox() {
                 },
                 body: JSON.stringify({ chatId: selectedChat._id, users })
             }
-            let res = await fetch(`${server.URL.production}/api/chat/groupadd`, config)
+            let res = await fetch(`${server.URL.local}/api/chat/groupadd`, config)
 
             if (res.status === 401) HandleLogout()
 

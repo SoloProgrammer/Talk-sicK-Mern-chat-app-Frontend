@@ -1,5 +1,5 @@
 import { Box, Image, Tooltip, useDisclosure } from '@chakra-ui/react'
-import PopupModal from './PopupModal';
+import PopupModal from './Modals/PopupModal';
 import React from 'react'
 
 function CreateGroupChat() {
