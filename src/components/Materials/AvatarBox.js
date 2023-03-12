@@ -43,14 +43,14 @@ function AvatarBox({ m, startaChat, setIsHoverDisable, i, avatarBoxLoading }) {
                                 <Text fontSize={"1.1rem"}>
                                     {m.sender.name}
                                 </Text>
-                                <Text cursor={"pointer"} _hover={{ textDecor: "underline" }} fontSize={".9rem"} color="dodgerblue">
+                                <Box cursor={"pointer"} _hover={{ textDecor: "underline" }} fontSize={".9rem"} color="dodgerblue">
                                     <Text wordBreak={"break-word"} textAlign="left">
                                         <a href={`mailto:${m.sender.email}`}>
                                             {m.sender.email}
                                         </a>
-                                        <i class="fa-regular fa-envelope ml-3 black-200"></i>
+                                        <i className="fa-regular fa-envelope ml-3 black-200"></i>
                                     </Text>
-                                </Text>
+                                </Box>
                             </Box>
                             <Box display={"flex"} margin="1.5rem 0 .5rem 0" justifyContent={"end"}>
                                 <Text boxShadow={{ base: "0px 2px 3px rgba(0,0,0,.2)", md: "none" }} transition={".3s ease-in-out"} background={"rgb(241,243,244)"} marginBottom=".2rem" padding=".3rem 1rem" fontSize={".94rem"} _hover={{ boxShadow: "0px 2px 3px rgba(0,0,0,.2)" }}

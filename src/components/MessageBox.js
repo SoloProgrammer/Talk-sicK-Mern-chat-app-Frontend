@@ -13,6 +13,7 @@ import notifyAudio from '../../src/mp3/Notification.mp3'
 import chat1_icon from "../Images/chat1.jpg"
 import chat2_icon from "../Images/chat2.png"
 import SendImageModal from './Materials/Modals/SendImageModal'
+import { emojiIcon, sendBtn, sendBtnActive } from '../configs/ImageConfigs'
 
 
 var selectedChatCompare;
@@ -24,11 +25,6 @@ function MessagesBox() {
   const { user, setChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
 
   const [messageText, setMessageText] = useState("")
-
-  const sendBtn = "https://cdn-icons-png.flaticon.com/512/3059/3059413.png"
-  const sendBtnActive = "https://cdn-icons-png.flaticon.com/512/3060/3060014.png"
-
-  const emojiIcon = "https://cdn-icons-png.flaticon.com/512/9320/9320978.png"
 
   const handleMessageTyping = (e) => {
 
@@ -97,8 +93,6 @@ function MessagesBox() {
   }, [notifications])
 
 
-  let notificationBeep = new Audio(notifyAudio)
-
   // reciveing real time message from server with the help of socket!....................................................
   useEffect(() => {
 
@@ -114,7 +108,9 @@ function MessagesBox() {
 
             if (!newMessageRecieved.chat.archivedBy.includes(user._id) && !newMessageRecieved.chat.mutedNotificationBy.includes(user?._id)) {
               setNotifications([newMessageRecieved, ...notificationsCompare]);
+              let notificationBeep = new Audio(notifyAudio)
               notificationBeep.play()
+              notificationBeep.remove();
             }
             // console.log(".................", selectedChatCompare);
             setChatMessages(chatMessagesCompare.filter(chatM => chatM.chatId !== newMessageRecieved.chat._id))
@@ -154,8 +150,6 @@ function MessagesBox() {
 
   const [loading, setLoading] = useState(false)
 
-  let messageSentBeep = new Audio(sentAudio)
-
   const sendMessage = async () => {
     if (messageText.replace(regx, '').length === 0 && !sendPic) return setMessageText("")
     setLoading(true);
@@ -191,7 +185,9 @@ function MessagesBox() {
 
       if (!json.status) return showToast("Error", json.message, "error", 3000);
 
+      let messageSentBeep = new Audio(sentAudio)
       messageSentBeep?.play();
+      messageSentBeep.remove()
 
       socket.emit('new message', json.fullmessage, messages, user)
 
@@ -224,12 +220,15 @@ function MessagesBox() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const trimPicname = useCallback(name => {
+    
+    let nameSplit = name.split('.')
+
     if (window.innerWidth > 890) return name;
-    else if (name.slice(0, 15).length > 16) {
-      let nameSplit = name.split('.')
+    else if (nameSplit[0].length > 16) {
       return name.slice(0, 15) + "..." + nameSplit[1]
     }
     else return name
+
     // eslint-disable-next-line
   }, [sendPic])
 
@@ -324,11 +323,11 @@ function MessagesBox() {
                     {
                       sendPic
                       &&
-                      <Box padding={".05rem 1rem"} background="gray.200" borderRadius={"1rem"} pos="relative">
+                      <Box padding={".055rem 1rem"} background="gray.200" borderRadius={"1rem"} pos="relative">
                         <Tooltip label="remove" fontSize={".7rem"} placement="top">
                           <i className="fa-solid fa-xmark sendPicx-mark" onClick={() => setSendPic(null)} />
                         </Tooltip>
-                        <Text fontSize={"1rem"}>
+                        <Text fontSize={".95rem"} fontWeight="normal" letterSpacing={"0.01rem"}>
                           {trimPicname(sendPic.picName)}
                         </Text>
                       </Box>

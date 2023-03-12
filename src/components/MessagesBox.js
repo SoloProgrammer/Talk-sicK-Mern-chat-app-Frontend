@@ -1,6 +1,7 @@
 import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { downloadImage, imageActionBtns, zoomInImage, zoomOutImage } from '../configs/ImageConfigs'
 import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay } from '../configs/messageConfigs'
 import { scrollBottom, scrollTop } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
@@ -162,32 +163,99 @@ function MessageBox({ messages, setMessages }) {
 
   const [scrollToTop, setScrollToTop] = useState(false);
 
-  
-  let elm = document.querySelector('#messagesDisplay')
-  let [lastScrollvalue,setLastScrollvalue] = useState(0);
+  let messagesContainer = document.querySelector('#messagesDisplay')
+  let [lastScrollvalue, setLastScrollvalue] = useState(0);
 
-  elm?.addEventListener('scroll', () => {
-    const currScroll = elm?.scrollTop;
+  messagesContainer?.addEventListener('scroll', () => {
+    const currScroll = messagesContainer?.scrollTop;
 
-    // if the user is at the top of messagesContainer then set scrolltotop to false as now user will scroll down!
-    if(currScroll === 0) return setScrollToTop(false)
+    // if the user is at the top of messagesContainer then set scrolltotop to false as now user will able to scroll down!
+    if (currScroll === 0) return setScrollToTop(false)
 
-    // else if the user is at the extreme bottom of messagesContainer then set scrolltotop to true as now user will scroll up!
-    else if(currScroll >= elm?.scrollHeight - 800) return setScrollToTop(true)
+    // else if the user is at the extreme bottom of messagesContainer then set scrolltotop to true as now user will able to scroll up!
+    else if (currScroll >= messagesContainer?.scrollHeight - 800) return setScrollToTop(true)
 
     //  user scrolls up show up arrow!
-    if (lastScrollvalue < currScroll ) {
+    if (lastScrollvalue < currScroll) {
       setScrollToTop(false)
     }
     // else if show down arrow to go down!
     else setScrollToTop(true)
     setLastScrollvalue(currScroll);
 
-  })
+  });
+
+  const [msgImg, setMsgImg] = useState(null);
+
+  function handleImgActionCLick(action, src) {
+
+    if (action === "Download") downloadImage(src)
+    if (action === "Zoom-in") zoomInImage()
+    if (action === "Zoom-out") zoomOutImage()
+
+  }
+
+  useEffect(() => {
+    let img = document.querySelector('.messageImage')
+    setTimeout(() => {
+      if (img) {
+        img.style.transform = "translateX(0)"
+        setTimeout(() => {
+          img.style.opacity = 1
+        }, 150);
+      }
+    }, 50);
+  }, [msgImg])
 
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
-      
+
+      {
+        msgImg?.img
+        &&
+        <Box onClick={() => setMsgImg(null)} position={"fixed"} width="100%" height="100%" top={0} left="0" className="flex" zIndex={10} background="rgba(0,0,0,.6)">
+          <Box overflow={"hidden"} maxH={window.innerHeight} maxW="99.5%" minW={{ lg: "35rem" }} >
+            <Image transform={`translateX(${msgImg.senderId !== user?._id ? "-100%" : "100%"})`} opacity=".3" transition={".4s"} className='messageImage' src={msgImg?.img} maxH={window.innerHeight} maxW="100%" minW={{ lg: "100%" }} />
+          </Box>
+          <Box onClick={(e) => e.stopPropagation()} pos={"absolute"} bottom="0" width={"100%"} minHeight="6rem" background={"blackAlpha.500"} borderTop="1px solid rgba(255,255,255,.4)" className="flex">
+            <Box className='flex' gap={"3rem"}>
+              {
+                imageActionBtns.map((imgItem, i) => {
+                  return (
+                    <Tooltip key={i} label={imgItem.imgCopy} placement="bottom" fontSize={".8rem"} isOpen>
+                      <Box
+                        _active={{ bg: "whiteAlpha.400 !important" }}
+                        onClick={(e) => {
+                          handleImgActionCLick(imgItem.imgCopy, imgItem.src)
+                          e.stopPropagation()
+                        }
+                        }
+                        boxShadow="0 0 0 1px rgba(0,0,0,.2)"
+                        background="whiteAlpha.400"
+                        padding={".6rem"}
+                        borderRadius=".1rem"
+                        cursor={"pointer"}
+                        _hover={{ bg: "whiteAlpha.300" }}>
+                        <Image filter={"invert(100%)"} src={imgItem.src} width={"1.3rem"} />
+                      </Box>
+                    </Tooltip>
+                  )
+                })
+              }
+            </Box>
+          </Box>
+          {
+            msgImg.msg
+            &&
+            <Box onClick={(e) => e.stopPropagation()} pos={"absolute"} top="0" width={"100%"} minHeight="4rem" background={"blackAlpha.600"} borderBottom="1px solid rgba(255,255,255,.4)" className='flex' padding=".5rem">
+              <Text fontSize={{base:"1rem",md:"1.3rem"}} color="white" fontWeight={"light"} letterSpacing="0.05px">
+                {msgImg.msg}
+              </Text>
+            </Box>
+          }
+        </Box>
+      }
+
       {
         // profile?._id is same as profile && profile._id but in some instance we need to check the profile first and then the details inside it! it opens this profile drawer with profile?._id condition!
         profile && profile._id !== user?._id &&
@@ -260,7 +328,7 @@ function MessageBox({ messages, setMessages }) {
                             </Box>
                           }
 
-                          <Text
+                          <Box
                             padding={m.content.img ? ".3rem" : ".5rem"}
                             fontSize={"1rem"}
                             backgroundColor={m.sender._id !== user?._id ? "#56c8c0" : "#f8f8d9"}
@@ -304,28 +372,28 @@ function MessageBox({ messages, setMessages }) {
                                 {m.sender.name.split(" ")[0]}
                               </Text>
                             }
-                            <Text paddingLeft={(m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id)) && ".0rem"}>
+                            <Box paddingLeft={(m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id)) && ".0rem"}>
                               {
                                 m.content.img
                                   ?
                                   <>
                                     <Box maxW={"35rem"} >
-                                      <Box width={"100%"} paddingBottom={".6rem"}>
-                                        <Image borderRadius={".3rem"} src={m.content.img} preload="none" width="100%" height={"100%"} objectFit={"cover"} maxH="34rem" />
-                                      </Box>
+                                      <Text width={"100%"} paddingBottom={".6rem"}>
+                                        <Image onClick={() => setMsgImg({ img: m.content.img, msg: m.content.message, senderId: m.sender._id })} cursor={"pointer"} borderRadius={".3rem"} src={m.content.img} preload="none" width="100%" height={"100%"} objectFit={"cover"} maxH="30rem" />
+                                      </Text>
                                       <Text>{m.content?.message}</Text>
                                     </Box>
                                   </>
                                   :
                                   m.content.message
                               }
-                            </Text>
+                            </Box>
 
                             <Text pos={"absolute"} fontSize={".6rem"} right=".4rem" color={"black !important"} textShadow="none !important">
                               {getMsgTime(m.createdAt)}
                             </Text>
 
-                          </Text>
+                          </Box>
                         </Box>
                       </Box>
                     </Box>

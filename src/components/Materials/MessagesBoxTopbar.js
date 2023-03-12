@@ -1,5 +1,5 @@
 import { Avatar, Box, Image, Text, Tooltip } from '@chakra-ui/react'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { getSender, GroupMembers, isUserOnline } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
@@ -13,6 +13,11 @@ function MessagesBoxTopbar() {
         setSelectedChat(null);
         navigate('/chats')
     }
+
+    let sender = useMemo(() => {
+        return getSender(selectedChat, user)
+        // eslint-disable-next-line
+    }, [selectedChat._id])
 
     return (
         <>
@@ -31,10 +36,10 @@ function MessagesBoxTopbar() {
                 padding="0 .9rem">
 
                 <Box display={"flex"} color="white" gap="1rem" className='msgleftTop' alignItems={"center"}>
-                    <Avatar cursor={"pointer"} onClick={() => setProfile(getSender(selectedChat, user))} boxShadow={"0 0 0 2px #fff"} src={getSender(selectedChat, user)?.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} />
+                    <Avatar cursor={"pointer"} onClick={() => setProfile(sender)} boxShadow={"0 0 0 2px #fff"} src={sender?.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} />
                     <Text fontSize={{ base: "1.3rem", md: "1.5rem" }} fontWeight="normal">
                         {
-                            getSender(selectedChat, user)?.name
+                            sender?.name
                         }
                     </Text>
                     {selectedChat?.pinnedBy.includes(user?._id)
@@ -48,18 +53,18 @@ function MessagesBoxTopbar() {
                     <Text pos={"absolute"} bottom=".3rem" fontSize={".8rem"} color="floralwhite" letterSpacing=".01rem" left={"5rem"}>
                         {isTyping
                             ?
-                            selectedChat.isGroupchat ? (typingUser.split(" ")[0] + " is typing....." ) : "typing....."
+                            selectedChat.isGroupchat ? (typingUser.split(" ")[0] + " is typing.....") : "typing....."
                             :
                             !selectedChat?.isGroupchat
                             &&
-                            isUserOnline(getSender(selectedChat, user)) && "online"
+                            isUserOnline(sender) && "online"
                         }
                     </Text>
                 </Box>
                 <Box className='msgrightTop'>
                     {
                         window.innerWidth > 770 && selectedChat?.isGroupchat &&
-                        GroupMembers(selectedChat)
+                        <GroupMembers selectedChat={selectedChat} />
                     }
                     {
                         window.innerWidth < 770 && !(selectedChat?.isGroupchat) &&
@@ -86,30 +91,27 @@ function MessagesBoxTopbar() {
                     marginLeft=".08rem"
                     padding="0 .2rem"
                 >
-                    {
-                        window.innerWidth < 770 &&
-                        <Box
-                            borderRadius={".3rem"}
-                            display="flex"
-                            justifyContent={"space-between"}
-                            width="100%"
-                            className='backTochatsBtn'>
+                    <Box
+                        borderRadius={".3rem"}
+                        display="flex"
+                        justifyContent={"space-between"}
+                        width="100%"
+                        className='backTochatsBtn'>
 
-                            <Box onClick={handleBack}
-                                className='flex'
-                                gap={".5rem"}
-                                width={"fit-content"}
-                                padding={"0 .3rem"}
-                                borderRadius=".3rem "
-                                background="white">
-                                <Image maxWidth="1rem" src="https://cdn-icons-png.flaticon.com/512/7792/7792362.png"></Image>
-                                <Text color={"black"} fontWeight="medium">Back</Text>
-                            </Box>
-                            <Box>
-                                {GroupMembers(selectedChat)}
-                            </Box>
+                        <Box onClick={handleBack}
+                            className='flex'
+                            gap={".5rem"}
+                            width={"fit-content"}
+                            padding={"0 .3rem"}
+                            borderRadius=".3rem "
+                            background="white">
+                            <Image maxWidth="1rem" src="https://cdn-icons-png.flaticon.com/512/7792/7792362.png"></Image>
+                            <Text color={"black"} fontWeight="medium">Back</Text>
                         </Box>
-                    }
+                        <Box>
+                            {GroupMembers(selectedChat)}
+                        </Box>
+                    </Box>
 
                 </Box>
             }

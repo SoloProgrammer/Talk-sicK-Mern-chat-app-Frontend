@@ -47,7 +47,6 @@ function Chatpage() {
     // eslint-disable-next-line
   }, [locaObj])
 
-
   const GetuserInfo = async () => {
     let res = await getUser();
     if (!res.status) {
@@ -72,7 +71,6 @@ function Chatpage() {
   useEffect(() => {
     setTimeout(() => document.querySelector('.profileDrawer')?.classList.remove('translateXFull-'), 0);
   }, [profile])
-
 
   const fetchallchats = async () => {
     setChatsLoading(true)
@@ -121,14 +119,12 @@ function Chatpage() {
     // eslint-disable-next-line
   }, [isfetchChats, user]);
 
-
   let elms = document.querySelectorAll('.chat_menu');
   document.addEventListener('click', () => {
     elms.forEach(item => {
       item.classList.remove('menu_open')
     })
   })
-
 
   return (
     <Box className={`mainChatBox hideleft`} width="100%" display="flex" justifyContent={"center"} alignItems="center" transition={".5s"}>

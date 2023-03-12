@@ -320,6 +320,8 @@ const ChatProvider = ({ children }) => {
             if (!(archivedChats.map(c => c._id).includes(chat._id)) || archivedChats.filter(c => c._id !== chat._id).length < 1) navigate('/chats');
             else navigate('/chats/archived')
 
+            document.body.click();
+
         } catch (error) {
             showToast("Error", error.message, "error", 3000)
             setLoading(false)
@@ -362,6 +364,9 @@ const ChatProvider = ({ children }) => {
 
             if (!(archivedChats.map(c => c._id).includes(chat._id)) || archivedChats.filter(c => c._id !== chat._id).length < 1) navigate('/chats');
             else navigate('/chats/archived')
+
+            // this click handler is impoertant don't delete this...!!
+            document.body.click()
 
         } catch (error) {
             showToast("Error", error.message, "error", 3000)

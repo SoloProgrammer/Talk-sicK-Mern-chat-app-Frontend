@@ -19,13 +19,14 @@ export const isAdmin = () => {
     return selectedChat?.groupAdmin.map(u => u._id).includes(user._id)
 }
 
-export const GroupMembers = (selectedChat) => {
+export const GroupMembers = ({ selectedChat }) => {
     const { profile, user } = ChatState()
+
     return (
         <Tooltip isOpen label="Group members" placement={profile ? "left" : 'bottom-end'} pointerEvents={"none"}>
             <AvatarGroup size='sm' max={3}>
                 {
-                    selectedChat.users.map((u, i) => {
+                    selectedChat?.users?.map((u, i) => {
                         return (
                             <Avatar key={i} src={u._id === user?._id ? user?.avatar : u.avatar || defaultPic} >
                                 {isUserOnline(u) && <AvatarBadge

@@ -297,7 +297,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                 }
                             </Avatar>
                         </label>
-                        <Text fontSize={"2xl"} color="gray.500" fontWeight="semibold" pos={"relative"} width="full" className='flex' marginTop={".5rem"}>
+                        <Box fontSize={"2xl"} color="gray.500" fontWeight="semibold" pos={"relative"} width="full" className='flex' marginTop={".5rem"}>
 
                             {/* Profile name */}
                             <Box className='InptBox flex nameInptBox' gap={".5rem"} >
@@ -321,7 +321,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                 }
                             </Box>
 
-                            {/* the online and offline status should ponly be visible on user profile not group profile and that's why as only user profile has about property in it that's the reason we use about property to display user status if it's there! */}
+                            {/* the online and offline status should only be visible on user profile not group profile and that's why as only user profile has about property in it not grp profile that's the reason we use about property of user profile to display user status if it's there! */}
                             {
                                 (profile.about) && (onlineUsers.map(U => U.userId).includes(profile._id)
                                     ?
@@ -335,7 +335,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                     </Text>)
                             }
 
-                        </Text>
+                        </Box>
                     </Box>
 
                     {/* Profile about */}

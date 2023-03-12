@@ -100,7 +100,7 @@ function ChatsBox() {
           (!chatsLoading && chats?.length === 0 && archivedChats.length === 0)
             ?
             <Box height={"100%"} display="flex" flexDir={"column"} justifyContent="center" alignItems={"center"} className='allchats hidetop' transition={".6s"}>
-              <Image marginBottom={"4rem"} opacity=".3" width={{ base: "6rem", md: "10rem" }} src="https://cdn-icons-png.flaticon.com/512/3073/3073428.png"></Image>
+              <Image marginBottom={"4rem"} opacity=".3" width={{ base: "6rem", md: "10rem" }} src="https://cdn-icons-png.flaticon.com/512/3073/3073428.png" />
               <Text fontWeight={"medium"} >Haven't Created your first Chat Yet?</Text>
               <Text>No Problem!</Text>
               <br />
@@ -149,19 +149,17 @@ function ChatsBox() {
 
                       <Box width={{ base: "calc(100% - 15%)", md: "calc(100% - 12%)" }}>
                         <Box display={"flex"} justifyContent="space-between" width={"100%"}>
-                          <Text fontSize={"1rem"} fontWeight="semibold">
-                            <Text className='flex' gap={".7rem"}>
-                              {getSender(chat, user)?.name}
+                          <Box fontSize={"1rem"} fontWeight="semibold">
+                            <Box className='flex' gap={".7rem"}>
+                              <Text>{getSender(chat, user)?.name}</Text>
                               {chat?.mutedNotificationBy?.includes(user?._id)
                                 &&
-                                <Box>
-                                  <Tooltip label="Notification muted" placement='top' fontSize={".8rem"}>
-                                    <Image width={"1rem"} src='https://cdn-icons-png.flaticon.com/512/4175/4175297.png' />
-                                  </Tooltip>
-                                </Box>
+                                <Tooltip label="Notification muted" placement='top' fontSize={".8rem"}>
+                                  <Image width={"1rem"} src='https://cdn-icons-png.flaticon.com/512/4175/4175297.png' />
+                                </Tooltip>
                               }
-                            </Text>
-                          </Text>
+                            </Box>
+                          </Box>
                           {chat.latestMessage &&
                             <>
                               <Text
@@ -177,19 +175,19 @@ function ChatsBox() {
 
                           }
                         </Box>
-                        {/* latestmessage */}
 
-                        <Text fontSize={".9rem"} marginTop=".1rem">
-                          <Text fontSize={".8rem"} fontWeight="black" display={"inline"}>
+                        {/* latestmessage */}
+                        <Box marginTop=".18rem" fontSize={".8rem"} fontWeight="black" display={"inline-block"}>
+                          <span>
                             {chat.latestMessage
                               &&
                               (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "}
-                            <Text display={"inline-block"} fontWeight="normal" fontSize={".87rem"}>
-                              {chat.latestMessage ? (chat.latestMessage.content.img ? <> <i class="fa-regular fa-image" /> image</> : Trimlastestmsg(chat.latestMessage?.content.message)) : "No message yet!"}
-                            </Text>
-                          </Text>
-                        </Text>
+                          </span>
 
+                          <Text display={"inline-block"} fontWeight="normal" fontSize={".87rem"}>
+                            {chat.latestMessage ? (chat.latestMessage.content.img ? <> <i className="fa-regular fa-image" />&nbsp;image</> : Trimlastestmsg(chat.latestMessage?.content.message)) : "No message yet!"}
+                          </Text>
+                        </Box>
                       </Box>
 
                       {

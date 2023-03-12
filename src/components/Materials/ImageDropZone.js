@@ -4,7 +4,7 @@ import { useDropzone } from 'react-dropzone'
 import { handleFileUpload } from '../../configs/handleFileUpload'
 import { ChatState } from '../../Context/ChatProvider'
 
-function ImageDropZone({ isOpen,pic, setPic }) {
+function ImageDropZone({ isOpen, pic, setPic }) {
 
     const { showToast, setSendPic, setIsClosable } = ChatState();
 
@@ -19,7 +19,10 @@ function ImageDropZone({ isOpen,pic, setPic }) {
             }
         }
         const picture = await handleFileUpload(e, setLoading, showToast)
-        setPic({ picture, picName: e.target.files[0].name })
+
+        if(picture){
+            setPic({ picture, picName: e.target.files[0].name })
+        }
         setIsClosable(true)
         // eslint-disable-next-line
     }, [])
@@ -39,7 +42,7 @@ function ImageDropZone({ isOpen,pic, setPic }) {
                     ?
                     <Box height={"10rem"} cursor="pointer" className="flex" border={"2px dashed #1b95d8"} flexDir={"column"} borderRadius=".3rem">
                         <Image src='https://cdn-icons-png.flaticon.com/512/4303/4303472.png' opacity={".5"} width={"1.7rem"} />
-                        <Box textAlign={"center"}>
+                        <Box textAlign={"center"} padding="0 .4rem">
                             {isDragActive ?
                                 <p>Drop the file here ...</p> :
                                 <p>Drag 'n' drop Image file here, or click to select file</p>}

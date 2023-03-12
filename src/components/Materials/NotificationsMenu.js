@@ -19,7 +19,7 @@ function NotificationsMenu({ notifications, defaultPic,setNotifications,navigate
                             <Text>
                                 {noti.chat.isGroupchat
                                     ?
-                                    noti.chat.chatName.length > 8 ? noti.chat.chatName.slice(0, 8) + "..." : noti.chat.chatName
+                                    noti.chat.chatName.length > 13 ? noti.chat.chatName.slice(0, 13) + "..." : noti.chat.chatName
                                     :
                                     noti.sender.name.split(" ")[0]}
                             </Text>

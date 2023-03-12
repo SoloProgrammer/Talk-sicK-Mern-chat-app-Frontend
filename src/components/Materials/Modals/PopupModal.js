@@ -162,7 +162,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
             <Modal size={'md'} isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick={isClosable}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader fontFamily={"Roboto"} color="dimgray">
+                    <ModalHeader fontFamily={"Roboto"} color="lightslategray">
                         <Box className='flex' gap={".6rem"} justifyContent="start">
                             <Text textTransform={'capitalize'} fontSize="1.5rem">
                                 {addMember ? "Add a new group member" : "Create a Group"}
@@ -197,8 +197,10 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                                 </Box>
                             </Box>
                         </Box>}
-                        {/* /This Text will act like a divider */}
+                        
+                        {/* /This Text component will act like a divider */}
                         <Text marginTop={".9rem"} />
+
                         <Box>
                             <Box className='flex' gap={"1rem"} justifyContent="start">
                                 <Image width={"1.8rem"} src='https://cdn-icons-png.flaticon.com/512/1531/1531117.png' />

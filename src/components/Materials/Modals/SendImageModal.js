@@ -24,7 +24,7 @@ function SendImageModal({ children, isOpen, onClose, }) {
             <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick={isClosable}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader fontFamily={"Roboto"} color="dimgray" className='flex' gap={".8rem"} justifyContent="start">
+                    <ModalHeader fontFamily={"Roboto"} color="lightslategray" className='flex' gap={".8rem"} justifyContent="start">
                         Select Image n attach to textBox
                     </ModalHeader>
                     <ModalCloseButton disabled={!isClosable} />
@@ -35,7 +35,7 @@ function SendImageModal({ children, isOpen, onClose, }) {
                         {
                             pic
                             &&
-                            <Button onClick={() => { setSendPic({ picture: pic.picture, picName: pic.picName }); onClose() }} variant='solid'><i class="fa-solid fa-paperclip mr-3 black-200"></i> Attach to textBox</Button>
+                            <Button onClick={() => { setSendPic({ picture: pic.picture, picName: pic.picName }); onClose() }} variant='solid'><i className="fa-solid fa-paperclip mr-3 black-200"></i> Attach to textBox</Button>
 
                         }
                     </ModalFooter>

@@ -26,9 +26,12 @@ function GroupMembersBox() {
     }
 
     useEffect(() => {
-        setGroupUsers(selectedChat?.users.slice(0, 5))
+        setGroupUsers(selectedChat?.users.slice(0, 5));
+        setLastInd(5);
+
+        // in this useEffect we gave selectedChat as the dependency because we are setting lastIndex and the groupusers whenever selected chat updated...!
+        // eg selected chat updates when we addusers or removeusers from grp.., Thanks!
         // eslint-disable-next-line
-        setLastInd(5)
     }, [selectedChat])
 
     const [loading, setLoading] = useState(false)

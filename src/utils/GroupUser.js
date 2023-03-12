@@ -91,12 +91,16 @@ function GroupUser({ u }) {
             if (!json.status) return showToast("Error", json.message, "error", 3000)
             
             setSelectedChat(json.chat);
+
+            console.log("..",json.chat);
             setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
             setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)))
             showToast("Success", json.message, "success", 3000)
+            onClose()
 
         } catch (error) {
             setRemoveUserLoading(false)
+            onClose()
             setIsClosable(true)
             return showToast("Error", error.message, "error", 3000)
         }
