@@ -185,7 +185,7 @@ function ChatsBox() {
                           </span>
 
                           <Text display={"inline-block"} fontWeight="normal" fontSize={".87rem"}>
-                            {chat.latestMessage ? (chat.latestMessage.content.img ? <> <i className="fa-regular fa-image" />&nbsp;image</> : Trimlastestmsg(chat.latestMessage?.content.message)) : "No message yet!"}
+                            {chat.latestMessage ? (chat.latestMessage.content.img ? <><i className="fa-regular fa-image" />&nbsp;{chat.latestMessage.content.img.substring(chat.latestMessage.content.img.lastIndexOf('.') + 1) === "gif" ? "gif" : "image"}</> : Trimlastestmsg(chat.latestMessage?.content.message)) : "No message yet!"}
                           </Text>
                         </Box>
                       </Box>

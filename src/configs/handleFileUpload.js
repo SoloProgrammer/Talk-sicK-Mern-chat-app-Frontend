@@ -5,7 +5,7 @@ export const handleFileUpload = async (e, setLoading, showToast) => {
         showToast("Not Selected", "Please select an Image file", "warning", 3000)
         return null
     }
-    if (pics.type === 'image/jpeg' || pics.type === 'image/png' || pics.type === 'image/jpg') {
+    if (pics.type === 'image/jpeg' || pics.type === 'image/png' || pics.type === 'image/jpg' || pics.type === 'image/gif') {
 
         if (Math.round(pics.size / 1024) < 2048) {
             setLoading(true)

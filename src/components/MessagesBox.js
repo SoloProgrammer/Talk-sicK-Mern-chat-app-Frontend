@@ -226,7 +226,7 @@ function MessageBox({ messages, setMessages }) {
                       <Box
                         _active={{ bg: "whiteAlpha.400 !important" }}
                         onClick={(e) => {
-                          handleImgActionCLick(imgItem.imgCopy, imgItem.src)
+                          handleImgActionCLick(imgItem.imgCopy, msgImg.img)
                           e.stopPropagation()
                         }
                         }
@@ -248,7 +248,7 @@ function MessageBox({ messages, setMessages }) {
             msgImg.msg
             &&
             <Box onClick={(e) => e.stopPropagation()} pos={"absolute"} top="0" width={"100%"} minHeight="4rem" background={"blackAlpha.600"} borderBottom="1px solid rgba(255,255,255,.4)" className='flex' padding=".5rem">
-              <Text fontSize={{base:"1rem",md:"1.3rem"}} color="white" fontWeight={"light"} letterSpacing="0.05px">
+              <Text fontSize={{ base: "1rem", md: "1.3rem" }} color="white" fontWeight={"light"} letterSpacing="0.05px">
                 {msgImg.msg}
               </Text>
             </Box>
@@ -379,7 +379,7 @@ function MessageBox({ messages, setMessages }) {
                                   <>
                                     <Box maxW={"35rem"} >
                                       <Text width={"100%"} paddingBottom={".6rem"}>
-                                        <Image onClick={() => setMsgImg({ img: m.content.img, msg: m.content.message, senderId: m.sender._id })} cursor={"pointer"} borderRadius={".3rem"} src={m.content.img} preload="none" width="100%" height={"100%"} objectFit={"cover"} maxH="30rem" />
+                                        <Image opacity={msgImg && 0} onClick={() => setMsgImg({ img: m.content.img, msg: m.content.message, senderId: m.sender._id })} cursor={"pointer"} borderRadius={".3rem"} src={m.content.img} preload="none" width="100%" height={"100%"} objectFit={"cover"} maxH="30rem" />
                                       </Text>
                                       <Text>{m.content?.message}</Text>
                                     </Box>

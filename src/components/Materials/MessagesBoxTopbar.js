@@ -109,10 +109,9 @@ function MessagesBoxTopbar() {
                             <Text color={"black"} fontWeight="medium">Back</Text>
                         </Box>
                         <Box>
-                            {GroupMembers(selectedChat)}
+                            <GroupMembers selectedChat={selectedChat} />
                         </Box>
                     </Box>
-
                 </Box>
             }
         </>

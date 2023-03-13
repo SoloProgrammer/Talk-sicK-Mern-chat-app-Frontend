@@ -72,7 +72,7 @@ function MessagesBox() {
   const [isEmojiPick, setIsEmojiPick] = useState(false);
 
   window.addEventListener('click', () => {
-    setIsEmojiPick(false)
+    isEmojiPick && setIsEmojiPick(false)
   })
 
   useEffect(() => {
