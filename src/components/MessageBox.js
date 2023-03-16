@@ -121,7 +121,7 @@ function MessagesBox() {
       }
       else {
         setMessages([...Previousmessages, newMessageRecieved]);
-        seenlstMessage(newMessageRecieved._id);
+        seenlstMessage();
         refreshChats(user);
 
         // console.log("outside",chatMessages);
@@ -171,13 +171,13 @@ function MessagesBox() {
           "Content-Type": "application/json",
           token: localStorage.getItem('token')
         },
-        body: JSON.stringify({ chatId: selectedChat?._id, content })
+        body: JSON.stringify({ chatId: selectedChat?._id, content, receiverIds: selectedChat.users.filter(u => u._id !== user?._id).map(u => u._id)})
       }
 
       setMessageText("");
       setSendPic(null)
 
-      let res = await fetch(`${server.URL.local}/api/message/sendmessage`, config);
+      let res = await fetch(`${server.URL.production}/api/message/sendmessage`, config);
 
       if (res.status === 401) return HandleLogout()
 
@@ -186,8 +186,11 @@ function MessagesBox() {
       if (!json.status) return showToast("Error", json.message, "error", 3000);
 
       let messageSentBeep = new Audio(sentAudio)
+      // messageSentBeep.muted = true
       messageSentBeep?.play();
       messageSentBeep.remove()
+      
+      seenlstMessage();
 
       socket.emit('new message', json.fullmessage, messages, user)
 
@@ -220,7 +223,7 @@ function MessagesBox() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const trimPicname = useCallback(name => {
-    
+
     let nameSplit = name.split('.')
 
     if (window.innerWidth > 890) return name;
@@ -251,7 +254,7 @@ function MessagesBox() {
                 letterSpacing="0.05rem"
                 textAlign={"center"}
                 fontSize={{ md: ".9rem" }} >
-                Talk-o-Meter a Chat app Project with live personal as well as group messaging functionality<br />You will also recieve live Notifications from chats you have created for the newly recieved messages
+                Talk-sicK a Chat app Project with live personal as well as group messaging functionality<br />You will also recieve live Notifications from chats you have created for the newly recieved messages
               </Text>
               <br />
               <Text

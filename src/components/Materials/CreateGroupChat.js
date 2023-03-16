@@ -7,7 +7,7 @@ function CreateGroupChat() {
 
     return (
         <PopupModal isOpen={isOpen} onClose={onClose}>
-            <Tooltip label="New Group Chat" placement='bottom-end' borderRadius={".2rem"}>
+            <Tooltip label="New Group" placement='bottom-end' borderRadius={".2rem"}>
                 <Box width={"2.3rem"}
                     cursor="pointer"
                     onClick={onOpen}

@@ -6,7 +6,7 @@ function BrandLogo({color = "black"}) {
             <div className="brandpic">
                 <img src="https://cdn-icons-png.flaticon.com/512/3845/3845696.png" alt="Talk-o-Meter"  />
             </div>
-            Talk-o-Meter
+            Talk-sicK
         </div>
   )
 }

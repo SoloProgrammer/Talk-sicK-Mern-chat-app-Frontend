@@ -61,14 +61,17 @@ function ChatsBox() {
   const handleChatClick = (chat) => {
     navigate(`/chats/chat/${chat._id}`);
     setProfile(null);
+    let elm = document.getElementById(`unseenMsgsCount${chat._id}`);
+    if (elm) elm.style.display = "none"
   }
 
   useEffect(() => {
 
     let elem = document.getElementById(`DateTime${selectedChat?._id}`)
-    if (elem?.classList.contains('unSeen')) {
-      elem.classList.remove('unSeen');
-      selectedChat?.latestMessage && seenlstMessage(selectedChat.latestMessage._id)
+
+    if(elem) elem.classList.remove('unSeen');
+    if (selectedChat?.latestMessage && !(selectedChat.latestMessage.seenBy.includes(user?._id))) {
+      seenlstMessage()
     }
 
     notifications.length && setNotifications(notifications.filter(noti => noti.chat._id !== selectedChat?._id))
@@ -113,6 +116,7 @@ function ChatsBox() {
             &&
             <Box display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" paddingBottom={window.innerWidth > 770 ? "4.3rem" : "4.8rem"} className='allchats ' transition={".6s"}>
               {
+                // if we have something in the archivedChats and viewArchivedChats is sets to true then display ArchivedChats else unArchivedchats
                 (archivedChats.length && viewArchivedChats ? archivedChats : chats)?.map((chat, i) => {
                   return (
                     <Box
@@ -162,14 +166,25 @@ function ChatsBox() {
                           </Box>
                           {chat.latestMessage &&
                             <>
-                              <Text
-                                fontSize={".75rem"}
-                                fontWeight="normal"
-                                id={`DateTime${chat._id}`}
-                                padding={".0 .3rem"}
-                                className={`latestMessageDateTime flex ${!(chat.latestMessage?.seenBy.includes(user?._id)) && "unSeen"}`}>
-                                <>{getDateTime(chat.latestMessage.createdAt)}</>
-                              </Text>
+                              <Box className='flex' gap={".3rem"}>
+                                <Text
+                                  fontSize={".75rem"}
+                                  fontWeight="normal"
+                                  id={`DateTime${chat._id}`}
+                                  padding={".0 .3rem"}
+                                  className={`transformPaddingPlus flex ${(!(chat.latestMessage?.seenBy.includes(user?._id)) && (!selectedChat || selectedChat._id !== chat._id)) && "unSeen"}`}>
+                                  <>{getDateTime(chat.latestMessage.createdAt)}</>
+                                </Text>
+                                {chat.unseenMsgsCountBy && ((chat.unseenMsgsCountBy[user?._id] > 0) && (!selectedChat || selectedChat._id !== chat._id))
+                                  &&
+                                  <Box fontSize={".6rem"}
+                                    marginRight={{ base: ".2rem", md: "0" }}
+                                    boxShadow="0 0 1px rgba(0,0,0,.5)"
+                                    fontWeight="semibold" minW={"1.2rem"} padding={".08rem .26rem"} paddingTop=".18rem" id={`unseenMsgsCount${chat._id}`} className='flex transformPaddingPlus' background={"#0dcc74"} borderRadius="50%" >
+                                    <Text color={"white"}>{chat.unseenMsgsCountBy[user?._id]}</Text>
+                                  </Box>
+                                }
+                              </Box>
 
                             </>
 

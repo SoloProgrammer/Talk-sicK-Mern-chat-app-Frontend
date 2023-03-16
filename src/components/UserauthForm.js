@@ -50,14 +50,14 @@ function Login({ value, inputValues, setInputValues }) {
             },
             body: payload
           }
-          let res = await fetch(`${server.URL.local}/api/user/${value === "login" ? "login" : "createuser"}`, config);
+          let res = await fetch(`${server.URL.production}/api/user/${value === "login" ? "login" : "createuser"}`, config);
           let json = await res.json();
     
           if (!json.status) {
             showToast("Alert!", json.message, "error", 4000)
           } else {
             value !== "login" ?
-              showToast("Whooho!", "We've created an account for your welcome to [Talk-o-Meter]", "success", 4000)
+              showToast("Whooho!", "We've created an account for your welcome to [Talk-sicK]", "success", 4000)
               : showToast("Welcome", json.message, "success", 4000)
             localStorage.setItem('token', json.token)
             navigate('/chats')

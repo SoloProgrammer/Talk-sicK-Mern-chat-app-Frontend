@@ -47,6 +47,20 @@
     border-radius: inherit !important;
 }
 
+.chakra-avatar__img {
+    transition: .2s all ease-in-out;
+}
+
+.viewProfileImg {
+    position: fixed !important;
+    top: 24% !important;
+    left: 39% !important;
+    width: 23rem !important;
+    height: 23rem !important;
+    border-radius: 0.1rem !important;
+
+}
+
 .sendPicx-mark {
     position: absolute;
     right: -0.3rem;
@@ -59,10 +73,12 @@
     color: black;
     border: 2px solid white;
 }
+
 .sendPicx-mark:hover {
     background: #c6d5e3;
 
 }
+
 .chat_menu span {
     width: 100%;
     padding: .5rem 1rem !important;
@@ -188,7 +204,7 @@
     display: none;
 }
 
-.latestMessageDateTime {
+.transformPaddingPlus {
     transform: translate(.4rem, -.5rem);
     padding: 0 .3rem;
 }
@@ -198,15 +214,16 @@
     color: #12c9d2;
 }
 
-
 .notification_badge {
-    font-size: 12px !important;
+    font-size: 11.5px !important;
     border-radius: 50% !important;
-    width: 1.3rem !important;
-    height: 1.3rem !important;
+    top: 1px !important;
+    width: 1.33rem !important;
+    height: 1.33rem !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
+    border: 1.7px solid #27aea4;
 }
 
 .MsgTime {
@@ -291,6 +308,16 @@ textarea {
 }
 
 @media (max-width:770px) {
+    .notification_badge {
+        font-size: 11.2px !important;
+        top: 2px !important;
+        right: -3.2px !important;
+        width: 1.2rem !important;
+        height: 1.2rem !important;
+        border: 0px solid transparent;
+        box-shadow: 0 0 0 1px #27aea4;
+    }
+
     .chakra-modal__content {
         width: 94.9% !important;
     }

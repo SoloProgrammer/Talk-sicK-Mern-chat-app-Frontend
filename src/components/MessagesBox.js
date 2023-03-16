@@ -52,7 +52,7 @@ function MessageBox({ messages, setMessages }) {
           token: localStorage.getItem('token')
         }
       }
-      let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChat._id}`, config)
+      let res = await fetch(`${server.URL.production}/api/message/fetchmessages/${selectedChat._id}`, config)
 
       if (res.status === 401) HandleLogout()
 
@@ -213,9 +213,9 @@ function MessageBox({ messages, setMessages }) {
       {
         msgImg?.img
         &&
-        <Box onClick={() => setMsgImg(null)} position={"fixed"} width="100%" height="100%" top={0} left="0" className="flex" zIndex={10} background="rgba(0,0,0,.6)">
-          <Box overflow={"hidden"} maxH={window.innerHeight} maxW="99.5%" minW={{ lg: "35rem" }} >
-            <Image transform={`translateX(${msgImg.senderId !== user?._id ? "-100%" : "100%"})`} opacity=".3" transition={".4s"} className='messageImage' src={msgImg?.img} maxH={window.innerHeight} maxW="100%" minW={{ lg: "100%" }} />
+        <Box onClick={() => setMsgImg(null)} position={"fixed"} width="100%" height="100%" top={0} left="0" className="flex" zIndex={10} background="rgba(0,0,0,.6)" >
+          <Box overflow={"hidden"} maxH={window.innerHeight} maxW="99.5%" minW={{ lg: "35rem" }}>
+            <Image transform={`translateX(${msgImg.senderId !== user?._id ? "-100%" : "100%"})`} opacity=".3" transition={".4s"} className='messageImage' src={msgImg?.img} maxH={window.innerHeight} maxW="100%" minW={{ lg: "100%" }} objectFit="contain"/>
           </Box>
           <Box onClick={(e) => e.stopPropagation()} pos={"absolute"} bottom="0" width={"100%"} minHeight="6rem" background={"blackAlpha.500"} borderTop="1px solid rgba(255,255,255,.4)" className="flex">
             <Box className='flex' gap={"3rem"}>
@@ -378,8 +378,8 @@ function MessageBox({ messages, setMessages }) {
                                   ?
                                   <>
                                     <Box maxW={"35rem"} >
-                                      <Text width={"100%"} paddingBottom={".6rem"}>
-                                        <Image opacity={msgImg && 0} onClick={() => setMsgImg({ img: m.content.img, msg: m.content.message, senderId: m.sender._id })} cursor={"pointer"} borderRadius={".3rem"} src={m.content.img} preload="none" width="100%" height={"100%"} objectFit={"cover"} maxH="30rem" />
+                                      <Text width={"100%"} paddingBottom={".6rem"} >
+                                        <Image opacity={(msgImg && m.content.img === msgImg.img) && 0} onClick={() => setMsgImg({ img: m.content.img, msg: m.content.message, senderId: m.sender._id })} cursor={"pointer"} borderRadius={".3rem"} src={m.content.img} preload="none" width="100%" height={"100%"} objectFit={"cover"} maxH="30rem" />
                                       </Text>
                                       <Text>{m.content?.message}</Text>
                                     </Box>

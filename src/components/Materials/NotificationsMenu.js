@@ -1,7 +1,7 @@
 import { Avatar, MenuItem, Text } from '@chakra-ui/react';
 import React from 'react'
 
-function NotificationsMenu({ notifications, defaultPic,setNotifications,navigate,chats }) {
+function NotificationsMenu({ notifications, defaultPic, setNotifications, navigate, chats }) {
     return (
         <>
             {notifications.map(noti => {

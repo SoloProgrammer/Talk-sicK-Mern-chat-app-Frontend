@@ -49,7 +49,7 @@ function ChatsTopBar() {
                 </Box>
                 <Box display={"flex"} justifyContent="space-evenly">
                     <Box>
-                        <Tooltip label="Search Users" placement='bottom-end' borderRadius={".2rem"}>
+                        <Tooltip label="Search" placement='bottom-end' borderRadius={".2rem"}>
                             <Box _active={{ boxShadow: "inset 0 0 0 22px #a2f1ec54" }}
                                 _hover={{ boxShadow: "inset 0 0 0 25px #a2f1ec54" }}
                                 width="fit-content"
@@ -73,13 +73,13 @@ function ChatsTopBar() {
                                 <BellIcon fontSize={window.innerWidth > 770 ? "2rem" : "1.8rem"} m={1} />
                             </MenuButton>
                         </Tooltip>
-                        <MenuList boxShadow={"0 0 3px rgba(0,0,0,.4)"} position={"left"} zIndex="10">
+                        <MenuList boxShadow={"0 0 3px rgba(0,0,0,.4)"} position={"left"} zIndex="10" >
 
                             {notifications.length > 0
                                 ?
                                 <NotificationsMenu chats={chats} setNotifications={setNotifications} navigate={navigate} defaultPic={defaultPic} notifications={notifications} />
                                 :
-                                <MenuItem>No messages</MenuItem>
+                                <MenuItem>No notifications!</MenuItem>
                             }
                         </MenuList>
                     </Menu>

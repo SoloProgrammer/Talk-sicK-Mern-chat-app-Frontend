@@ -49,7 +49,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                         token: localStorage.getItem('token')
                     }
                 }
-                const res = await fetch(`${server.URL.local}/api/user/searchuser?search=${search}`, config);
+                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config);
                 const json = await res.json();
 
                 // let result = result1.filter(o1 => !result2.some(o2 => o1.id === o2.id));
@@ -122,11 +122,14 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                 },
                 body: JSON.stringify({ users, groupName, groupAvatar: pic })
             }
-            let res = await fetch(`${server.URL.local}/api/chat/creategroup`, config)
+            let res = await fetch(`${server.URL.production}/api/chat/creategroup`, config)
 
             if (res.status === 401) HandleLogout();
 
             const json = await res.json();
+
+            setIsClosable(true)
+
             if (!json.status) {
                 setCreategroupLoading(false)
                 return showToast("Error", json.message, "error", 3000)
@@ -137,7 +140,6 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
             setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
             setSelectedChat(json.Fullgroup)
             navigate(`/chats/chat/${json.Fullgroup._id}`)
-            setIsClosable(true)
 
             onClose()
 
