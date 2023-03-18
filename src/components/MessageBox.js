@@ -22,7 +22,7 @@ var chatMessagesCompare;
 
 function MessagesBox() {
 
-  const { user, setChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenlstMessage, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
+  const { user, setChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -49,7 +49,7 @@ function MessagesBox() {
 
     let TypingDelay = setTimeout(() => {
       socket.emit("stop typing", selectedChat?._id);
-    }, 1500);
+    }, 2500);
 
     return () => clearTimeout(TypingDelay)
 
@@ -96,11 +96,20 @@ function MessagesBox() {
   // reciveing real time message from server with the help of socket!....................................................
   useEffect(() => {
 
-    // this useEFfect will run whenever socket sends a new message.................................. to recieved it!
-    socket?.on("message recieved", (newMessageRecieved, Previousmessages, user) => {
+    const eventListener = (newMessageRecieved, newMessages, user) => {
+
+      //..............
+      // this condition is used to check if the selected Chat by the user is equal to newmessage received in the chat then update the selected chat with the new chats using filter method and due to this selected chat is updated and user will not able to see the new message in the red when he received another new message when he is in the same chat only display that red color message eg: 1 new message when he is opening the chat first time when he received the new message! 
+      // if (selectedChatCompare && selectedChatCompare._id === newMessageRecieved.chat._id) {
+      //   setSelectedChat(allchatsCompare.filter(c => c._id === selectedChatCompare?._id)[0])
+      // }
+      //..............
 
       if (!selectedChatCompare || selectedChatCompare?._id !== newMessageRecieved.chat._id) {
         // give notification
+
+        // console.log("notification");
+
         if (!socket) return
         else {
 
@@ -120,8 +129,9 @@ function MessagesBox() {
         refreshChats(user);
       }
       else {
-        setMessages([...Previousmessages, newMessageRecieved]);
-        seenlstMessage();
+        // console.log("seenMessge");
+        setMessages([...newMessages]);
+        seenMessages();
         refreshChats(user);
 
         // console.log("outside",chatMessages);
@@ -132,19 +142,19 @@ function MessagesBox() {
 
           if (cmp.chatId === selectedChatCompare._id) {
 
-            let chatWithNewMsg = { chatId: selectedChatCompare._id, messages: [...cmp.messages, newMessageRecieved] }
+            let chatWithNewMsgs = { chatId: selectedChatCompare._id, messages: [...newMessages] }
 
             // console.log("chatwithnewMessage", chatWithNewMsg);
 
-            setChatMessages([...(chatMessagesCompare.filter(chm => chm.chatId !== selectedChatCompare._id)), chatWithNewMsg])
+            setChatMessages([...(chatMessagesCompare.filter(chm => chm.chatId !== selectedChatCompare._id)), chatWithNewMsgs])
           }
           return 1
         })
       }
-    })
+    };
+    socket?.on("message recieved", eventListener);
     // eslint-disable-next-line 
-
-  });
+  }, [user]);
 
   const [messages, setMessages] = useState([])
 
@@ -171,7 +181,7 @@ function MessagesBox() {
           "Content-Type": "application/json",
           token: localStorage.getItem('token')
         },
-        body: JSON.stringify({ chatId: selectedChat?._id, content, receiverIds: selectedChat.users.filter(u => u._id !== user?._id).map(u => u._id)})
+        body: JSON.stringify({ chatId: selectedChat?._id, content, receiverIds: selectedChat.users.filter(u => u._id !== user?._id).map(u => u._id) })
       }
 
       setMessageText("");
@@ -186,20 +196,18 @@ function MessagesBox() {
       if (!json.status) return showToast("Error", json.message, "error", 3000);
 
       let messageSentBeep = new Audio(sentAudio)
-      // messageSentBeep.muted = true
+
       messageSentBeep?.play();
       messageSentBeep.remove()
-      
-      seenlstMessage();
 
-      socket.emit('new message', json.fullmessage, messages, user)
+      socket.emit('new message', json.fullmessage, json.allMessages, user)
 
-      setMessages([...messages, json.fullmessage]);
+      setMessages([...json.allMessages]);
 
       chatMessages.map(chatMsg => {
         if (chatMsg.chatId === selectedChat?._id) {
 
-          chatMsg = { chatId: selectedChat._id, messages: [...chatMsg.messages, json.fullmessage] }
+          chatMsg = { chatId: selectedChat._id, messages: [...json.allMessages] }
 
           setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat._id)), chatMsg]) // cm := ChatMessage
         }
@@ -263,7 +271,7 @@ function MessagesBox() {
                 color={"#31ceb8"}
                 textAlign="center"
               >
-                Create a chat or Click on the Existing chat to start Conversation..!
+                Search and Create a Chat or Click on the Existing Chat to Start Conversation..!
               </Text>
             </Box>
           </Box>

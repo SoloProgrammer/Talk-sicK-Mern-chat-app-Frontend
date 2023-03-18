@@ -171,8 +171,7 @@ const ChatProvider = ({ children }) => {
         }
     }
 
-    const seenlstMessage = async () => {
-
+    const seenMessages = async () => {
         try {
 
             let config = {
@@ -181,7 +180,7 @@ const ChatProvider = ({ children }) => {
                     "Content-Type": "application/json",
                     token: localStorage.getItem('token')
                 },
-                body: JSON.stringify({ chatId:selectedChat?._id })
+                body: JSON.stringify({ chatId: selectedChat?._id })
             }
 
             let res = await fetch(`${server.URL.production}/api/message/seenMessage`, config);
@@ -195,7 +194,7 @@ const ChatProvider = ({ children }) => {
 
             // refresing the chats whenever a new or lastemessgge seen by user to show him in the chat that he has seen the latestmessage!
             setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))));
-
+            // setSelectedChat(json.chats.filter(c => c._id === selectedChat?._id)[0])
             setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
 
         } catch (error) {
@@ -380,16 +379,18 @@ const ChatProvider = ({ children }) => {
 
         // whenever new message recives and user is on another chat so all the chats will be fetch again and to stay the user on the same chat he is before refrshing the chats this logic is used!
         if (selectedChat && notifications.length) {
-            chats && setSelectedChat(chats.filter(chat => chat._id === selectedChat._id)[0])
+            // chats && setSelectedChat(chats.filter(chat => chat._id === selectedChat._id)[0])
         }
         // eslint-disable-next-line
     }, [chats]);
 
     // state for determining all the popups in the app should be able to closed or not..! 
-    const [isClosable, setIsClosable] = useState(true)
+    const [isClosable, setIsClosable] = useState(true);
+
+    const [messages, setMessages] = useState([])
 
     return (
-        <ChatContext.Provider value={{ isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenlstMessage, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic }}>
+        <ChatContext.Provider value={{ messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic }}>
             {children}
         </ChatContext.Provider>
     )

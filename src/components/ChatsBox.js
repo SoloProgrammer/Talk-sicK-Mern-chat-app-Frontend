@@ -13,7 +13,7 @@ import { ChatsSkeleton } from './Materials/Loading'
 
 function ChatsBox() {
 
-  const { chats, archivedChats, viewArchivedChats, chatsLoading, user, selectedChat, setProfile, profile, seenlstMessage, notifications, setNotifications } = ChatState()
+  const { chats, archivedChats, viewArchivedChats, chatsLoading, user, selectedChat, setProfile, profile, seenMessages, notifications, setNotifications } = ChatState()
 
   const navigate = useNavigate();
 
@@ -69,9 +69,13 @@ function ChatsBox() {
 
     let elem = document.getElementById(`DateTime${selectedChat?._id}`)
 
-    if(elem) elem.classList.remove('unSeen');
+    if (elem) elem.classList.remove('unSeen');
+
     if (selectedChat?.latestMessage && !(selectedChat.latestMessage.seenBy.includes(user?._id))) {
-      seenlstMessage()
+     
+      setTimeout(() => {
+        seenMessages()
+      }, 500);
     }
 
     notifications.length && setNotifications(notifications.filter(noti => noti.chat._id !== selectedChat?._id))

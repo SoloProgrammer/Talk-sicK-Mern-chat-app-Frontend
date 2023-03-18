@@ -1,5 +1,5 @@
 import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { downloadImage, imageActionBtns, zoomInImage, zoomOutImage } from '../configs/ImageConfigs'
 import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay } from '../configs/messageConfigs'
@@ -9,6 +9,7 @@ import { defaultPic, HandleLogout, islastMsgOfSender } from '../configs/userConf
 import { ChatState } from '../Context/ChatProvider'
 import AvatarBox from './Materials/AvatarBox'
 import ProfileDrawer from './Materials/ProfileDrawer'
+import MessageImageViewBox from './MessageImageViewBox'
 
 function MessageBox({ messages, setMessages }) {
 
@@ -207,53 +208,32 @@ function MessageBox({ messages, setMessages }) {
     }, 50);
   }, [msgImg])
 
+  const isFirstUnseenMessage = useCallback((m, messages, i) => {
+   
+    if (messages.length) {
+
+      if (!m.seenBy.includes(user._id)) {
+        if (messages[i - 1]) {
+          if (messages[i - 1].seenBy.includes(user?._id)) return true
+        }
+
+        else if (messages.length === 1) return true
+
+        else if (!messages[i + 1].seenBy.includes(user?._id)) return true
+
+      }
+    }
+
+    // eslint-disable-next-line
+  }, [messages])
+
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
 
       {
         msgImg?.img
         &&
-        <Box onClick={() => setMsgImg(null)} position={"fixed"} width="100%" height="100%" top={0} left="0" className="flex" zIndex={10} background="rgba(0,0,0,.6)" >
-          <Box overflow={"hidden"} maxH={window.innerHeight} maxW="99.5%" minW={{ lg: "35rem" }}>
-            <Image transform={`translateX(${msgImg.senderId !== user?._id ? "-100%" : "100%"})`} opacity=".3" transition={".4s"} className='messageImage' src={msgImg?.img} maxH={window.innerHeight} maxW="100%" minW={{ lg: "100%" }} objectFit="contain"/>
-          </Box>
-          <Box onClick={(e) => e.stopPropagation()} pos={"absolute"} bottom="0" width={"100%"} minHeight="6rem" background={"blackAlpha.500"} borderTop="1px solid rgba(255,255,255,.4)" className="flex">
-            <Box className='flex' gap={"3rem"}>
-              {
-                imageActionBtns.map((imgItem, i) => {
-                  return (
-                    <Tooltip key={i} label={imgItem.imgCopy} placement="bottom" fontSize={".8rem"} isOpen>
-                      <Box
-                        _active={{ bg: "whiteAlpha.400 !important" }}
-                        onClick={(e) => {
-                          handleImgActionCLick(imgItem.imgCopy, msgImg.img)
-                          e.stopPropagation()
-                        }
-                        }
-                        boxShadow="0 0 0 1px rgba(0,0,0,.2)"
-                        background="whiteAlpha.400"
-                        padding={".6rem"}
-                        borderRadius=".1rem"
-                        cursor={"pointer"}
-                        _hover={{ bg: "whiteAlpha.300" }}>
-                        <Image filter={"invert(100%)"} src={imgItem.src} width={"1.3rem"} />
-                      </Box>
-                    </Tooltip>
-                  )
-                })
-              }
-            </Box>
-          </Box>
-          {
-            msgImg.msg
-            &&
-            <Box onClick={(e) => e.stopPropagation()} pos={"absolute"} top="0" width={"100%"} minHeight="4rem" background={"blackAlpha.600"} borderBottom="1px solid rgba(255,255,255,.4)" className='flex' padding=".5rem">
-              <Text fontSize={{ base: "1rem", md: "1.3rem" }} color="white" fontWeight={"light"} letterSpacing="0.05px">
-                {msgImg.msg}
-              </Text>
-            </Box>
-          }
-        </Box>
+        <MessageImageViewBox msgImg={msgImg} setMsgImg={setMsgImg} imageActionBtns={imageActionBtns} handleImgActionCLick={handleImgActionCLick} />
       }
 
       {
@@ -298,6 +278,17 @@ function MessageBox({ messages, setMessages }) {
                   return (
                     <Box key={i}>
                       {
+                        selectedChat.unseenMsgsCountBy && selectedChat.unseenMsgsCountBy[user?._id] > 0 && isFirstUnseenMessage(m, messages, i) && m.sender._id !== user?._id
+                        &&
+                        <Box pos={"relative"} borderBottom={"2px solid red"} margin="1.5rem 0">
+                          <Text userSelect={"none"} boxShadow={"0 0 2px rgba(0,0,0,.2)"} pos={"absolute"} borderRadius=".9rem" color={"red.500"} background="white" top="-.8rem" left="-.2rem" fontWeight={"medium"} fontSize=".87rem" padding={".1rem 1rem"} >
+                            {m.chat.unseenMsgsCountBy[user?._id]} new
+                            {m.chat.unseenMsgsCountBy[user?._id] > 1 ? " messages" : " message"}
+                          </Text>
+                        </Box>
+                      }
+
+                      {
                         isFirstMsgOfTheDay(m.createdAt, messages, i)
                         &&
                         <Box margin={i === 0 ? ".5rem 0" : "1rem 0"} marginBottom="1.5rem" pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "2px" : "1.5px"} solid #15dfd0`} width={"100%"}>
@@ -327,7 +318,6 @@ function MessageBox({ messages, setMessages }) {
                               </Tooltip>
                             </Box>
                           }
-
                           <Box
                             padding={m.content.img ? ".3rem" : ".5rem"}
                             fontSize={"1rem"}
@@ -385,7 +375,7 @@ function MessageBox({ messages, setMessages }) {
                                     </Box>
                                   </>
                                   :
-                                  m.content.message
+                                  <Text>{m.content.message}</Text>
                               }
                             </Box>
 
