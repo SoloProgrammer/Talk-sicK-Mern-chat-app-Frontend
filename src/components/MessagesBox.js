@@ -1,6 +1,6 @@
 import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { downloadImage, imageActionBtns, zoomInImage, zoomOutImage } from '../configs/ImageConfigs'
 import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay } from '../configs/messageConfigs'
 import { scrollBottom, scrollTop } from '../configs/scrollConfigs'
@@ -209,7 +209,7 @@ function MessageBox({ messages, setMessages }) {
   }, [msgImg])
 
   const isFirstUnseenMessage = useCallback((m, messages, i) => {
-   
+
     if (messages.length) {
 
       if (!m.seenBy.includes(user._id)) {
@@ -225,13 +225,22 @@ function MessageBox({ messages, setMessages }) {
     }
 
     // eslint-disable-next-line
-  }, [messages])
+  }, [messages]);
+
+  const locaObj = useLocation();
+
+  useEffect(() => {
+    if (locaObj.pathname === `/chats/chat/${selectedChat?._id}`) setMsgImg(null);
+    if (locaObj.pathname.slice(locaObj.pathname.lastIndexOf('/')) === '/image' && !msgImg) window.history.back()
+    
+    // eslint-disable-next-line
+  }, [locaObj, msgImg])
 
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
 
       {
-        msgImg?.img
+        msgImg?.img && window.location.pathname === `/chats/chat/${selectedChat?._id}/view/${msgImg.senderId}/image`
         &&
         <MessageImageViewBox msgImg={msgImg} setMsgImg={setMsgImg} imageActionBtns={imageActionBtns} handleImgActionCLick={handleImgActionCLick} />
       }
@@ -369,7 +378,19 @@ function MessageBox({ messages, setMessages }) {
                                   <>
                                     <Box maxW={"35rem"} >
                                       <Text width={"100%"} paddingBottom={".6rem"} >
-                                        <Image opacity={(msgImg && m.content.img === msgImg.img) && 0} onClick={() => setMsgImg({ img: m.content.img, msg: m.content.message, senderId: m.sender._id })} cursor={"pointer"} borderRadius={".3rem"} src={m.content.img} preload="none" width="100%" height={"100%"} objectFit={"cover"} maxH="30rem" />
+                                        <Image
+                                          opacity={(msgImg && m.content.img === msgImg.img) && 0}
+                                          onClick={() => {
+                                            setMsgImg({ img: m.content.img, msg: m.content.message, senderId: m.sender._id });
+                                            navigate(`${window.location.pathname}/view/${m.sender._id}/image`)
+                                          }}
+                                          cursor={"pointer"}
+                                          borderRadius={".3rem"}
+                                          src={m.content.img}
+                                          preload="none"
+                                          width="100%" height={"100%"}
+                                          objectFit={"cover"}
+                                          maxH="30rem" />
                                       </Text>
                                       <Text>{m.content?.message}</Text>
                                     </Box>

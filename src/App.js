@@ -14,6 +14,7 @@ function App() {
           <Route exact path='/chats' element={<Chatpage />} />
           <Route exact path='/chats/archived' element={<Chatpage />} />
           <Route exact path='/chats/chat/:chatId' element={<Chatpage />} />
+          <Route exact path='/chats/chat/:chatId/view/:senderId/image' element={<Chatpage />} />
           <Route exact path='*' element={<Chatpage />} />
         </Routes>
       </div>

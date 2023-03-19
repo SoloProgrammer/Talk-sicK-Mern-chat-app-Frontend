@@ -31,6 +31,12 @@ html,body {
 .bg_red{
     background-color: red;
 }
+.translateYdown{
+    transform: translateY(10rem);
+}
+.translateYup{
+    transform: translateY(-10rem);
+}
 .black-200{
     color: black;
     opacity: .5;

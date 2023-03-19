@@ -385,7 +385,10 @@ function ProfileDrawer({ width, align = "right" }) {
                                 </Text>
                                 <Box width={"full"}>
                                     <Box>
-                                        <Text fontWeight={"hairline"} fontSize=".9rem">Email</Text>
+                                        <Text fontWeight={"hairline"} fontSize=".9rem" className='flex' gap={".3rem"} justifyContent="start">
+                                            Email
+                                            <Image width={".87rem"} opacity={".7"} src="https://cdn-icons-png.flaticon.com/512/2592/2592592.png"/>
+                                        </Text>
                                         <Box className={`flex ${profile?._id === user?._id ? "disabledBg" : "InptBox"}`} gap={".5rem"} padding=".9rem 0" width="100%">
                                             {
                                                 <input type="text"
