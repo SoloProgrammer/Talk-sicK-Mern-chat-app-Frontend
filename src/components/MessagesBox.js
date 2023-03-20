@@ -1,8 +1,8 @@
 import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { downloadImage, imageActionBtns, zoomInImage, zoomOutImage } from '../configs/ImageConfigs'
-import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay } from '../configs/messageConfigs'
+import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay, isFirstUnseenMessage } from '../configs/messageConfigs'
 import { scrollBottom, scrollTop } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
 import { defaultPic, HandleLogout, islastMsgOfSender } from '../configs/userConfigs'
@@ -208,31 +208,12 @@ function MessageBox({ messages, setMessages }) {
     }, 50);
   }, [msgImg])
 
-  const isFirstUnseenMessage = useCallback((m, messages, i) => {
-
-    if (messages.length) {
-
-      if (!m.seenBy.includes(user._id)) {
-        if (messages[i - 1]) {
-          if (messages[i - 1].seenBy.includes(user?._id)) return true
-        }
-
-        else if (messages.length === 1) return true
-
-        else if (!messages[i + 1].seenBy.includes(user?._id)) return true
-
-      }
-    }
-
-    // eslint-disable-next-line
-  }, [messages]);
-
   const locaObj = useLocation();
 
   useEffect(() => {
     if (locaObj.pathname === `/chats/chat/${selectedChat?._id}`) setMsgImg(null);
     if (locaObj.pathname.slice(locaObj.pathname.lastIndexOf('/')) === '/image' && !msgImg) window.history.back()
-    
+
     // eslint-disable-next-line
   }, [locaObj, msgImg])
 
@@ -287,7 +268,7 @@ function MessageBox({ messages, setMessages }) {
                   return (
                     <Box key={i}>
                       {
-                        selectedChat.unseenMsgsCountBy && selectedChat.unseenMsgsCountBy[user?._id] > 0 && isFirstUnseenMessage(m, messages, i) && m.sender._id !== user?._id
+                        selectedChat.unseenMsgsCountBy && selectedChat.unseenMsgsCountBy[user?._id] > 0 && isFirstUnseenMessage(m, messages, i, user) && m.sender._id !== user?._id
                         &&
                         <Box pos={"relative"} borderBottom={"2px solid red"} margin="1.5rem 0">
                           <Text userSelect={"none"} boxShadow={"0 0 2px rgba(0,0,0,.2)"} pos={"absolute"} borderRadius=".9rem" color={"red.500"} background="white" top="-.8rem" left="-.2rem" fontWeight={"medium"} fontSize=".87rem" padding={".1rem 1rem"} >

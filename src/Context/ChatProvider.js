@@ -127,11 +127,12 @@ const ChatProvider = ({ children }) => {
     }
 
     const handlePinOrUnpinChat = async (chat) => {
-
+        
+        
         setTimeout(() => {
             document.body.click()
         }, 250);
-
+        
         let updatedChats = chats.map(c => {
             if (c._id === chat._id) {
                 if (!c.pinnedBy.includes(user?._id)) {
@@ -143,6 +144,10 @@ const ChatProvider = ({ children }) => {
             }
             return c;
         });
+        
+        if(chat.pinnedBy.includes(user?._id)){
+            updatedChats = [...updatedChats.filter(c => c._id === chat._id),...updatedChats.filter(c => c._id !== chat._id)]
+        }
 
         (selectedChat && selectedChat._id === chat._id) && setSelectedChat(chats.filter(c => c._id === chat._id)[0]);
 

@@ -24,7 +24,7 @@ export const getMessageDay = (msgTimestamps) => {
 
         if (dayDiff === 0) return "Today"
         else if (dayDiff === 1) return "Yesterday"
-        else if(dayDiff < 7) return weekDays[msgFulldate.getDay()]
+        else if (dayDiff < 7) return weekDays[msgFulldate.getDay()]
         else return msgdate + " " + Fullmonth[msgFulldate.getMonth()];
     }
 
@@ -69,4 +69,20 @@ export const isLastMsgOfTheDay = (msgTimestamp, messages, i) => {
         if (msgdate !== nextMsgdate) return true
     }
 
+}
+
+export const isFirstUnseenMessage = (m, messages, i, user) => {
+    if (messages.length) {
+
+        if (!m.seenBy.includes(user._id)) {
+            if (messages[i - 1]) {
+                if (messages[i - 1].seenBy.includes(user?._id)) return true
+            }
+
+            else if (messages.length === 1) return true
+
+            else if (!messages[i + 1].seenBy.includes(user?._id)) return true
+
+        }
+    }
 }

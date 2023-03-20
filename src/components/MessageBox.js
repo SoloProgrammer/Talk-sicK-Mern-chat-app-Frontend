@@ -19,10 +19,11 @@ import { emojiIcon, sendBtn, sendBtnActive } from '../configs/ImageConfigs'
 var selectedChatCompare;
 var notificationsCompare;
 var chatMessagesCompare;
+var allchatsCompare;
 
 function MessagesBox() {
 
-  const { user, setChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
+  const { user, setChats, refreshChats,chats,setSelectedChat, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -80,6 +81,7 @@ function MessagesBox() {
     setIsEmojiPick(false)
     selectedChatCompare = selectedChat
     chatMessagesCompare = chatMessages
+    allchatsCompare = chats
     // eslint-disable-next-line
   }, [selectedChat?._id, chatMessages]);
 
@@ -100,16 +102,15 @@ function MessagesBox() {
 
       //..............
       // this condition is used to check if the selected Chat by the user is equal to newmessage received in the chat then update the selected chat with the new chats using filter method and due to this selected chat is updated and user will not able to see the new message in the red when he received another new message when he is in the same chat only display that red color message eg: 1 new message when he is opening the chat first time when he received the new message! 
-      // if (selectedChatCompare && selectedChatCompare._id === newMessageRecieved.chat._id) {
-      //   setSelectedChat(allchatsCompare.filter(c => c._id === selectedChatCompare?._id)[0])
-      // }
+      if (selectedChatCompare && selectedChatCompare._id === newMessageRecieved.chat._id) {
+        setSelectedChat(allchatsCompare.filter(c => c._id === selectedChatCompare?._id)[0])
+      }
       //..............
 
       if (!selectedChatCompare || selectedChatCompare?._id !== newMessageRecieved.chat._id) {
         // give notification
 
         // console.log("notification");
-
         if (!socket) return
         else {
 

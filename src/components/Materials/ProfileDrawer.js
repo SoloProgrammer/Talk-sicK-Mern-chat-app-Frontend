@@ -1,6 +1,7 @@
 import { Avatar, Box, Button, Image, Input, Spinner, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
 import React, { useState, useEffect } from 'react'
 import { handleFileUpload } from '../../configs/handleFileUpload'
+import { LogoutIcon } from '../../configs/ImageConfigs'
 import { server } from '../../configs/serverURl'
 import { HandleLogout } from '../../configs/userConfigs'
 import { ChatState } from '../../Context/ChatProvider'
@@ -438,7 +439,7 @@ function ProfileDrawer({ width, align = "right" }) {
                     <Box padding={{ base: "0rem .8rem", md: "0 1.1rem" }} width="full" marginTop={".5rem"}>
                         <Button colorScheme={"red"} width="full" onClick={HandleLogout}>
                             LOG-OUT &nbsp;
-                            <Image src='https://cdn-icons-png.flaticon.com/512/4034/4034229.png' width={"1.2rem"} />
+                            <Image src={LogoutIcon} width={"1.2rem"} />
                         </Button>
                     </Box>
                 }

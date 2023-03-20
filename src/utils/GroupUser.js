@@ -196,8 +196,8 @@ function GroupUser({ u }) {
 
             {
                 (selectedChat?.isGroupchat) && selectedChat?.groupAdmin.map(u => u._id).includes(u._id) &&
-                <Box height=".1.46rem" className='flex Admin' justifyContent={"space-between"} pos={"absolute"} right=".3rem" top={".3rem"} padding=".2rem .4rem" borderRadius={".2rem"} background="#48f2e64a">
-                    <Text fontSize={".7rem"} color="darkcyan" fontWeight={"medium"}>Admin</Text>
+                <Box height=".1.46rem" className='flex Admin' justifyContent={"space-between"} pos={"absolute"} right=".3rem" top={".3rem"} padding=".2rem .4rem" borderRadius={".2rem"} background="#b4c6c44a">
+                    <Text fontSize={".7rem"} color="#1fb4a8" fontWeight={"medium"}>Admin</Text>
                     {
                         (selectedChat?.groupAdmin.map(u => u._id).includes(user?._id)) &&
                         (!removeAdminLoading ?

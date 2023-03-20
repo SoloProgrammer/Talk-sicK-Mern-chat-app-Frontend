@@ -11,6 +11,7 @@ import NotificationBadge from 'react-notification-badge';
 import { Effect } from 'react-notification-badge';
 import { useNavigate } from 'react-router-dom';
 import NotificationsMenu from './NotificationsMenu';
+import { LogoutIcon } from '../../configs/ImageConfigs';
 
 function ChatsTopBar() {
 
@@ -36,8 +37,8 @@ function ChatsTopBar() {
                             </MenuItem>
                             <div></div>
                             <MenuItem onClick={HandleLogout} display={"flex"} gap=".5rem" alignItems={"center"}>
-                                <Image src='https://cdn-icons-png.flaticon.com/512/4980/4980424.png'
-                                    boxSize='1.5rem'
+                                <Image src={LogoutIcon}
+                                    boxSize='1.4rem'
                                     borderRadius='full' />
                                 <span>Logout</span>
                             </MenuItem>
