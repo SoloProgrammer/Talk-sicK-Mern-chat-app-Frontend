@@ -23,7 +23,7 @@ export const GroupMembers = ({ selectedChat }) => {
     const { profile, user } = ChatState()
 
     return (
-        <Tooltip isOpen label="Group members" placement={profile ? "left" : 'bottom-end'} pointerEvents={"none"}>
+        <Tooltip isOpen label="Group members" fontSize={".8rem"} placement={profile ? "left" : 'bottom-end'} pointerEvents={"none"}>
             <AvatarGroup size='sm' max={3}>
                 {
                     selectedChat?.users?.map((u, i) => {
@@ -78,10 +78,4 @@ export const UserChip = ({ user, handleFunc }) => {
 export const HandleLogout = () => {
     localStorage.removeItem('token');
     window.location.reload(0);
-}
-
-export const islastMsgOfSender = (messages, i, senderId) => {
-
-    return (messages[i + 1] === undefined || messages[i + 1].sender._id !== senderId)
-
 }

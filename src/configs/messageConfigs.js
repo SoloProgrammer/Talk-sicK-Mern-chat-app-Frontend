@@ -86,3 +86,9 @@ export const isFirstUnseenMessage = (m, messages, i, user) => {
         }
     }
 }
+
+export const islastMsgOfSender = (messages, i, senderId) => {
+
+    return (messages[i + 1] === undefined || messages[i + 1].sender._id !== senderId)
+
+}

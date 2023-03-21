@@ -23,7 +23,7 @@ var allchatsCompare;
 
 function MessagesBox() {
 
-  const { user, setChats, refreshChats,chats,setSelectedChat, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
+  const { user, setChats, refreshChats, chats, setSelectedChat, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -95,7 +95,7 @@ function MessagesBox() {
   }, [notifications])
 
 
-  // reciveing real time message from server with the help of socket!....................................................
+  // reciveing real time/live message from users with the help of socket servers!....................................................
   useEffect(() => {
 
     const eventListener = (newMessageRecieved, newMessages, user) => {
@@ -132,7 +132,7 @@ function MessagesBox() {
       else {
         // console.log("seenMessge");
         setMessages([...newMessages]);
-        seenMessages();
+        seenMessages(selectedChatCompare);
         refreshChats(user);
 
         // console.log("outside",chatMessages);
@@ -201,7 +201,7 @@ function MessagesBox() {
       messageSentBeep?.play();
       messageSentBeep.remove()
 
-      socket.emit('new message', json.fullmessage, json.allMessages, user)
+      socket.emit('new message', json.fullmessage, json.allMessages)
 
       setMessages([...json.allMessages]);
 

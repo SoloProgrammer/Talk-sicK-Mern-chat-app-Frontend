@@ -127,12 +127,12 @@ const ChatProvider = ({ children }) => {
     }
 
     const handlePinOrUnpinChat = async (chat) => {
-        
-        
+
+
         setTimeout(() => {
             document.body.click()
         }, 250);
-        
+
         let updatedChats = chats.map(c => {
             if (c._id === chat._id) {
                 if (!c.pinnedBy.includes(user?._id)) {
@@ -144,9 +144,9 @@ const ChatProvider = ({ children }) => {
             }
             return c;
         });
-        
-        if(chat.pinnedBy.includes(user?._id)){
-            updatedChats = [...updatedChats.filter(c => c._id === chat._id),...updatedChats.filter(c => c._id !== chat._id)]
+
+        if (chat.pinnedBy.includes(user?._id)) {
+            updatedChats = [...updatedChats.filter(c => c._id === chat._id), ...updatedChats.filter(c => c._id !== chat._id)]
         }
 
         (selectedChat && selectedChat._id === chat._id) && setSelectedChat(chats.filter(c => c._id === chat._id)[0]);
@@ -176,7 +176,7 @@ const ChatProvider = ({ children }) => {
         }
     }
 
-    const seenMessages = async () => {
+    const seenMessages = async (selectedChat) => {
         try {
 
             let config = {
@@ -197,6 +197,7 @@ const ChatProvider = ({ children }) => {
             // ToDo gave an appropiatiate msg for the bad response from the server!
             if (!json.status) return
 
+            socket?.emit('seeing messages', json.messages, selectedChat?.users, user, selectedChat._id)
             // refresing the chats whenever a new or lastemessgge seen by user to show him in the chat that he has seen the latestmessage!
             setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))));
             // setSelectedChat(json.chats.filter(c => c._id === selectedChat?._id)[0])

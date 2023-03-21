@@ -12,6 +12,10 @@ export const emojiIcon = "https://cdn-icons-png.flaticon.com/512/9320/9320978.pn
 
 export const LogoutIcon = "https://cdn-icons-png.flaticon.com/512/4034/4034229.png"
 
+export const seenCheckMark = "https://cdn-icons-png.flaticon.com/512/3550/3550119.png"
+
+export const unSeenCheckMark = "https://cdn-icons-png.flaticon.com/512/5410/5410422.png"
+
 export let zoomCount = 0.5
 
 window.addEventListener('click', () => {

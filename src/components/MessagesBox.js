@@ -1,18 +1,17 @@
 import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { downloadImage, imageActionBtns, zoomInImage, zoomOutImage } from '../configs/ImageConfigs'
-import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay, isFirstUnseenMessage } from '../configs/messageConfigs'
+import { downloadImage, imageActionBtns, seenCheckMark, unSeenCheckMark, zoomInImage, zoomOutImage } from '../configs/ImageConfigs'
+import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay, isFirstUnseenMessage, islastMsgOfSender } from '../configs/messageConfigs'
 import { scrollBottom, scrollTop } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
-import { defaultPic, HandleLogout, islastMsgOfSender } from '../configs/userConfigs'
+import { defaultPic, HandleLogout } from '../configs/userConfigs'
 import { ChatState } from '../Context/ChatProvider'
 import AvatarBox from './Materials/AvatarBox'
 import ProfileDrawer from './Materials/ProfileDrawer'
 import MessageImageViewBox from './MessageImageViewBox'
 
 function MessageBox({ messages, setMessages }) {
-
 
   const { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket } = ChatState();
 
@@ -81,7 +80,6 @@ function MessageBox({ messages, setMessages }) {
 
   useEffect(() => {
     setTimeout(() => {
-
       scrollBottom("messagesDisplay")
     }, 20);
     // eslint-disable-next-line
@@ -215,7 +213,27 @@ function MessageBox({ messages, setMessages }) {
     if (locaObj.pathname.slice(locaObj.pathname.lastIndexOf('/')) === '/image' && !msgImg) window.history.back()
 
     // eslint-disable-next-line
-  }, [locaObj, msgImg])
+  }, [locaObj, msgImg]);
+
+  useEffect(() => {
+
+    socket?.on('seen messages', (messages, room) => {
+      if(selectedChat && selectedChat._id === room){
+
+        setMessages([...messages]);
+        
+        chatMessages.forEach(chatMsg => {
+          if (chatMsg.chatId === selectedChat?._id) {
+  
+            chatMsg = { chatId: selectedChat?._id, messages: [...messages] }
+  
+            setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat?._id)), chatMsg]) // cm := ChatMessage
+          }
+        })
+      }
+    })
+    // eslint-disable-next-line
+  }, [user])
 
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
@@ -311,7 +329,9 @@ function MessageBox({ messages, setMessages }) {
                           <Box
                             padding={m.content.img ? ".3rem" : ".5rem"}
                             fontSize={"1rem"}
-                            backgroundColor={m.sender._id !== user?._id ? "#56c8c0" : "#f8f8d9"}
+                            backgroundColor={m.sender._id !== user?._id ? "#56c8c0" : "#ffffdd"}
+                            // 
+                            // #f8f8d9
                             key={i} pos="relative"
                             width={"fit-content"}
                             color={m.sender._id === user?._id ? "black" : "ghostwhite"}
@@ -323,7 +343,7 @@ function MessageBox({ messages, setMessages }) {
                             borderBottomLeftRadius={".5rem"}
                             position="relative"
                             borderBottomRightRadius={(m.sender._id !== user?._id || (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))) && ".5rem"}
-                            minW={m.sender._id !== user?._id ? "80px" : "54px"}
+                            minW={m.sender._id !== user?._id ? "80px" : "80px"}
 
                             marginLeft=
                             {window.innerWidth > 770
@@ -347,6 +367,8 @@ function MessageBox({ messages, setMessages }) {
                           >
 
                             {
+                              !m.content.img
+                              &&
                               selectedChat?.isGroupchat && m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id) &&
                               <Text fontSize={".7rem"} fontWeight="normal">
                                 {m.sender.name.split(" ")[0]}
@@ -381,8 +403,12 @@ function MessageBox({ messages, setMessages }) {
                               }
                             </Box>
 
-                            <Text pos={"absolute"} fontSize={".6rem"} right=".4rem" color={"black !important"} textShadow="none !important">
+                            <Text pos={"absolute"} fontSize={".6rem"} right=".4rem" color={"black !important"} textShadow="none !important" display={"flex"} gap=".3rem">
                               {getMsgTime(m.createdAt)}
+                              {
+                                m.sender._id === user?._id
+                                && <Image src={m.seenBy.length !== selectedChat.users.length ? unSeenCheckMark : seenCheckMark} opacity={m.seenBy.length !== selectedChat.users.length && ".6"} width=".95rem" display="inline-block" />
+                              }
                             </Text>
 
                           </Box>

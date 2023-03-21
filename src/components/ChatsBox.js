@@ -61,20 +61,23 @@ function ChatsBox() {
   const handleChatClick = (chat) => {
     navigate(`/chats/chat/${chat._id}`);
     setProfile(null);
-    let elm = document.getElementById(`unseenMsgsCount${chat._id}`);
-    if (elm) elm.style.display = "none"
   }
-
+  
   useEffect(() => {
-
+    
+    // This logic will instantely remove green color from datetime of latestMessage of selectedChat to indicate user that new message in this chat has been seen
     let elem = document.getElementById(`DateTime${selectedChat?._id}`)
-
-    if (elem) elem.classList.remove('unSeen');
+    if (elem && elem.classList.contains('unSeen')) {
+      elem.classList.remove('unSeen');
+    }
+    
+    // This logic will instantely remove unseenMsgCount by user ffrom selectedChat to indicate user all messages has been seen by user!
+    let elm = document.getElementById(`unseenMsgsCount${selectedChat?._id}`);
+    if (elm && elm.style.display !== "none") elm.style.display = "none"
 
     if (selectedChat?.latestMessage && !(selectedChat.latestMessage.seenBy.includes(user?._id))) {
-     
       setTimeout(() => {
-        seenMessages()
+        seenMessages(selectedChat)
       }, 500);
     }
 
@@ -176,10 +179,10 @@ function ChatsBox() {
                                   fontWeight="normal"
                                   id={`DateTime${chat._id}`}
                                   padding={".0 .3rem"}
-                                  className={`transformPaddingPlus flex ${(!(chat.latestMessage?.seenBy.includes(user?._id)) && (!selectedChat || selectedChat._id !== chat._id)) && "unSeen"}`}>
+                                  className={`transformPaddingPlus flex ${(!(chat.latestMessage?.seenBy.includes(user?._id)) ) && "unSeen"}`}>
                                   <>{getDateTime(chat.latestMessage.createdAt)}</>
                                 </Text>
-                                {chat.unseenMsgsCountBy && ((chat.unseenMsgsCountBy[user?._id] > 0) && (!selectedChat || selectedChat._id !== chat._id))
+                                {chat.unseenMsgsCountBy && ((chat.unseenMsgsCountBy[user?._id] > 0) )
                                   &&
                                   <Box fontSize={".6rem"}
                                     marginRight={{ base: ".2rem", md: "0" }}
