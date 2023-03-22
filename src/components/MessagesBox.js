@@ -52,7 +52,7 @@ function MessageBox({ messages, setMessages }) {
           token: localStorage.getItem('token')
         }
       }
-      let res = await fetch(`${server.URL.production}/api/message/fetchmessages/${selectedChat._id}`, config)
+      let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChat._id}`, config)
 
       if (res.status === 401) HandleLogout()
 
@@ -217,21 +217,26 @@ function MessageBox({ messages, setMessages }) {
 
   useEffect(() => {
 
-    socket?.on('seen messages', (messages, room) => {
-      if(selectedChat && selectedChat._id === room){
+    if(user && user._id){
+      socket?.on('seen messages', (messages, room) => {
 
-        setMessages([...messages]);
+        // console.log(user,messages[messages.length - 1].sender,messages[messages.length - 1]);
         
-        chatMessages.forEach(chatMsg => {
-          if (chatMsg.chatId === selectedChat?._id) {
+        if ((selectedChat && selectedChat._id === room) && user._id === messages[messages.length - 1].sender._id) {
+          
+          setMessages([...messages]);
   
-            chatMsg = { chatId: selectedChat?._id, messages: [...messages] }
+          chatMessages.forEach(chatMsg => {
+            if (chatMsg.chatId === selectedChat?._id) {
   
-            setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat?._id)), chatMsg]) // cm := ChatMessage
-          }
-        })
-      }
-    })
+              chatMsg = { chatId: selectedChat?._id, messages: [...messages] }
+  
+              setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat?._id)), chatMsg]) // cm := ChatMessage
+            }
+          })
+        }
+      })
+    }
     // eslint-disable-next-line
   }, [user])
 

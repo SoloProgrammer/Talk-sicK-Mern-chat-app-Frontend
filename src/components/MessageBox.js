@@ -188,7 +188,7 @@ function MessagesBox() {
       setMessageText("");
       setSendPic(null)
 
-      let res = await fetch(`${server.URL.production}/api/message/sendmessage`, config);
+      let res = await fetch(`${server.URL.local}/api/message/sendmessage`, config);
 
       if (res.status === 401) return HandleLogout()
 
