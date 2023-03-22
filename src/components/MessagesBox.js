@@ -385,7 +385,7 @@ function MessageBox({ messages, setMessages }) {
                                   ?
                                   <>
                                     <Box maxW={"35rem"} >
-                                      <Text width={"100%"} paddingBottom={".6rem"} >
+                                    <Text width={"100%"} backgroundImage={!msgImg && `url(${m.content.img})`} >
                                         <Image
                                           opacity={(msgImg && m.content.img === msgImg.img) && 0}
                                           onClick={() => {
@@ -397,10 +397,11 @@ function MessageBox({ messages, setMessages }) {
                                           src={m.content.img}
                                           preload="none"
                                           width="100%" height={"100%"}
-                                          objectFit={"cover"}
-                                          maxH="30rem" />
+                                          objectFit={"contain"}
+                                          backdropFilter="blur(7px)"
+                                          maxH="25rem" />
                                       </Text>
-                                      <Text>{m.content?.message}</Text>
+                                      <Text paddingTop={".6rem"} >{m.content?.message}</Text>
                                     </Box>
                                   </>
                                   :
