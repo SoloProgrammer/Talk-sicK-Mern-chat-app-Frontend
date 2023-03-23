@@ -179,10 +179,10 @@ function ChatsBox() {
                                   fontWeight="normal"
                                   id={`DateTime${chat._id}`}
                                   padding={".0 .3rem"}
-                                  className={`transformPaddingPlus flex ${(!(chat.latestMessage?.seenBy.includes(user?._id)) ) && "unSeen"}`}>
+                                  className={`transformPaddingPlus flex ${(!(chat.latestMessage?.seenBy.includes(user?._id)) && selectedChat?._id !== chat._id ) && "unSeen"}`}>
                                   <>{getDateTime(chat.latestMessage.createdAt)}</>
                                 </Text>
-                                {chat.unseenMsgsCountBy && ((chat.unseenMsgsCountBy[user?._id] > 0) )
+                                {chat.unseenMsgsCountBy && ((chat.unseenMsgsCountBy[user?._id] > 0) && selectedChat?._id !== chat._id )
                                   &&
                                   <Box fontSize={".6rem"}
                                     marginRight={{ base: ".2rem", md: "0" }}

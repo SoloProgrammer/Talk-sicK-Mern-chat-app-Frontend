@@ -20,10 +20,11 @@ var selectedChatCompare;
 var notificationsCompare;
 var chatMessagesCompare;
 var allchatsCompare;
+var archivedChatsCompare;
 
 function MessagesBox() {
 
-  const { user, setChats, refreshChats, chats, setSelectedChat, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
+  const { user, setChats, setArchivedChats, refreshChats, chats, archivedChats, setSelectedChat, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -82,6 +83,7 @@ function MessagesBox() {
     selectedChatCompare = selectedChat
     chatMessagesCompare = chatMessages
     allchatsCompare = chats
+    archivedChatsCompare = archivedChats
     // eslint-disable-next-line
   }, [selectedChat?._id, chatMessages]);
 
@@ -98,12 +100,15 @@ function MessagesBox() {
   // reciveing real time/live message from users with the help of socket servers!....................................................
   useEffect(() => {
 
-    const eventListener = (newMessageRecieved, newMessages, user) => {
+    const messageReceivedEventListener = (newMessageRecieved, newMessages, user) => {
 
       //..............
       // this condition is used to check if the selected Chat by the user is equal to newmessage received in the chat then update the selected chat with the new chats using filter method and due to this selected chat is updated and user will not able to see the new message in the red when he received another new message when he is in the same chat only display that red color message eg: 1 new message when he is opening the chat first time when he received the new message! 
       if (selectedChatCompare && selectedChatCompare._id === newMessageRecieved.chat._id) {
-        setSelectedChat(allchatsCompare.filter(c => c._id === selectedChatCompare?._id)[0])
+        if(selectedChatCompare.archivedBy.includes(user._id)){
+          setSelectedChat(archivedChatsCompare.filter(c => c._id === selectedChatCompare._id)[0])
+        }
+        else setSelectedChat(allchatsCompare.filter(c => c._id === selectedChatCompare?._id)[0])
       }
       //..............
 
@@ -153,7 +158,7 @@ function MessagesBox() {
         })
       }
     };
-    socket?.on("message recieved", eventListener);
+    socket?.on("message recieved", messageReceivedEventListener);
     // eslint-disable-next-line 
   }, [user]);
 
@@ -188,7 +193,7 @@ function MessagesBox() {
       setMessageText("");
       setSendPic(null)
 
-      let res = await fetch(`${server.URL.local}/api/message/sendmessage`, config);
+      let res = await fetch(`${server.URL.production}/api/message/sendmessage`, config);
 
       if (res.status === 401) return HandleLogout()
 
@@ -215,6 +220,7 @@ function MessagesBox() {
         return 1
       })
 
+      setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
       setChats(json.chats.filter(c => !c.archivedBy.includes(user?._id)));
 
       setLoading(false);
