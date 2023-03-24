@@ -385,7 +385,7 @@ function MessageBox({ messages, setMessages }) {
                                   ?
                                   <>
                                     <Box maxW={"35rem"} >
-                                    <Text width={"100%"} backgroundImage={!msgImg && `url(${m.content.img})`} >
+                                    <Text width={"100%"} backgroundImage={!msgImg && `url(${m.content.img})`} backgroundPosition="center">
                                         <Image
                                           opacity={(msgImg && m.content.img === msgImg.img) && 0}
                                           onClick={() => {

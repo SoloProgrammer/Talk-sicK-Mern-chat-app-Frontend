@@ -388,7 +388,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                     <Box>
                                         <Text fontWeight={"hairline"} fontSize=".9rem" className='flex' gap={".3rem"} justifyContent="start">
                                             Email
-                                            {profile._id === user?._id && <Image width={".87rem"} opacity={".7"} src="https://cdn-icons-png.flaticon.com/512/2592/2592592.png"/>}
+                                            {profile._id === user?._id && <Image width={"1.2rem"} marginBottom=".1rem" opacity={"1"} src="https://cdn-icons-gif.flaticon.com/7920/7920885.gif"/>}
                                         </Text>
                                         <Box className={`flex ${profile?._id === user?._id ? "disabledBg" : "InptBox"}`} gap={".5rem"} padding=".9rem 0" width="100%">
                                             {
