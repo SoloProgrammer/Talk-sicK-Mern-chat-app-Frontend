@@ -25,7 +25,7 @@ import { handleFileUpload } from '../../../configs/handleFileUpload'
 
 function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmemberLoading }) {
 
-    const { showToast, selectedChat, setChats, setSelectedChat, isClosable, setIsClosable,user } = ChatState()
+    const { getPinnedChats, getUnPinnedChats, showToast, selectedChat, setChats, setSelectedChat, isClosable, setIsClosable, user } = ChatState()
 
     const [selectedUsers, setSelectedUsers] = useState([])
     const [searchResults, setSearchResults] = useState(null)
@@ -137,7 +137,8 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
             showToast("Success", "New Group Created Sucessfully", "success", 3000);
             setCreategroupLoading(false);
-            setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
+
+            setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
             setSelectedChat(json.Fullgroup)
             navigate(`/chats/chat/${json.Fullgroup._id}`)
 
@@ -199,7 +200,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                                 </Box>
                             </Box>
                         </Box>}
-                        
+
                         {/* /This Text component will act like a divider */}
                         <Text marginTop={".9rem"} />
 

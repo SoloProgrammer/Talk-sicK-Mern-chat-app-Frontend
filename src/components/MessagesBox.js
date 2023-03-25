@@ -221,8 +221,8 @@ function MessageBox({ messages, setMessages }) {
       socket?.on('seen messages', (messages, room) => {
 
         // console.log(user,messages[messages.length - 1].sender,messages[messages.length - 1]);
-        
-        if ((selectedChat && selectedChat._id === room) && user._id === messages[messages.length - 1].sender._id) {
+        let lastMsg = messages[messages.length - 1]
+        if ((selectedChat && selectedChat._id === room) && user._id === lastMsg.sender._id) {
           
           setMessages([...messages]);
   

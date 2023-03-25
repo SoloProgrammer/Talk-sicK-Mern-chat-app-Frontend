@@ -9,7 +9,7 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat,setSendPic } = ChatState();
+  const { getPinnedChats, getUnPinnedChats, getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat, setSendPic } = ChatState();
 
   const navigate = useNavigate();
   const locaObj = useLocation();
@@ -73,40 +73,43 @@ function Chatpage() {
   }, [profile])
 
   const fetchallchats = async () => {
-    setChatsLoading(true)
-    try {
-      const config = {
-        headers: {
-          token: localStorage.getItem('token')
-        }
-      }
-      const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
-
-      if (res.status === 401) HandleLogout()
-
-      const json = await res.json();
-
-      if (!json.status) return showToast("Error", json.message, "error", 3000)
-
-      setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))));
-      setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
-      setChatsLoading(false);
-      isfetchChats && setIsfetchChats(false)
-
-      if (json.chats) {
-        let UnseenMsgnotifications = []
-        json.chats.forEach(chat => {
-          if (user && chat.latestMessage && !chat.archivedBy.includes(user._id) && !chat.mutedNotificationBy.includes(user?._id) && !(chat.latestMessage?.seenBy.includes(user._id))) {
-            UnseenMsgnotifications.push(chat.latestMessage)
+    if (user) {
+      setChatsLoading(true)
+      try {
+        const config = {
+          headers: {
+            token: localStorage.getItem('token')
           }
-        })
-        setNotifications(UnseenMsgnotifications)
+        }
+        const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
+
+        if (res.status === 401) HandleLogout()
+
+        const json = await res.json();
+
+        if (!json.status) return showToast("Error", json.message, "error", 3000)
+
+        setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
+        setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
+        setChatsLoading(false);
+        isfetchChats && setIsfetchChats(false)
+
+        // Filled notificatons array with all the new messges from chats on first load of chatspage 
+        if (json.chats) {
+          let UnseenMsgnotifications = []
+          json.chats.forEach(chat => {
+            if (user && chat.latestMessage && !chat.archivedBy.includes(user._id) && !chat.mutedNotificationBy.includes(user?._id) && !(chat.latestMessage?.seenBy.includes(user._id))) {
+              UnseenMsgnotifications.push(chat.latestMessage)
+            }
+          })
+          setNotifications(UnseenMsgnotifications)
+        }
+
+        setTimeout(() => document.querySelector('.allchats')?.classList.remove('hidetop'), 10)
+
+      } catch (error) {
+        return showToast("Error", error.message, "error", 3000)
       }
-
-      setTimeout(() => document.querySelector('.allchats')?.classList.remove('hidetop'), 10)
-
-    } catch (error) {
-      return showToast("Error", error.message, "error", 3000)
     }
   }
 

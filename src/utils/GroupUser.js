@@ -9,7 +9,7 @@ import ConfirmBoxModal from '../components/Materials/Modals/ConfirmBoxModal'
 
 function GroupUser({ u }) {
 
-    const { user, selectedChat,setIsClosable, showToast, setSelectedChat, archivedChats, setArchivedChats, setViewArchivedChats, setChats, setProfile, chats, CreateChat } = ChatState()
+    const { getPinnedChats, getUnPinnedChats, user, selectedChat, setIsClosable, showToast, setSelectedChat, archivedChats, setArchivedChats, setViewArchivedChats, setChats, setProfile, chats, CreateChat } = ChatState()
 
     const [addAdminLoading, setAddAdminLoading] = useState(false)
     const [removeAdminLoading, setRemoveAdminLoading] = useState(false)
@@ -48,7 +48,7 @@ function GroupUser({ u }) {
             if (json.chat && json.chats) {
                 setSelectedChat(json.chat)
 
-                setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
+                setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
                 setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
 
                 if (action === "removegroupAdmin") {
@@ -89,11 +89,10 @@ function GroupUser({ u }) {
             setIsClosable(true)
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
-            
+
             setSelectedChat(json.chat);
 
-            console.log("..",json.chat);
-            setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
+            setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
             setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)))
             showToast("Success", json.message, "success", 3000)
             onClose()
@@ -183,12 +182,12 @@ function GroupUser({ u }) {
                     {
                         u?._id !== user?._id && selectedChat.groupAdmin.map(u => u._id).includes(user?._id)
                         &&
-                         <ConfirmBoxModal handleFunc={() => handleRemoveFromGroup(u?._id)} isOpen={isOpen} onClose={onClose} 
-                         modalDetail={{ chat: selectedChat, subtext: `Are you sure you want to remove (${u.name}) from `,btnCopy:"Remove" }} loading={removeUserLoading}>
+                        <ConfirmBoxModal handleFunc={() => handleRemoveFromGroup(u?._id)} isOpen={isOpen} onClose={onClose}
+                            modalDetail={{ chat: selectedChat, subtext: `Are you sure you want to remove (${u.name}) from `, btnCopy: "Remove" }} loading={removeUserLoading}>
                             <Tooltip label={"Remove from group"} placement="top">
                                 <Image onClick={onOpen} cursor={"pointer"} width="1.35rem" height={"1.35rem"} src="https://cdn-icons-png.flaticon.com/512/9404/9404050.png" />
                             </Tooltip>
-                         </ConfirmBoxModal>
+                        </ConfirmBoxModal>
                     }
                 </Box>
                 <Text marginTop={".2rem"} wordBreak={"break-word"} fontSize={"sm"}>Email: {u.email}</Text>

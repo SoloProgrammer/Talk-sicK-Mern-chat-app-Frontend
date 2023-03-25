@@ -17,7 +17,7 @@ function MessagesBoxTopbar() {
     let sender = useMemo(() => {
         return getSender(selectedChat, user)
         // eslint-disable-next-line
-    }, [selectedChat._id])
+    }, [selectedChat])
 
     return (
         <>

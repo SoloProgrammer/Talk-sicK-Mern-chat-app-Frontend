@@ -11,7 +11,7 @@ import ConfirmBoxModal from './Modals/ConfirmBoxModal'
 
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = ChatState();
+    const { getPinnedChats, getUnPinnedChats, handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = ChatState();
 
     // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
 
@@ -103,19 +103,20 @@ function ProfileDrawer({ width, align = "right" }) {
             }
 
             setSaved(true);
-
+            
             setSelectedChat({ ...selectedChat, ...detailsToUpdate });
 
             // if the group to update is archived then update the archived chats
             setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
 
             // updating chats if group is not archived!
-            setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))));
+            setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
 
             showToast("Success", json.message, "success", 3000)
 
         } catch (error) {
-
+            setSaved(true);
+            showToast("Error",error.message,"error",3000)
         }
         setIsEdit(false)
     }
@@ -215,6 +216,7 @@ function ProfileDrawer({ width, align = "right" }) {
         setSaved(false)
 
         let avatar = await handleFileUpload(e, setAvatarLoading, showToast);
+
         if (avatar) {
             if (profile?._id === user._id) {
                 setProfile({ ...profile, avatar });
@@ -225,6 +227,7 @@ function ProfileDrawer({ width, align = "right" }) {
                 updateGrpProfile({ groupAvatar: avatar })
             }
         }
+        else setSaved(true)
     }
 
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -241,7 +244,7 @@ function ProfileDrawer({ width, align = "right" }) {
             top="0"
             overflowY="auto"
             height={`${window.innerWidth > 770 ? `calc(100vh - ${profile?._id === user?._id ? "11rem" : "10.1rem"})` : `calc(100vh - ${profile?._id === user?._id ? "12rem" : "9.6rem"})`}`}
-            paddingBottom={profile._id === user?._id  ? "1rem" : "3rem"}
+            paddingBottom={profile._id === user?._id ? "1rem" : "3rem"}
             boxShadow={"0 0 4px rgb(0 0 0 / 30%)"}
             background="white">
             <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"} pos="relative" padding={"0 .53rem"} paddingTop="1rem" >
@@ -329,7 +332,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                     <Text userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#29b764"} letterSpacing=".01rem" background="#effbf4">
                                         online
                                     </Text>
-                                    
+
                                     :
                                     <Text userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#3e4240"} letterSpacing=".01rem" background="rgb(241, 243, 244)">
                                         offline
@@ -388,7 +391,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                     <Box>
                                         <Text fontWeight={"hairline"} fontSize=".9rem" className='flex' gap={".3rem"} justifyContent="start">
                                             Email
-                                            {profile._id === user?._id && <Image width={"1.2rem"} marginBottom=".1rem" opacity={"1"} src="https://cdn-icons-gif.flaticon.com/7920/7920885.gif"/>}
+                                            {profile._id === user?._id && <Image width={"1.2rem"} marginBottom=".1rem" opacity={"1"} src="https://cdn-icons-gif.flaticon.com/7920/7920885.gif" />}
                                         </Text>
                                         <Box className={`flex ${profile?._id === user?._id ? "disabledBg" : "InptBox"}`} gap={".5rem"} padding=".9rem 0" width="100%">
                                             {

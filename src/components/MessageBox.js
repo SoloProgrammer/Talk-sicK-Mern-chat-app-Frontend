@@ -24,7 +24,7 @@ var archivedChatsCompare;
 
 function MessagesBox() {
 
-  const { user, setChats, setArchivedChats, refreshChats, chats, archivedChats, setSelectedChat, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
+  const { getPinnedChats, getUnPinnedChats, user, setChats, setArchivedChats, refreshChats, chats, archivedChats, setSelectedChat, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
 
   const [messageText, setMessageText] = useState("")
 
@@ -105,7 +105,7 @@ function MessagesBox() {
       //..............
       // this condition is used to check if the selected Chat by the user is equal to newmessage received in the chat then update the selected chat with the new chats using filter method and due to this selected chat is updated and user will not able to see the new message in the red when he received another new message when he is in the same chat only display that red color message eg: 1 new message when he is opening the chat first time when he received the new message! 
       if (selectedChatCompare && selectedChatCompare._id === newMessageRecieved.chat._id) {
-        if(selectedChatCompare.archivedBy.includes(user._id)){
+        if (selectedChatCompare.archivedBy.includes(user._id)) {
           setSelectedChat(archivedChatsCompare.filter(c => c._id === selectedChatCompare._id)[0])
         }
         else setSelectedChat(allchatsCompare.filter(c => c._id === selectedChatCompare?._id)[0])
@@ -114,6 +114,7 @@ function MessagesBox() {
 
       if (!selectedChatCompare || selectedChatCompare?._id !== newMessageRecieved.chat._id) {
         // give notification
+        let notificationBeep = new Audio(notifyAudio)
 
         // console.log("notification");
         if (!socket) return
@@ -123,7 +124,6 @@ function MessagesBox() {
 
             if (!newMessageRecieved.chat.archivedBy.includes(user._id) && !newMessageRecieved.chat.mutedNotificationBy.includes(user?._id)) {
               setNotifications([newMessageRecieved, ...notificationsCompare]);
-              let notificationBeep = new Audio(notifyAudio)
               notificationBeep.play()
               notificationBeep.remove();
             }
@@ -173,6 +173,7 @@ function MessagesBox() {
     try {
 
       let content;
+      let messageSentBeep = new Audio(sentAudio)
 
       if (sendPic) {
         content = { message: messageText, img: sendPic.picture }
@@ -201,8 +202,6 @@ function MessagesBox() {
 
       if (!json.status) return showToast("Error", json.message, "error", 3000);
 
-      let messageSentBeep = new Audio(sentAudio)
-
       messageSentBeep?.play();
       messageSentBeep.remove()
 
@@ -221,7 +220,7 @@ function MessagesBox() {
       })
 
       setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
-      setChats(json.chats.filter(c => !c.archivedBy.includes(user?._id)));
+      setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
 
       setLoading(false);
     } catch (error) {

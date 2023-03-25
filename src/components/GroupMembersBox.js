@@ -9,7 +9,7 @@ import { server } from '../configs/serverURl'
 
 function GroupMembersBox() {
 
-    const { selectedChat, showToast, user, setChats, setSelectedChat, archivedChats, setArchivedChats, setIsClosable } = ChatState()
+    const { getPinnedChats, getUnPinnedChats, selectedChat, showToast, user, setChats, setSelectedChat, archivedChats, setArchivedChats, setIsClosable } = ChatState()
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -64,7 +64,7 @@ function GroupMembersBox() {
             showToast("Great!", json.message, "success", 3000)
             setSelectedChat(json.chat)
 
-            setChats(json.chats.filter(c => (!c.archivedBy.includes(user?._id))))
+            setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
             setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)));
 
             onClose()
@@ -97,7 +97,7 @@ function GroupMembersBox() {
                             gap=".3rem"
                             transition={".3s"}
                             _hover={{ bg: "gray.300" }}
-                            marginRight=".9rem">
+                            marginRight=".3rem">
 
                             <span> Add members </span>
                             <Image width={{ base: ".8rem", md: ".9rem" }} src={"https://cdn-icons-png.flaticon.com/512/9293/9293648.png"} />

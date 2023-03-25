@@ -7,7 +7,7 @@ import ConfirmBoxModal from './Modals/ConfirmBoxModal';
 
 function ChatMenuBox({ chat, i }) {
 
-    let { handleLeaveGrp, handleDeleteChat, user, setChats, showToast, handlePinOrUnpinChat, hanldeArchiveChatAction, archivedChats, chats } = ChatState();
+    let { getPinnedChats, getUnPinnedChats, handleLeaveGrp, handleDeleteChat, user, setChats, showToast, handlePinOrUnpinChat, hanldeArchiveChatAction, archivedChats, chats } = ChatState();
 
     const handleChatMenuIconClick = (e, i) => {
         e.stopPropagation();
@@ -31,7 +31,7 @@ function ChatMenuBox({ chat, i }) {
         setTimeout(() => {
             document.body.click()
         }, 250);
-        
+
         let updatedChats = chats.map(c => {
             if (c._id === chat._id) {
                 if (!(c.mutedNotificationBy.includes(user?._id))) {
@@ -45,8 +45,8 @@ function ChatMenuBox({ chat, i }) {
             }
             return c
         });
-        
-        setChats(updatedChats)
+
+        setChats([...getPinnedChats(updatedChats, user), ...getUnPinnedChats(updatedChats, user)]);
 
         try {
             let config = {

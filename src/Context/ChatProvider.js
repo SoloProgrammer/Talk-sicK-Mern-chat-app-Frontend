@@ -113,7 +113,8 @@ const ChatProvider = ({ children }) => {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-            setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))))
+            setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
+
             setChatsLoading(false)
             setIsChatCreating(null)
             navigate(`/chats/chat/${json.chat._id}`)
@@ -199,7 +200,8 @@ const ChatProvider = ({ children }) => {
 
             socket?.emit('seeing messages', json.messages, selectedChat._id)
             // refresing the chats whenever a new or lastemessgge seen by user to show him in the chat that he has seen the latestmessage!
-            setChats(json.chats.filter(c => !(c.archivedBy.includes(user?._id))));
+            setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
+
             // setSelectedChat(json.chats.filter(c => c._id === selectedChat?._id)[0])
             setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
 
@@ -212,6 +214,12 @@ const ChatProvider = ({ children }) => {
 
     }
 
+    const getPinnedChats = (chats, u) => {
+        return chats.filter(c => c.pinnedBy.includes(u?._id) && !c.archivedBy.includes(u?._id))
+    }
+    const getUnPinnedChats = (chats, u) => {
+        return chats.filter(c => !c.pinnedBy.includes(u?._id) && !c.archivedBy.includes(u?._id))
+    }
     const refreshChats = async (u = user) => {
 
         try {
@@ -230,7 +238,8 @@ const ChatProvider = ({ children }) => {
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
             setArchivedChats(json.chats.filter(c => c.archivedBy.includes(u?._id)));
-            setChats(json.chats.filter(c => !(c.archivedBy.includes(u?._id))));
+
+            setChats([...getPinnedChats(json.chats, u), ...getUnPinnedChats(json.chats, u)]);
 
         } catch (error) {
             return showToast("Error", error.message, "error", 3000)
@@ -245,13 +254,17 @@ const ChatProvider = ({ children }) => {
             navigate('/chats')
         }
 
-        // this logic will remove chat from archived if it presents and puch back to not archived chats of users
+        // this logic will remove chat from archived if it presents and push back to not archived chats of users
         if (archivedChats.map(c => c._id).includes(chat._id)) {
             setArchivedChats(archivedChats.filter(c => c._id !== chat._id));
-            setChats([chat, ...chats])
+            setChats([...getPinnedChats(chats, user), chat, ...getUnPinnedChats(chats, user)])
         }
         // this logic will add chat into archived if not present and remove from chats of users
         else {
+            if(chat.pinnedBy.includes(user?._id)){
+                handlePinOrUnpinChat(chat);
+                chat.pinnedBy = chat.pinnedBy.filter(u => u !== user._id) 
+            }
             setArchivedChats([...archivedChats, chat]);
             setChats(chats.filter(c => c._id !== chat._id));
         }
@@ -386,7 +399,7 @@ const ChatProvider = ({ children }) => {
     const [messages, setMessages] = useState([])
 
     return (
-        <ChatContext.Provider value={{ messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic }}>
+        <ChatContext.Provider value={{ getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic }}>
             {children}
         </ChatContext.Provider>
     )
