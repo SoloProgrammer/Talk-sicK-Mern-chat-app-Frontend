@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Avatar, AvatarBadge, Box, Image, Spinner, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
 import { ChatState } from '../Context/ChatProvider'
 import { HandleLogout, isUserOnline } from '../configs/userConfigs'
+import { defaultPic } from '../configs/ImageConfigs'
 import { server } from '../configs/serverURl'
 import { useNavigate } from 'react-router-dom'
 import ConfirmBoxModal from '../components/Materials/Modals/ConfirmBoxModal'
@@ -37,7 +38,7 @@ function GroupUser({ u }) {
                 body: JSON.stringify({ userId, chatId: selectedChat?._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/${action}`, config)
+            let res = await fetch(`${server.URL.productionl}/api/chat/${action}`, config)
 
             if (res.status === 401) HandleLogout()
 
@@ -79,7 +80,7 @@ function GroupUser({ u }) {
                 body: JSON.stringify({ chatId: selectedChat?._id, userId })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/groupremove`, config);
+            let res = await fetch(`${server.URL.productionl}/api/chat/groupremove`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -165,7 +166,7 @@ function GroupUser({ u }) {
             alignItems="center">
 
             <Tooltip hasArrow label={user?._id === u._id ? "My Profile" : "Start a chat"} placement='left'>
-                <Avatar onClick={() => handleGroupUserAvatarClick(u._id === user?._id ? user : u)} cursor={"pointer"} _hover={{ boxShadow: "0 0 0 2px white" }} name={u.name} src={u._id === user?._id ? user?.avatar : u.avatar} size="sm">
+                <Avatar onClick={() => handleGroupUserAvatarClick(u._id === user?._id ? user : u)} cursor={"pointer"} _hover={{ boxShadow: "0 0 0 2px white" }} src={u._id === user?._id ? user?.avatar : u.avatar || defaultPic} size="sm">
                     <Tooltip fontSize={".65rem"} label={isUserOnline(u) ? "online" : "offline"} placement="bottom-start">
                         <AvatarBadge
                             borderWidth="1.8px"
@@ -195,7 +196,7 @@ function GroupUser({ u }) {
 
             {
                 (selectedChat?.isGroupchat) && selectedChat?.groupAdmin.map(u => u._id).includes(u._id) &&
-                <Box height=".1.46rem" className='flex Admin' justifyContent={"space-between"} pos={"absolute"} right=".3rem" top={".3rem"} padding=".2rem .4rem" borderRadius={".2rem"} background="#b4c6c44a">
+                <Box height=".1.46rem" className='flex Admin' justifyContent={"space-between"} pos={"absolute"} right=".3rem" top={".3rem"} padding=".2rem .4rem" borderRadius={".2rem"} background="#dae6e6">
                     <Text fontSize={".7rem"} color="#39b7ad" fontWeight={"medium"} userSelect="none">Admin</Text>
                     {
                         (selectedChat?.groupAdmin.map(u => u._id).includes(user?._id)) &&

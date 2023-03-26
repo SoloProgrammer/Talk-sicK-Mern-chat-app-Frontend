@@ -1,9 +1,9 @@
 import { Avatar, Box, Button, Image, Input, Spinner, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
 import React, { useState, useEffect } from 'react'
 import { handleFileUpload } from '../../configs/handleFileUpload'
-import { LogoutIcon } from '../../configs/ImageConfigs'
+import { defaultPic, defaultGrpPic, LogoutIcon } from '../../configs/ImageConfigs'
 import { server } from '../../configs/serverURl'
-import { HandleLogout } from '../../configs/userConfigs'
+import { HandleLogout, isAdmin } from '../../configs/userConfigs'
 import { ChatState } from '../../Context/ChatProvider'
 import DeleteChat from '../DeleteChat'
 import GroupMembersBox from '../GroupMembersBox'
@@ -54,24 +54,27 @@ function ProfileDrawer({ width, align = "right" }) {
                 body: JSON.stringify(detailsToUpdate)
             }
 
-            let res = await fetch(`${server.URL.production}/api/user/updateuser`, config);
+            let res = await fetch(`${server.URL.productionl}/api/user/updateuser`, config);
 
             if (res.status === "401") return HandleLogout();
 
             let json = await res.json();
 
+            setSaved(true)
+
             if (!json.status) {
                 showToast("Error", json.message, "error", 3000);
-                setSaved(true)
                 return
             }
 
             setUser(json.updatedUser);
-            setSaved(true);
             setIsEdit(false)
             showToast("Success", json.message, "success", 3000)
 
+            return true;
+
         } catch (error) {
+            setSaved(true)
             return showToast("Error", error.message, "error", 3000)
         }
     }
@@ -90,7 +93,7 @@ function ProfileDrawer({ width, align = "right" }) {
                 body: JSON.stringify({ chatId: selectedChat._id, detailsToUpdate })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/updategroup`, config);
+            let res = await fetch(`${server.URL.productionl}/api/chat/updategroup`, config);
 
             if (res.status === "401") HandleLogout();
 
@@ -103,7 +106,6 @@ function ProfileDrawer({ width, align = "right" }) {
             }
 
             setSaved(true);
-            
             setSelectedChat({ ...selectedChat, ...detailsToUpdate });
 
             // if the group to update is archived then update the archived chats
@@ -111,12 +113,13 @@ function ProfileDrawer({ width, align = "right" }) {
 
             // updating chats if group is not archived!
             setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
-
             showToast("Success", json.message, "success", 3000)
+
+            return true
 
         } catch (error) {
             setSaved(true);
-            showToast("Error",error.message,"error",3000)
+            showToast("Error", error.message, "error", 3000)
         }
         setIsEdit(false)
     }
@@ -234,6 +237,35 @@ function ProfileDrawer({ width, align = "right" }) {
 
     const [loading, setLoading] = useState(false);
 
+    const handleRemoveAvatar = async (e) => {
+        e.stopPropagation()
+        setConfirm(false)
+        let updateStatus;
+        if (profile._id === user?._id) {
+            updateStatus = await updateUserProfile({ avatar: defaultPic })
+            updateStatus && setProfile({ ...profile, avatar: defaultPic });
+        }
+        else {
+            updateStatus = await updateGrpProfile({ groupAvatar: defaultGrpPic })
+            updateStatus && setProfile({ ...profile, avatar: defaultGrpPic })
+        }
+    }
+
+    const [confirm, setConfirm] = useState(false);
+
+    const handleConfirm = () => {
+        if (confirm) {
+            setConfirm(false)
+        }
+        else {
+            console.log("iy");
+            setConfirm(true);
+        }
+    }
+    window.addEventListener('click', () => {
+        confirm && setConfirm(false)
+    })
+
     return (
         <Box
             className={`profileDrawer ${align === "right" ? "right0 translateXFull maxWidth520" : "left0 translateXFull-"}`}
@@ -248,6 +280,31 @@ function ProfileDrawer({ width, align = "right" }) {
             boxShadow={"0 0 4px rgb(0 0 0 / 30%)"}
             background="white">
             <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"} pos="relative" padding={"0 .53rem"} paddingTop="1rem" >
+
+                {
+                    <Box className={`confirmBox center ${!confirm && "translateYFull"}`} transition={".4s"} minWidth={"96%"} pos="absolute" background={"white"} zIndex="21" boxShadow={"0 0 3px rgba(0,0,0,.2)"} padding="1rem 0" borderRadius={".2rem"} top={profile._id === user?._id ? "1.9%" : "1.5%"} >
+                        <Box className='padding-1LR flex' marginBottom={"1rem"} justifyContent="space-between">
+                            <Text fontWeight={"medium"}>
+                                Remove Avatar?
+                            </Text>
+                            <Text fontSize={"1.1rem"} onClick={handleConfirm} transition={".3s"} className="fa-solid fa-xmark" padding={".3rem .5rem"} cursor="pointer" borderRadius=".2rem" _hover={{ bg: "rgba(10, 12, 15, 0.06)" }} />
+                        </Box>
+                        <Text fontSize={".92rem"} fontWeight="normal" letterSpacing={".04rem"} className='padding-1LR' >
+                            Are you sure you want to remove avatar?
+                        </Text>
+                        <Text borderBottom={"1px solid rgb(194, 201, 214)"} margin="1.4rem 0"></Text>
+                        <Box className='padding-1LR flex' justifyContent={"end"} marginTop="-.37rem">
+                            <Box color={"white"} className="flex" gap={".6rem"}>
+                                <Text onClick={handleConfirm} className='padding3T8LR pointer' borderRadius={".2rem"} background={"rgb(209, 214, 224)"} fontWeight="normal" color={"black"} _hover={{ bg: "rgb(197, 201, 211)" }}>
+                                    Cancel
+                                </Text>
+                                <Text onClick={handleRemoveAvatar} className='padding3T8LR pointer' borderRadius={".2rem"} background={"rgb(206, 25, 13)"} fontWeight="medium" _hover={{ bg: "rgb(208, 4, 5)" }}>
+                                    Remove
+                                </Text>
+                            </Box>
+                        </Box>
+                    </Box>
+                }
 
                 <Box onClick={() => setProfile(null)} cursor={"pointer"} pos={"absolute"} left=".8rem" top={".8rem"}>
                     <Tooltip label="Close" placement='bottom'>
@@ -280,20 +337,38 @@ function ProfileDrawer({ width, align = "right" }) {
                 <Box className='profile_details' width={"full"} padding={{ base: "0rem .8rem", md: "0" }} >
                     <Box className='flex' flexDir={"column"} width="100%">
                         <label htmlFor="profileAvatarOnchange">
-                            <Avatar onMouseEnter={() => setOnHover(true)} onMouseLeave={() => setOnHover(false)} cursor={"pointer"} overflow={"hidden"} src={profile?.avatar} width="11rem" height={"11rem"} position="relative" >
+                            <Avatar onMouseEnter={() => setOnHover(true)} onMouseLeave={() => setOnHover(false)} cursor={"pointer"} src={profile?.avatar || defaultPic} width="11rem" height={"11rem"} position="relative" >
                                 {
-                                    (profile?._id === user?._id || selectedChat?.isGroupchat)
+                                    (
+                                        (profile._id === user?._id || (selectedChat?.isGroupchat && isAdmin()))
+                                        &&
+                                        (profile.avatar !== defaultPic && profile.avatar !== defaultGrpPic)
+                                    )
+                                    &&
+                                    <Tooltip label="Remove avatar" placement='top' fontSize={".75rem"}>
+                                        <Box _hover={{ bg: "#f6f6f6" }} onMouseOver={() => setOnHover(false)} onMouseLeave={() => setOnHover(true)}
+                                            onClick={
+                                                (e) => {
+                                                    e.stopPropagation()
+                                                    handleConfirm()
+                                                }
+                                            } pos={"absolute"} right="1rem" top={0} zIndex="20" padding={".45rem"} background="white" borderRadius={"50%"} boxShadow="inset 0 0 1.5px rgba(0,0,0,.3)">
+                                            <Image src="https://cdn-icons-png.flaticon.com/512/5165/5165608.png" width={"1.1rem"} />
+                                        </Box>
+                                    </Tooltip>
+                                }
+                                {
+                                    (profile?._id === user?._id || selectedChat?.isGroupchat) && saved
                                     &&
                                     <>
-                                        <Input onChange={handleProfileAvatarChange} type="file" name="avatar" id="profileAvatarOnchange" display="none" />
-                                        <Box display={onHover || isedit ? "flex" : "none"} background={"blackAlpha.500"} borderRadius={"."} width={"100%"} height="100%" pos={'absolute'} top="0" left={"0"} className="flex">
+                                        {onHover && !avatarLoading && <Input onChange={handleProfileAvatarChange} type="file" name="avatar" id="profileAvatarOnchange" display="none" />}
+                                        <Box display={onHover || isedit ? "flex" : "none"} background={"blackAlpha.500"} borderRadius={"50%"} width={"100%"} height="100%" pos={'absolute'} top="0" left={"0"} className="flex">
                                             {
                                                 avatarLoading
                                                     ?
                                                     <Spinner size={'lg'} color="white" />
                                                     :
                                                     <Image cursor={"pointer"} filter={"invert(100%)"} width={"2rem"} src="https://cdn-icons-png.flaticon.com/512/2099/2099154.png" />
-
                                             }
                                         </Box>
                                     </>

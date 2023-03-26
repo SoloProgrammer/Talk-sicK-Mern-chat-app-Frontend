@@ -18,7 +18,8 @@ import { Loading } from '../Loading'
 import { ChatState } from '../../../Context/ChatProvider'
 import UserListItem from '../../../utils/UserListItem'
 import EmptySearch from '../../EmptySearch'
-import { defaultPic, HandleLogout, UserChip } from '../../../configs/userConfigs'
+import { HandleLogout, UserChip } from '../../../configs/userConfigs'
+import { defaultPic } from '../../../configs/ImageConfigs'
 import { server } from '../../../configs/serverURl'
 import { useNavigate } from 'react-router-dom'
 import { handleFileUpload } from '../../../configs/handleFileUpload'
@@ -49,7 +50,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                         token: localStorage.getItem('token')
                     }
                 }
-                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config);
+                const res = await fetch(`${server.URL.productionl}/api/user/searchuser?search=${search}`, config);
                 const json = await res.json();
 
                 // let result = result1.filter(o1 => !result2.some(o2 => o1.id === o2.id));
@@ -73,7 +74,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
     useEffect(() => {
 
         let searchDelay = setTimeout(() => {
-            SearchUsers()
+            SearchUsers();
         }, 200);
 
         // cleapUp function needed to 300ms delay in search.... 
@@ -81,7 +82,6 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
         // eslint-disable-next-line
     }, [search])
-
 
     useEffect(() => {
         setSearchResults(null)
@@ -105,7 +105,6 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
     const [creategroupLoading, setCreategroupLoading] = useState(false);
 
-
     const handleCreateGroup = async () => {
 
         let users = selectedUsers.map(u => u._id)
@@ -122,7 +121,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                 },
                 body: JSON.stringify({ users, groupName, groupAvatar: pic })
             }
-            let res = await fetch(`${server.URL.production}/api/chat/creategroup`, config)
+            let res = await fetch(`${server.URL.productionl}/api/chat/creategroup`, config)
 
             if (res.status === 401) HandleLogout();
 

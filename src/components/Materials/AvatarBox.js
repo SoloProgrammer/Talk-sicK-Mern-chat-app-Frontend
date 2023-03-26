@@ -1,6 +1,6 @@
 import { Avatar, Box, Spinner, Text } from '@chakra-ui/react'
 import React from 'react'
-import { defaultPic } from '../../configs/userConfigs'
+import { defaultPic } from '../../configs/ImageConfigs'
 import { ChatState } from '../../Context/ChatProvider'
 
 function AvatarBox({ m, startaChat, setIsHoverDisable, i, avatarBoxLoading }) {

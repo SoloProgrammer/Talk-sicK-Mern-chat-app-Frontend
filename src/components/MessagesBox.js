@@ -5,7 +5,8 @@ import { downloadImage, imageActionBtns, seenCheckMark, unSeenCheckMark, zoomInI
 import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay, isFirstUnseenMessage, islastMsgOfSender } from '../configs/messageConfigs'
 import { scrollBottom, scrollTop } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
-import { defaultPic, HandleLogout } from '../configs/userConfigs'
+import { HandleLogout } from '../configs/userConfigs'
+import { defaultPic } from '../configs/ImageConfigs'
 import { ChatState } from '../Context/ChatProvider'
 import AvatarBox from './Materials/AvatarBox'
 import ProfileDrawer from './Materials/ProfileDrawer'
@@ -52,7 +53,7 @@ function MessageBox({ messages, setMessages }) {
           token: localStorage.getItem('token')
         }
       }
-      let res = await fetch(`${server.URL.production}/api/message/fetchmessages/${selectedChat._id}`, config)
+      let res = await fetch(`${server.URL.productionl}/api/message/fetchmessages/${selectedChat._id}`, config)
 
       if (res.status === 401) HandleLogout()
 
@@ -335,8 +336,6 @@ function MessageBox({ messages, setMessages }) {
                             padding={m.content.img ? ".3rem" : ".5rem"}
                             fontSize={"1rem"}
                             backgroundColor={m.sender._id !== user?._id ? "#56c8c0" : "#ffffdd"}
-                            // 
-                            // #f8f8d9
                             key={i} pos="relative"
                             width={"fit-content"}
                             color={m.sender._id === user?._id ? "black" : "ghostwhite"}
@@ -398,7 +397,7 @@ function MessageBox({ messages, setMessages }) {
                                           preload="none"
                                           width="100%" height={"100%"}
                                           objectFit={"contain"}
-                                          backdropFilter="blur(7px)"
+                                          backdropFilter="blur(24px)"
                                           maxH="25rem" />
                                       </Text>
                                       <Text paddingTop={".6rem"} >{m.content?.message}</Text>

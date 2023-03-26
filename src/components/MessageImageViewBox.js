@@ -41,7 +41,6 @@ function MessageImageViewBox({ msgImg, setMsgImg, imageActionBtns, handleImgActi
             closeBtn?.classList.remove('translateXFull');
             setOpen(false)
         }, 3000);
-        console.log("iysgd");
         // eslint-disable-next-line
     }, [imageActionBtnsBox])
 

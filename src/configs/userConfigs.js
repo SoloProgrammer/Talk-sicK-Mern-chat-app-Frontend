@@ -1,7 +1,6 @@
 import { Avatar, AvatarBadge, AvatarGroup, Box, Image, Text, Tooltip } from '@chakra-ui/react'
 import { ChatState } from '../Context/ChatProvider'
-
-export const defaultPic = "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"
+import { defaultPic } from './ImageConfigs'
 
 export const getSender = (chat, user) => {
     if (chat?.isGroupchat) return { name: chat.chatName, avatar: chat.groupAvatar, isGrpProfile: true }
@@ -28,7 +27,7 @@ export const GroupMembers = ({ selectedChat }) => {
                 {
                     selectedChat?.users?.map((u, i) => {
                         return (
-                            <Avatar key={i} src={u._id === user?._id ? user?.avatar : u.avatar || defaultPic} >
+                            <Avatar key={i} src={(u._id === user?._id ? user?.avatar : u.avatar) || defaultPic} >
                                 {isUserOnline(u) && <AvatarBadge
                                     borderWidth="1.8px"
                                     borderColor='#ffffff'

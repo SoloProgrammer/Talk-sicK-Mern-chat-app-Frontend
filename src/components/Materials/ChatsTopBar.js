@@ -5,8 +5,8 @@ import { BellIcon, ChevronDownIcon, SearchIcon } from '@chakra-ui/icons'
 import SideDrawer from './SideDrawer';
 import BrandLogo from '../../utils/BrandLogo';
 import CreateGroupChat from './CreateGroupChat';
-import { defaultPic, HandleLogout } from '../../configs/userConfigs';
-
+import { HandleLogout } from '../../configs/userConfigs';
+import { defaultPic } from '../../configs/ImageConfigs'
 import NotificationBadge from 'react-notification-badge';
 import { Effect } from 'react-notification-badge';
 import { useNavigate } from 'react-router-dom';
@@ -32,7 +32,7 @@ function ChatsTopBar() {
                         </MenuButton>
                         <MenuList boxShadow={"0 0 3px rgba(0,0,0,.4)"}>
                             <MenuItem display={"flex"} gap=".5rem" alignItems={"center"} onClick={() => setProfile(user)} >
-                                <Avatar size={"xs"} name={user?.name} src={user?.avatar} />{' '}
+                                <Avatar size={"xs"} src={user?.avatar || defaultPic} />{' '}
                                 <span>My profile</span>
                             </MenuItem>
                             <div></div>

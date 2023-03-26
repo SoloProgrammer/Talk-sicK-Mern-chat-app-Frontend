@@ -51,7 +51,7 @@ function GroupMembersBox() {
                 },
                 body: JSON.stringify({ chatId: selectedChat._id, users })
             }
-            let res = await fetch(`${server.URL.production}/api/chat/groupadd`, config)
+            let res = await fetch(`${server.URL.productionl}/api/chat/groupadd`, config)
 
             if (res.status === 401) HandleLogout()
 

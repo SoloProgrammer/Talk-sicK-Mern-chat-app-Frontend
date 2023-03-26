@@ -58,7 +58,7 @@ function ChatMenuBox({ chat, i }) {
                 body: JSON.stringify({ chatId: chat._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/muteOrUnmuteNotification`, config);
+            let res = await fetch(`${server.URL.productionl}/api/chat/muteOrUnmuteNotification`, config);
 
             if (res.status === "401") HandleLogout()
 

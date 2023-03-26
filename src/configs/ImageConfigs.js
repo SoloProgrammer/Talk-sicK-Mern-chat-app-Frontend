@@ -4,6 +4,10 @@ export const imageActionBtns = [
     { imgCopy: "Zoom-out", src: 'https://cdn-icons-png.flaticon.com/512/74/74158.png' },
 ]
 
+export const defaultPic = "https://res.cloudinary.com/dvzjzf36i/image/upload/v1679814483/wxrvucwq93ovrswfpsk3.png"
+
+export const defaultGrpPic = "https://tse2.mm.bing.net/th?id=OIP.OtLqKEL4eIvyiNSJZ4pT-wHaHa&pid=Api&P=0"
+
 export const sendBtn = "https://cdn-icons-png.flaticon.com/512/3059/3059413.png"
 
 export const sendBtnActive = "https://cdn-icons-png.flaticon.com/512/3060/3060014.png"

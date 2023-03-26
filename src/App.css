@@ -1,68 +1,108 @@
-.App{
+.App {
     background: url('./Images/Bg1.jpg');
     min-height: 100vh;
     display: flex;
     background-position: center;
     font-family: Roboto;
 }
-html,body {    
-    height:100%;
+
+html,
+body {
+    height: 100%;
     margin: 0;
 }
-.red{
+
+.red {
     color: red;
     font-weight: bold;
 }
-.left0{
+
+.translateYFull {
+    transform: translate(-50%, -100%) !important;
+    opacity: 0;
+}
+
+.center {
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+.padding-1LR {
+    padding: 0 1rem;
+}
+
+.padding3T8LR {
+    padding: .3rem .8rem;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.left0 {
     left: 0 !important;
 }
-.allchatsBox::-webkit-scrollbar{
+
+.allchatsBox::-webkit-scrollbar {
     width: .7rem;
     background: transparent;
     display: none;
 }
-.allchatsBox::-webkit-scrollbar-thumb{
+
+.allchatsBox::-webkit-scrollbar-thumb {
     background: rgba(209, 209, 209, 0.644);
     border-radius: 2rem;
 }
-.right0{
+
+.right0 {
     right: 0 !important;
 }
-.bg_red{
+
+.bg_red {
     background-color: red;
 }
-.translateYdown{
+
+.translateYdown {
     transform: translateY(10rem);
 }
-.translateYup{
+
+.translateYup {
     transform: translateY(-10rem);
 }
-.black-200{
+
+.black-200 {
     color: black;
     opacity: .5;
 }
-.translateXFull{
+
+.translateXFull {
     transform: translateX(400px);
 }
-.translateXFull-{
+
+.translateXFull- {
     transform: translateX(-400px);
 }
-.hide{
+
+.hide {
     transform: translateX(200px);
     opacity: 0;
 }
-.ml-3{
+
+.ml-3 {
     margin-left: .3rem;
 }
-.mr-3{
+
+.mr-3 {
     margin-right: .3rem;
 }
-.flex{
+
+.flex {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.MessageBoxInput{
+
+.MessageBoxInput {
     width: 100%;
     height: 100%;
     outline: none;
@@ -70,19 +110,23 @@ html,body {
     color: black;
     background-color: transparent;
     font-size: 1.15rem;
-    padding:.6rem 0.5rem;
+    padding: .6rem 0.5rem;
 }
-.hideleft{
+
+.hideleft {
     transform: translateX(-300px);
     opacity: 0;
 }
-.hidetop{
+
+.hidetop {
     transform: translateY(-200px);
 }
-.translateY200{
+
+.translateY200 {
     transform: translateY(200px);
 }
-.chaticon{
+
+.chaticon {
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -93,7 +137,8 @@ html,body {
     transform: translate(-50%);
     padding: .5rem;
 }
-.chaticon img{
+
+.chaticon img {
     width: 100%;
     height: 100%;
     object-fit: cover
@@ -101,7 +146,7 @@ html,body {
 
 /* brand logo css starts............... */
 
-.brand_logo{
+.brand_logo {
     display: block;
     margin: auto;
     width: 100%;
@@ -112,8 +157,9 @@ html,body {
     z-index: -1;
     width: fit-content;
 }
-.brand_logo .brandpic{
- 
+
+.brand_logo .brandpic {
+
     overflow: hidden;
     width: 33px;
     height: 33px;
@@ -124,42 +170,46 @@ html,body {
     box-shadow: 0 0 2px rgb(0 0 0 / 20%);
     left: -27px;
 }
-.brand_logo .brandpic img{
+
+.brand_logo .brandpic img {
     z-index: 2;
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
+
 /* brand logo css ends............... */
 
 
-@media (max-width:650px){
-.App{
-    background-size: contain;
-}
-.brand_logo{
-    font-size: 1.4rem;
-}
-.brand_logo .brandpic{
-    overflow: hidden;
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    top: -17px;
-    padding: 0.3rem;
-    border-radius: 50%;
-    box-shadow: 0 0 2px rgb(0 0 0 / 20%);
-    left: -21px;
-}
-.hide{
-    transform: translateY(-200px);
-    opacity: 0;
-}
+@media (max-width:650px) {
+    .App {
+        background-size: contain;
+    }
+
+    .brand_logo {
+        font-size: 1.4rem;
+    }
+
+    .brand_logo .brandpic {
+        overflow: hidden;
+        width: 30px;
+        height: 30px;
+        position: absolute;
+        top: -17px;
+        padding: 0.3rem;
+        border-radius: 50%;
+        box-shadow: 0 0 2px rgb(0 0 0 / 20%);
+        left: -21px;
+    }
+
+    .hide {
+        transform: translateY(-200px);
+        opacity: 0;
+    }
 }
 
-@media (max-width:370px){
-   html{
-    font-size: 1rem;
-   }
+@media (max-width:370px) {
+    html {
+        font-size: 1rem;
+    }
 }
-
