@@ -81,7 +81,7 @@ function Chatpage() {
             token: localStorage.getItem('token')
           }
         }
-        const res = await fetch(`${server.URL.productionl}/api/chat/allchats`, config);
+        const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
 
         if (res.status === 401) HandleLogout()
 

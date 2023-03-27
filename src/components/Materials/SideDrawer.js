@@ -55,7 +55,7 @@ function SideDrawer({ isOpen, onClose }) {
                         token: localStorage.getItem('token')
                     }
                 }
-                const res = await fetch(`${server.URL.productionl}/api/user/searchuser?search=${search}`, config)
+                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config)
                 const json = await res.json()
 
                 if (!json.status) HandleLogout()

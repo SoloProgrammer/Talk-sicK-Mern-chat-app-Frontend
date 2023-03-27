@@ -8,6 +8,7 @@ import { ChatState } from '../../Context/ChatProvider'
 import DeleteChat from '../DeleteChat'
 import GroupMembersBox from '../GroupMembersBox'
 import ConfirmBoxModal from './Modals/ConfirmBoxModal'
+import RemoveAvatarConfirmModal from './Modals/RemoveAvatarConfirmModal'
 
 
 function ProfileDrawer({ width, align = "right" }) {
@@ -54,7 +55,7 @@ function ProfileDrawer({ width, align = "right" }) {
                 body: JSON.stringify(detailsToUpdate)
             }
 
-            let res = await fetch(`${server.URL.productionl}/api/user/updateuser`, config);
+            let res = await fetch(`${server.URL.production}/api/user/updateuser`, config);
 
             if (res.status === "401") return HandleLogout();
 
@@ -93,7 +94,7 @@ function ProfileDrawer({ width, align = "right" }) {
                 body: JSON.stringify({ chatId: selectedChat._id, detailsToUpdate })
             }
 
-            let res = await fetch(`${server.URL.productionl}/api/chat/updategroup`, config);
+            let res = await fetch(`${server.URL.production}/api/chat/updategroup`, config);
 
             if (res.status === "401") HandleLogout();
 
@@ -237,7 +238,7 @@ function ProfileDrawer({ width, align = "right" }) {
 
     const [loading, setLoading] = useState(false);
 
-    const handleRemoveAvatar = async (e) => {
+    const handleRemoveProfileAvatar = async (e) => {
         e.stopPropagation()
         setConfirm(false)
         let updateStatus;
@@ -281,29 +282,11 @@ function ProfileDrawer({ width, align = "right" }) {
             background="white">
             <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"} pos="relative" padding={"0 .53rem"} paddingTop="1rem" >
 
+
+                {/* confirmBox modal for Removing profileAvatar */}
                 {
-                    <Box className={`confirmBox center ${!confirm && "translateYFull"}`} transition={".4s"} minWidth={"96%"} pos="absolute" background={"white"} zIndex="21" boxShadow={"0 0 3px rgba(0,0,0,.2)"} padding="1rem 0" borderRadius={".2rem"} top={profile._id === user?._id ? "1.9%" : "1.5%"} >
-                        <Box className='padding-1LR flex' marginBottom={"1rem"} justifyContent="space-between">
-                            <Text fontWeight={"medium"}>
-                                Remove Avatar?
-                            </Text>
-                            <Text fontSize={"1.1rem"} onClick={handleConfirm} transition={".3s"} className="fa-solid fa-xmark" padding={".3rem .5rem"} cursor="pointer" borderRadius=".2rem" _hover={{ bg: "rgba(10, 12, 15, 0.06)" }} />
-                        </Box>
-                        <Text fontSize={".92rem"} fontWeight="normal" letterSpacing={".04rem"} className='padding-1LR' >
-                            Are you sure you want to remove avatar?
-                        </Text>
-                        <Text borderBottom={"1px solid rgb(194, 201, 214)"} margin="1.4rem 0"></Text>
-                        <Box className='padding-1LR flex' justifyContent={"end"} marginTop="-.37rem">
-                            <Box color={"white"} className="flex" gap={".6rem"}>
-                                <Text onClick={handleConfirm} className='padding3T8LR pointer' borderRadius={".2rem"} background={"rgb(209, 214, 224)"} fontWeight="normal" color={"black"} _hover={{ bg: "rgb(197, 201, 211)" }}>
-                                    Cancel
-                                </Text>
-                                <Text onClick={handleRemoveAvatar} className='padding3T8LR pointer' borderRadius={".2rem"} background={"rgb(206, 25, 13)"} fontWeight="medium" _hover={{ bg: "rgb(208, 4, 5)" }}>
-                                    Remove
-                                </Text>
-                            </Box>
-                        </Box>
-                    </Box>
+
+                    <RemoveAvatarConfirmModal handleConfirm={handleConfirm} confirm={confirm} handleRemoveProfileAvatar={handleRemoveProfileAvatar} user={user} profile={profile}/>
                 }
 
                 <Box onClick={() => setProfile(null)} cursor={"pointer"} pos={"absolute"} left=".8rem" top={".8rem"}>
