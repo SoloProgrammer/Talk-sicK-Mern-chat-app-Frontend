@@ -293,8 +293,7 @@ function ProfileDrawer({ width, align = "right" }) {
                     <Tooltip label="Close" placement='bottom'>
                         <Image width="2rem" src="https://cdn-icons-png.flaticon.com/512/2763/2763138.png" />
                     </Tooltip>
-                </Box>
-
+                </Box >
                 {
                     (user?._id === profile?._id || selectedChat?.isGroupchat) &&
                     <Box pos={"absolute"} right='1rem' cursor={"pointer"}>

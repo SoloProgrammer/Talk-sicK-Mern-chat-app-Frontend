@@ -12,6 +12,9 @@ import AvatarBox from './Materials/AvatarBox'
 import ProfileDrawer from './Materials/ProfileDrawer'
 import MessageImageViewBox from './MessageImageViewBox'
 
+var selectedChatCompare;
+var chatMessagesCompare;
+
 function MessageBox({ messages, setMessages }) {
 
   const { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket } = ChatState();
@@ -89,8 +92,10 @@ function MessageBox({ messages, setMessages }) {
   useEffect(() => {
     selectedChat && fetchMessages()
     socket?.emit('join chat', selectedChat?._id)
+    selectedChatCompare = selectedChat
+    chatMessagesCompare = chatMessages
     // eslint-disable-next-line
-  }, [selectedChat?._id])
+  }, [selectedChat?._id, chatMessages])
 
   let avatarBoxs = document.querySelectorAll('.avatarBox');
 
@@ -218,21 +223,32 @@ function MessageBox({ messages, setMessages }) {
 
   useEffect(() => {
 
-    if(user && user._id){
+    if (user && user._id) {
       socket?.on('seen messages', (messages, room) => {
 
         // console.log(user,messages[messages.length - 1].sender,messages[messages.length - 1]);
         let lastMsg = messages[messages.length - 1]
-        if ((selectedChat && selectedChat._id === room) && user._id === lastMsg.sender._id) {
-          
+
+        // console.log(room, selectedChatCompare?._id);
+
+        if ((selectedChatCompare && selectedChatCompare._id === room) && user._id === lastMsg.sender._id) {
           setMessages([...messages]);
-  
-          chatMessages.forEach(chatMsg => {
-            if (chatMsg.chatId === selectedChat?._id) {
-  
-              chatMsg = { chatId: selectedChat?._id, messages: [...messages] }
-  
-              setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat?._id)), chatMsg]) // cm := ChatMessage
+        }
+
+        // console.log(chatMessagesCompare);
+
+        if (user?._id === lastMsg.sender._id) {
+          chatMessagesCompare.forEach(chatMsg => {
+
+            // console.log(lastMsg.chat, chatMsg);
+            
+            if (chatMsg.chatId === lastMsg.chat?._id) {
+
+              chatMsg = { chatId: lastMsg.chat?._id, messages: [...messages] }
+
+              // console.log("...", chatMsg, selectedChatCompare);
+
+              setChatMessages([...(chatMessagesCompare.filter(cm => cm.chatId !== lastMsg.chat?._id)), chatMsg]) // cm := ChatMessage
             }
           })
         }
@@ -384,7 +400,7 @@ function MessageBox({ messages, setMessages }) {
                                   ?
                                   <>
                                     <Box maxW={"35rem"} >
-                                    <Text width={"100%"} backgroundImage={!msgImg && `url(${m.content.img})`} backgroundPosition="center">
+                                      <Text width={"100%"} backgroundImage={!msgImg && `url(${m.content.img})`} backgroundPosition="center">
                                         <Image
                                           opacity={(msgImg && m.content.img === msgImg.img) && 0}
                                           onClick={() => {
