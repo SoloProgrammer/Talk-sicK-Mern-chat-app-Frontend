@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import ChatMenuBox from './Materials/ChatMenuBox'
 import ChatFooter from './ChatFooter'
 import { ChatsSkeleton } from './Materials/Loading'
+import { defaultPic } from '../configs/ImageConfigs'
 
 
 function ChatsBox() {
@@ -142,7 +143,7 @@ function ChatsBox() {
                       _hover={{ base: { bg: "transperent" }, md: { bg: "#2da89f61" } }}
                     >
                       <Box maxWidth={"67px"} >
-                        <Avatar boxShadow={"0 0 0 3px #27aea4"} src={getSender(chat, user)?.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} >
+                        <Avatar boxShadow={"0 0 0 3px #27aea4"} src={getSender(chat, user)?.avatar || defaultPic} >
                           {
                             !(chat.isGroupchat)
                             &&

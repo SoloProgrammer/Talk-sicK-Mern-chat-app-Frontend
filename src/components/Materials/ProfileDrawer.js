@@ -1,10 +1,11 @@
 import { Avatar, Box, Button, Image, Input, Spinner, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useContext } from 'react'
 import { handleFileUpload } from '../../configs/handleFileUpload'
 import { defaultPic, defaultGrpPic, LogoutIcon } from '../../configs/ImageConfigs'
 import { server } from '../../configs/serverURl'
 import { HandleLogout, isAdmin } from '../../configs/userConfigs'
-import { ChatState } from '../../Context/ChatProvider'
+import { ChatContext } from '../../Context/ChatProvider'
+// import { ChatState } from '../../Context/ChatProvider' /// commented this line as we need to use diffrent method to call the context and use in this file..!
 import DeleteChat from '../DeleteChat'
 import GroupMembersBox from '../GroupMembersBox'
 import ConfirmBoxModal from './Modals/ConfirmBoxModal'
@@ -12,7 +13,9 @@ import RemoveAvatarConfirmModal from './Modals/RemoveAvatarConfirmModal'
 
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { getPinnedChats, getUnPinnedChats, handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = ChatState();
+    const { getPinnedChats, getUnPinnedChats, handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = useContext(ChatContext);
+    // The context can be used like the above one also..!
+
 
     // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
 
@@ -259,7 +262,6 @@ function ProfileDrawer({ width, align = "right" }) {
             setConfirm(false)
         }
         else {
-            console.log("iy");
             setConfirm(true);
         }
     }

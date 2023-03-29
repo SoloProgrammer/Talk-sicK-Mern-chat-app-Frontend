@@ -1,5 +1,6 @@
 import { Avatar, AvatarBadge, Box, Text, Tooltip } from '@chakra-ui/react'
 import React from 'react'
+import { defaultPic } from '../configs/ImageConfigs'
 import { isUserOnline } from '../configs/userConfigs'
 
 function UserListItem({ user, handleFunc }) {
@@ -18,7 +19,7 @@ function UserListItem({ user, handleFunc }) {
       width="full"
       alignItems="center">
 
-      <Avatar name={user.name} src={user.avatar} size="sm" >
+      <Avatar src={user.avatar || defaultPic} size="sm" >
         <Tooltip fontSize={".65rem"} label={isUserOnline(user) ? "online" : "offline"} placement="bottom-start">
           <AvatarBadge
             borderWidth="1.8px"

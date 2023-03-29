@@ -5,7 +5,7 @@ import { HandleLogout } from '../configs/userConfigs';
 import io from 'socket.io-client'
 import { useNavigate } from 'react-router-dom';
 
-const ChatContext = createContext();
+export const ChatContext = createContext();
 
 const ChatProvider = ({ children }) => {
 
@@ -52,6 +52,8 @@ const ChatProvider = ({ children }) => {
 
     const [typingUser, setTypingUser] = useState(null) // this is needed inside the groupChat as we need to find who is typing in the whole group! 
 
+    //Socket.io connection with configuration........................................................
+
     useEffect(() => {
         let socketCreated = io(ENDPOINT, { transports: ['websocket', 'polling'] });
         setSocket(socketCreated)
@@ -65,7 +67,6 @@ const ChatProvider = ({ children }) => {
         // eslint-disable-next-line 
     }, [user]);
 
-    //Socket.io connection with configuration........................................................
 
     const [chats, setChats] = useState(null);
 
@@ -85,7 +86,15 @@ const ChatProvider = ({ children }) => {
 
     const [viewArchivedChats, setViewArchivedChats] = useState(false);
 
-    const [notifications, setNotifications] = useState([])
+    const [notifications, setNotifications] = useState([]);
+
+    const getPinnedChats = (chats, u) => {
+        return chats.filter(c => c.pinnedBy.includes(u?._id) && !c.archivedBy.includes(u?._id))
+    }
+
+    const getUnPinnedChats = (chats, u) => {
+        return chats.filter(c => !c.pinnedBy.includes(u?._id) && !c.archivedBy.includes(u?._id))
+    }
 
     const CreateChat = async (userId, userName) => {
 
@@ -129,7 +138,6 @@ const ChatProvider = ({ children }) => {
 
     const handlePinOrUnpinChat = async (chat) => {
 
-
         setTimeout(() => {
             document.body.click()
         }, 250);
@@ -152,7 +160,7 @@ const ChatProvider = ({ children }) => {
 
         (selectedChat && selectedChat._id === chat._id) && setSelectedChat(chats.filter(c => c._id === chat._id)[0]);
 
-        setChats(updatedChats)
+        setChats([...getPinnedChats(updatedChats, user), ...getUnPinnedChats(updatedChats, user)])
 
         try {
             let config = {
@@ -214,12 +222,6 @@ const ChatProvider = ({ children }) => {
 
     }
 
-    const getPinnedChats = (chats, u) => {
-        return chats.filter(c => c.pinnedBy.includes(u?._id) && !c.archivedBy.includes(u?._id))
-    }
-    const getUnPinnedChats = (chats, u) => {
-        return chats.filter(c => !c.pinnedBy.includes(u?._id) && !c.archivedBy.includes(u?._id))
-    }
     const refreshChats = async (u = user) => {
 
         try {
@@ -261,9 +263,9 @@ const ChatProvider = ({ children }) => {
         }
         // this logic will add chat into archived if not present and remove from chats of users
         else {
-            if(chat.pinnedBy.includes(user?._id)){
+            if (chat.pinnedBy.includes(user?._id)) {
                 handlePinOrUnpinChat(chat);
-                chat.pinnedBy = chat.pinnedBy.filter(u => u !== user._id) 
+                chat.pinnedBy = chat.pinnedBy.filter(u => u !== user._id)
             }
             setArchivedChats([...archivedChats, chat]);
             setChats(chats.filter(c => c._id !== chat._id));

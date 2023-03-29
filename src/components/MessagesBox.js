@@ -221,8 +221,10 @@ function MessageBox({ messages, setMessages }) {
     // eslint-disable-next-line
   }, [locaObj, msgImg]);
 
+  // socket on for seen messges!
   useEffect(() => {
 
+    // this sockert is only for the user who send the lastestmesssage in the chat not for the user who seen the latestMessage in that chat!
     if (user && user._id) {
       socket?.on('seen messages', (messages, room) => {
 
