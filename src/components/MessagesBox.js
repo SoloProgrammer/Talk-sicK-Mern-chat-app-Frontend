@@ -243,7 +243,7 @@ function MessageBox({ messages, setMessages }) {
           chatMessagesCompare.forEach(chatMsg => {
 
             // console.log(lastMsg.chat, chatMsg);
-            
+
             if (chatMsg.chatId === lastMsg.chat?._id) {
 
               chatMsg = { chatId: lastMsg.chat?._id, messages: [...messages] }
@@ -278,9 +278,9 @@ function MessageBox({ messages, setMessages }) {
         messagesLoading
           ?
           <Box width={"100%"} height="100%" className='flex'>
-            <Tooltip label="Loading Conversations....." isOpen placement='top'>
-              <Box zIndex={1} padding={"1rem"} borderRadius="full" className='flex' bg={"white"} boxShadow="0 0 0 rgba(0,0,0,.3)">
-                <Spinner color='darkcyan' width={"3rem"} height="3rem" />
+            <Tooltip label="Loading Conversations....." isOpen placement='top' fontSize={".8rem"}>
+              <Box zIndex={1} padding={"1rem"} borderRadius="full" className='flex' bg={"white"} boxShadow="0 0 2px rgba(0,0,0,.6)">
+                <Spinner color='darkcyan' width={{ base: "2.2rem", md: "3rem" }} height={{ base: "2.2rem", md: "3rem" }} />
               </Box>
             </Tooltip>
           </Box>
@@ -288,7 +288,7 @@ function MessageBox({ messages, setMessages }) {
           <Box pos={"relative"} id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".3rem .4rem"} paddingTop=".6rem">
 
             {
-              messages.length > 10 &&
+              messages.length > 12 &&
               <Box position={'sticky'} boxShadow="0 0 3px rgba(0,0,0,.3)" cursor={"pointer"} top="0px" right={"20px"} zIndex="1" padding={".7rem"} background="white" borderRadius={"50%"} w="fit-content">
                 <Image width={"1.1rem"} onClick={() => {
                   if (scrollToTop) {
@@ -323,7 +323,7 @@ function MessageBox({ messages, setMessages }) {
                       {
                         isFirstMsgOfTheDay(m.createdAt, messages, i)
                         &&
-                        <Box margin={i === 0 ? ".5rem 0" : "1rem 0"} marginBottom="1.5rem" pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "2px" : "1.5px"} solid #15dfd0`} width={"100%"}>
+                        <Box margin={i === 0 ? ".5rem 0" : "1rem 0"} marginBottom="1.5rem" pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "1px" : "1px"} solid #27aea4`} width={"100%"}>
                           <Text
                             userSelect={"none"}
                             pos={"absolute"}
@@ -353,13 +353,13 @@ function MessageBox({ messages, setMessages }) {
                           <Box
                             padding={m.content.img ? ".3rem" : ".5rem"}
                             fontSize={"1rem"}
-                            backgroundColor={m.sender._id !== user?._id ? "#56c8c0" : "#ffffdd"}
+                            backgroundColor={m.sender._id !== user?._id ? "#effbff" : "#ffffdd"}
                             key={i} pos="relative"
                             width={"fit-content"}
-                            color={m.sender._id === user?._id ? "black" : "ghostwhite"}
+                            color={m.sender._id === user?._id ? "black" : "black"}
                             minWidth={"3.3rem"}
-                            fontWeight={'medium'}
-                            boxShadow={m.sender._id === user?._id && "0 0 4px rgba(0,0,0,.3)"}
+                            fontWeight={'400'}
+                            boxShadow={m.sender._id === user?._id ? "0px 0px 2px rgba(0,0,0,.3)" : "1px 2px 0px rgba(0,0,0,.15)"}
                             borderTopLeftRadius={(m.sender._id === user?._id || (window.innerWidth > 770 && (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i)))) && ".5rem"}
                             borderTopRightRadius=".5rem"
                             borderBottomLeftRadius={".5rem"}
@@ -382,8 +382,6 @@ function MessageBox({ messages, setMessages }) {
                               &&
                               (m.sender._id === user?._id)
                               && "2.5rem"}
-
-                            textShadow={m.sender._id !== user?._id && "2px 2px 3px rgba(0,0,0,.3)"}
                             paddingBottom="1rem"
                             paddingLeft={m.content?.message?.length === 1 && ".9rem"}
                           >
