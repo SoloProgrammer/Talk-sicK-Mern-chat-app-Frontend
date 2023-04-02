@@ -20,6 +20,27 @@ export const seenCheckMark = "https://cdn-icons-png.flaticon.com/512/3550/355011
 
 export const unSeenCheckMark = "https://cdn-icons-png.flaticon.com/512/5410/5410422.png"
 
+export const BrandImg = "https://cdn-icons-png.flaticon.com/512/3845/3845696.png"
+
+export const archiveImg = "https://cdn-icons-png.flaticon.com/512/8138/8138776.png"
+
+export const unArchiveImg = "https://cdn-icons-png.flaticon.com/512/5774/5774826.png"
+
+export const downArrowCyan = "https://cdn-icons-png.flaticon.com/512/137/137519.png"
+
+export const leaveGrpImg = "https://cdn-icons-png.flaticon.com/512/8914/8914318.png"
+
+export const trashCanIcon = "https://cdn-icons-png.flaticon.com/512/5165/5165608.png"
+
+export const pinFilledIcon = "https://cdn-icons-png.flaticon.com/512/1274/1274749.png"
+
+export const pinOutlineIcon = "https://cdn-icons-png.flaticon.com/512/1274/1274786.png"
+
+export const bellDividedIcon = "https://cdn-icons-png.flaticon.com/512/4175/4175297.png"
+
+export const bellIcon = "https://cdn-icons-png.flaticon.com/512/3239/3239952.png"
+
+
 export let zoomCount = 0.5
 
 window.addEventListener('click', () => {

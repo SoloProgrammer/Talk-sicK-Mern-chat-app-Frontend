@@ -279,7 +279,7 @@ function MessageBox({ messages, setMessages }) {
           ?
           <Box width={"100%"} height="100%" className='flex'>
             <Tooltip label="Loading Conversations....." isOpen placement='top' fontSize={".8rem"}>
-              <Box zIndex={1} padding={"1rem"} borderRadius="full" className='flex' bg={"white"} boxShadow="0 0 2px rgba(0,0,0,.6)">
+              <Box zIndex={1} padding={"1rem"} borderRadius="full" className='flex' bg={"white"} boxShadow="0 0 2px rgba(0,0,0,.4)">
                 <Spinner color='darkcyan' width={{ base: "2.2rem", md: "3rem" }} height={{ base: "2.2rem", md: "3rem" }} />
               </Box>
             </Tooltip>

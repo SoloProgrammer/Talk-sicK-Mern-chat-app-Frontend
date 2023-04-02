@@ -1,26 +1,37 @@
 import { Box, Image, useDisclosure } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { server } from '../../configs/serverURl';
 import { HandleLogout } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
 import ConfirmBoxModal from './Modals/ConfirmBoxModal';
+import { archiveImg, downArrowCyan, unArchiveImg, leaveGrpImg, trashCanIcon, pinFilledIcon, pinOutlineIcon, bellIcon, bellDividedIcon } from '../../configs/ImageConfigs';
 
 function ChatMenuBox({ chat, i }) {
 
     let { getPinnedChats, getUnPinnedChats, handleLeaveGrp, handleDeleteChat, user, setChats, showToast, handlePinOrUnpinChat, hanldeArchiveChatAction, archivedChats, chats } = ChatState();
 
-    const handleChatMenuIconClick = (e, i) => {
-        e.stopPropagation();
+    let elms = document.querySelectorAll('.chat_menu');
 
-        let elms = document.querySelectorAll('.chat_menu');
-        let elm = document.getElementById(`chatmenu${i}`);
-
+    function hideChatMenuBoxs() {
         elms.forEach(item => {
             item.classList.remove('menu_open')
         })
+    }
+
+    const handleChatMenuIconClick = (e, i) => {
+        e.stopPropagation();
+
+        let elm = document.getElementById(`chatmenu${i}`);
+
+        hideChatMenuBoxs();
 
         elm.classList.add('menu_open')
     }
+
+    useEffect(() => {
+        hideChatMenuBoxs();
+        // eslint-disable-next-line
+    }, [window.location.href])
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -77,7 +88,7 @@ function ChatMenuBox({ chat, i }) {
     return (
         <>
             <Box id={`chatMenuIcon${i}`} className='chatMenuIcon arrowIcon' pos={"absolute"} right="6px" bottom={"4px"} cursor="pointer" onClick={(e) => handleChatMenuIconClick(e, i)}>
-                <Image width={"1rem"} src='https://cdn-icons-png.flaticon.com/512/137/137519.png' />
+                <Image width={"1rem"} src={downArrowCyan} />
                 <Box pos={"relative"}>
                     <Box id={`chatmenu${i}`} className='chat_menu flex' flexDir={"column"} width={"10.8rem"}>
 
@@ -97,7 +108,7 @@ function ChatMenuBox({ chat, i }) {
                                 onClick={onOpen}
                                 className='flex'>
                                 {!chat.isGroupchat ? "Delete Chat" : "Leave group"}
-                                <Image width="1.1rem" src={`${chat.isGroupchat ? "https://cdn-icons-png.flaticon.com/512/8914/8914318.png" : "https://cdn-icons-png.flaticon.com/512/5165/5165608.png"}`} />
+                                <Image width="1.1rem" src={`${chat.isGroupchat ? leaveGrpImg : trashCanIcon}`} />
                             </span>
                         </ConfirmBoxModal>
 
@@ -106,7 +117,7 @@ function ChatMenuBox({ chat, i }) {
                             e.stopPropagation();
                         }}>
                             {chat.pinnedBy?.includes(user?._id) ? "Unpin Chat" : "Pin Chat"}
-                            <Image width="1.1rem" src={`${chat.pinnedBy?.includes(user?._id) ? "https://cdn-icons-png.flaticon.com/512/1274/1274749.png" : "https://cdn-icons-png.flaticon.com/512/1274/1274786.png"}`} />
+                            <Image width="1.1rem" src={`${chat.pinnedBy?.includes(user?._id) ? pinFilledIcon : pinOutlineIcon}`} />
                         </span>}
 
                         <span className='flex' onClick={(e) => {
@@ -117,16 +128,16 @@ function ChatMenuBox({ chat, i }) {
 
                             {archivedChats.map(c => c._id).includes(chat._id)
                                 ?
-                                <Image src='https://cdn-icons-png.flaticon.com/512/5774/5774826.png' width="1rem" />
+                                <Image src={unArchiveImg} width="1rem" />
                                 :
-                                <Image width="1.1rem" src='https://cdn-icons-png.flaticon.com/512/8138/8138776.png' />}
+                                <Image width="1.1rem" src={archiveImg} />}
                         </span>
 
                         {!archivedChats.map(c => c._id).includes(chat._id)
                             &&
                             <span onClick={() => handleNotificationAction(chat)} className='flex'>
                                 {chat.mutedNotificationBy?.includes(user?._id) ? 'Unmute notification' : "Mute notification"}
-                                <Image width={`${chat.mutedNotificationBy?.includes(user?._id) ? "1.16rem" : "1.08rem"}`} src={`${chat.mutedNotificationBy?.includes(user?._id) ? "https://cdn-icons-png.flaticon.com/512/4175/4175297.png" : "https://cdn-icons-png.flaticon.com/512/3239/3239952.png"} `} />
+                                <Image width={`${chat.mutedNotificationBy?.includes(user?._id) ? "1.16rem" : "1.08rem"}`} src={`${chat.mutedNotificationBy?.includes(user?._id) ? bellDividedIcon : bellIcon} `} />
                             </span>}
                     </Box>
                 </Box>

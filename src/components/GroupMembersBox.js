@@ -80,7 +80,7 @@ function GroupMembersBox() {
             <Box className='flex' justifyContent={"space-between"} marginBottom=".5rem">
                 <Text fontSize={{ base: "1.2rem", md: "1.4rem" }} fontWeight="hairline" color="slategrey">Group members</Text>
                 {
-                    isAdmin()
+                    isAdmin(selectedChat,user)
                     &&
                     <PopupModal isOpen={isOpen} onClose={onClose} addMember={true} handleFunc={hanldeAddmember} addmemberLoading={loading}>
                         <Box

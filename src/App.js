@@ -3,12 +3,14 @@ import './App.css';
 import Chatpage from './pages/Chatpage';
 import Homepage from './pages/Homepage';
 import './components/componentCSS.css'
+import Alert from './components/Alert/Alert';
 
 function App() {
 
   return (
     <>
       <div className="App">
+        <Alert />
         <Routes>
           <Route exact path='/' element={<Homepage />} />
           <Route exact path='/chats' element={<Chatpage />} />

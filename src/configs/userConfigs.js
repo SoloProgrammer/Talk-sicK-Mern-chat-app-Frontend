@@ -13,9 +13,8 @@ export const isUserOnline = (User) => {
     return onlineUsers.map(u => u.userId).includes(User._id)
 }
 
-export const isAdmin = () => {
-    const { selectedChat, user } = ChatState()
-    return selectedChat?.groupAdmin.map(u => u._id).includes(user._id)
+export const isAdmin = (chat, user) => {
+    return chat?.groupAdmin.map(u => u._id).includes(user._id)
 }
 
 export const GroupMembers = ({ selectedChat }) => {

@@ -1,5 +1,5 @@
 import { Avatar, Box, Button, Image, Input, Spinner, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
-import React, { useState, useEffect,useContext } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { handleFileUpload } from '../../configs/handleFileUpload'
 import { defaultPic, defaultGrpPic, LogoutIcon } from '../../configs/ImageConfigs'
 import { server } from '../../configs/serverURl'
@@ -13,7 +13,7 @@ import RemoveAvatarConfirmModal from './Modals/RemoveAvatarConfirmModal'
 
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { getPinnedChats, getUnPinnedChats, handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat } = useContext(ChatContext);
+    const { getPinnedChats, getUnPinnedChats, handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat, setAlertInfo } = useContext(ChatContext);
     // The context can be used like the above one also..!
 
 
@@ -119,13 +119,15 @@ function ProfileDrawer({ width, align = "right" }) {
             setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
             showToast("Success", json.message, "success", 3000)
 
+            setIsEdit(false)
             return true
-
+            
         } catch (error) {
+            setIsEdit(false)
             setSaved(true);
-            showToast("Error", error.message, "error", 3000)
+            showToast("Error", error.message, "error", 3000);
+            return false
         }
-        setIsEdit(false)
     }
 
     const HandleDetailSave = () => {
@@ -189,11 +191,21 @@ function ProfileDrawer({ width, align = "right" }) {
     }
 
     useEffect(() => {
-        !isedit && allInpts.forEach(inpt => inpt.classList.remove('active'))
+        !isedit && allInpts.forEach(inpt => inpt.classList.remove('active'));
         // eslint-disable-next-line
     }, [isedit]);
 
+    function showAlert() {
+        setAlertInfo({ active: true })
+        setTimeout(() => {
+            setAlertInfo({ active: false })
+        }, 3000);
+    }
     const handleSetEdit = () => {
+        if (selectedChat.isGroupchat && !isAdmin(selectedChat, user)) {
+            showAlert()
+            return
+        }
         setIsEdit(true)
         setTimeout(() => {
             document.querySelector('.nameInpt')?.focus()
@@ -219,7 +231,6 @@ function ProfileDrawer({ width, align = "right" }) {
     const [avatarLoading, setAvatarLoading] = useState(false);
 
     const handleProfileAvatarChange = async (e) => {
-
         setSaved(false)
 
         let avatar = await handleFileUpload(e, setAvatarLoading, showToast);
@@ -282,13 +293,14 @@ function ProfileDrawer({ width, align = "right" }) {
             paddingBottom={profile._id === user?._id ? "1rem" : "3rem"}
             boxShadow={"0 0 4px rgb(0 0 0 / 30%)"}
             background="white">
+
             <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"} pos="relative" padding={"0 .53rem"} paddingTop="1rem" >
 
 
                 {/* confirmBox modal for Removing profileAvatar */}
                 {
 
-                    <RemoveAvatarConfirmModal handleConfirm={handleConfirm} confirm={confirm} handleRemoveProfileAvatar={handleRemoveProfileAvatar} user={user} profile={profile}/>
+                    <RemoveAvatarConfirmModal handleConfirm={handleConfirm} confirm={confirm} handleRemoveProfileAvatar={handleRemoveProfileAvatar} user={user} profile={profile} />
                 }
 
                 <Box onClick={() => setProfile(null)} cursor={"pointer"} pos={"absolute"} left=".8rem" top={".8rem"}>
@@ -324,7 +336,7 @@ function ProfileDrawer({ width, align = "right" }) {
                             <Avatar onMouseEnter={() => setOnHover(true)} onMouseLeave={() => setOnHover(false)} cursor={"pointer"} src={profile?.avatar || defaultPic} width="11rem" height={"11rem"} position="relative" >
                                 {
                                     (
-                                        (profile._id === user?._id || (selectedChat?.isGroupchat && isAdmin()))
+                                        (profile._id === user?._id || (selectedChat?.isGroupchat && isAdmin(selectedChat, user)))
                                         &&
                                         (profile.avatar !== defaultPic && profile.avatar !== defaultGrpPic)
                                     )
@@ -345,8 +357,14 @@ function ProfileDrawer({ width, align = "right" }) {
                                     (profile?._id === user?._id || selectedChat?.isGroupchat) && saved
                                     &&
                                     <>
-                                        {onHover && !avatarLoading && <Input onChange={handleProfileAvatarChange} type="file" name="avatar" id="profileAvatarOnchange" display="none" />}
-                                        <Box display={onHover || isedit ? "flex" : "none"} background={"blackAlpha.500"} borderRadius={"50%"} width={"100%"} height="100%" pos={'absolute'} top="0" left={"0"} className="flex">
+                                        {onHover && !avatarLoading && <Input onChange={handleProfileAvatarChange} type="file" name="avatar" id={`${selectedChat.isGroupchat && isAdmin(selectedChat, user) && 'profileAvatarOnchange'}`} display="none" />}
+                                        <Box display={onHover || isedit ? "flex" : "none"} background={"blackAlpha.500"} borderRadius={"50%"} width={"100%"} height="100%" pos={'absolute'} top="0" left={"0"} className="flex"
+                                            onClick={() => {
+                                                if (selectedChat.isGroupchat && !isAdmin(selectedChat, user)) {
+                                                    showAlert()
+                                                }
+                                            }}
+                                        >
                                             {
                                                 avatarLoading
                                                     ?
