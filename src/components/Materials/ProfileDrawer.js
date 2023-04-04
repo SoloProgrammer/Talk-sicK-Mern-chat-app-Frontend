@@ -121,7 +121,7 @@ function ProfileDrawer({ width, align = "right" }) {
 
             setIsEdit(false)
             return true
-            
+
         } catch (error) {
             setIsEdit(false)
             setSaved(true);
@@ -202,7 +202,7 @@ function ProfileDrawer({ width, align = "right" }) {
         }, 3000);
     }
     const handleSetEdit = () => {
-        if (selectedChat.isGroupchat && !isAdmin(selectedChat, user)) {
+        if (profile?.isGrpProfile && !isAdmin(selectedChat, user)) {
             showAlert()
             return
         }
@@ -336,7 +336,7 @@ function ProfileDrawer({ width, align = "right" }) {
                             <Avatar onMouseEnter={() => setOnHover(true)} onMouseLeave={() => setOnHover(false)} cursor={"pointer"} src={profile?.avatar || defaultPic} width="11rem" height={"11rem"} position="relative" >
                                 {
                                     (
-                                        (profile._id === user?._id || (selectedChat?.isGroupchat && isAdmin(selectedChat, user)))
+                                        (profile._id === user?._id || (profile?.isGrpProfile && isAdmin(selectedChat, user)))
                                         &&
                                         (profile.avatar !== defaultPic && profile.avatar !== defaultGrpPic)
                                     )
@@ -357,10 +357,11 @@ function ProfileDrawer({ width, align = "right" }) {
                                     (profile?._id === user?._id || selectedChat?.isGroupchat) && saved
                                     &&
                                     <>
-                                        {onHover && !avatarLoading && <Input onChange={handleProfileAvatarChange} type="file" name="avatar" id={`${selectedChat.isGroupchat && isAdmin(selectedChat, user) && 'profileAvatarOnchange'}`} display="none" />}
+                                        {onHover && !avatarLoading && <Input onChange={handleProfileAvatarChange} type="file" name="avatar"
+                                            id={`${(!profile?.isGrpProfile || (profile?.isGrpProfile && isAdmin(selectedChat, user))) && 'profileAvatarOnchange'}`} display="none" />}
                                         <Box display={onHover || isedit ? "flex" : "none"} background={"blackAlpha.500"} borderRadius={"50%"} width={"100%"} height="100%" pos={'absolute'} top="0" left={"0"} className="flex"
                                             onClick={() => {
-                                                if (selectedChat.isGroupchat && !isAdmin(selectedChat, user)) {
+                                                if (profile?.isGrpProfile && !isAdmin(selectedChat, user)) {
                                                     showAlert()
                                                 }
                                             }}

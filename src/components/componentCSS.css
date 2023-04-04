@@ -310,7 +310,7 @@ textarea {
 
 @media (max-width:770px) {
     .GroupUsersBox::-webkit-scrollbar {
-        width: .3rem;
+        display: none;
         background: transparent;
     }
 

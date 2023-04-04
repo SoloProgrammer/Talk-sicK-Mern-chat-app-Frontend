@@ -22,7 +22,7 @@ function Alert() {
               <Image width="1.2rem" src={BrandImg}/>
           </Box>
           <Box fontSize={".85rem"} letterSpacing={".03rem"}>
-            Only admins can update the group info!
+            Only admins can Edit the group info!
           </Box>
       </Box>
     </Box>
