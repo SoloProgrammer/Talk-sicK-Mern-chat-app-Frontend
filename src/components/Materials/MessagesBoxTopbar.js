@@ -3,6 +3,7 @@ import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { getSender, GroupMembers, isUserOnline } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
+import { defaultPic } from '../../configs/ImageConfigs';
 
 function MessagesBoxTopbar() {
 
@@ -36,7 +37,7 @@ function MessagesBoxTopbar() {
                 padding="0 .9rem">
 
                 <Box display={"flex"} color="white" gap="1rem" className='msgleftTop' alignItems={"center"}>
-                    <Avatar cursor={"pointer"} onClick={() => setProfile(sender)} boxShadow={"0 0 0 2px #fff"} src={sender?.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} />
+                    <Avatar cursor={"pointer"} onClick={() => setProfile(sender)} boxShadow={"0 0 0 2px #fff"} src={sender?.avatar || defaultPic} />
                     <Text fontSize={{ base: "1.3rem", md: "1.4rem" }} fontWeight="normal">
                         {
                             sender?.name

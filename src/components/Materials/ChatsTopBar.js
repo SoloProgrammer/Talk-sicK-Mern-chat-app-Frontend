@@ -95,7 +95,7 @@ function ChatsTopBar() {
             <Box padding={".3rem"} borderBottom="2px solid darkcyan" background={"aliceblue"} pos="relative" zIndex={1}>
                 {
                     archivedChats.length > 0 &&
-                    <Box position={'absolute'} left="0" marginLeft={".4rem"} marginTop=".08rem" cursor={"pointer"}>
+                    <Box position={'absolute'} left="0" marginLeft={".4rem"} marginTop={!viewArchivedChats && ".08rem"} cursor={"pointer"}>
                         {
                             !viewArchivedChats
                                 ?

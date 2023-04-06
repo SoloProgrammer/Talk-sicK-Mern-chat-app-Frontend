@@ -55,7 +55,7 @@ export const UserChip = ({ user, handleFunc }) => {
             minW={"fit-content !important"}
             alignItems={"center"}>
 
-            <Avatar size="xs" src={user.avatar || "https://res.cloudinary.com/dvzjzf36i/image/upload/v1674153497/cudidy3gsv1e5zztsq38.png"} />
+            <Avatar size="xs" src={user.avatar || defaultPic} />
 
             <Text fontWeight={"medium"} fontSize=".9rem">{user.name}</Text>
 
