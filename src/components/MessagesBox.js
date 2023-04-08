@@ -390,7 +390,10 @@ function MessageBox({ messages, setMessages }) {
                               !m.content.img
                               &&
                               selectedChat?.isGroupchat && m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id) &&
-                              <Text fontSize={".7rem"} fontWeight="normal">
+                              <Text fontSize={".7rem"} fontWeight="normal" 
+                              _hover={{"textDecoration":"underline"}}
+                              cursor={"pointer"}
+                               onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}>
                                 {m.sender.name.split(" ")[0]}
                               </Text>
                             }
@@ -428,7 +431,7 @@ function MessageBox({ messages, setMessages }) {
                               {getMsgTime(m.createdAt)}
                               {
                                 m.sender._id === user?._id
-                                && <Image src={m.seenBy.length !== selectedChat.users.length ? unSeenCheckMark : seenCheckMark} opacity={m.seenBy.length !== selectedChat.users.length && ".6"} width=".95rem" display="inline-block" />
+                                && <Image src={m.seenBy.length !== selectedChat.users.length ? unSeenCheckMark : seenCheckMark} opacity={m.seenBy.length !== selectedChat.users.length && ".5"} width=".95rem" display="inline-block" />
                               }
                             </Text>
 

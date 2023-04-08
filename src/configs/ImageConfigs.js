@@ -18,7 +18,7 @@ export const LogoutIcon = "https://cdn-icons-png.flaticon.com/512/4034/4034229.p
 
 export const seenCheckMark = "https://cdn-icons-png.flaticon.com/512/3550/3550119.png"
 
-export const unSeenCheckMark = "https://cdn-icons-png.flaticon.com/512/5410/5410422.png"
+export const unSeenCheckMark = "https://cdn-icons-png.flaticon.com/512/3549/3549654.png"
 
 export const BrandImg = "https://cdn-icons-png.flaticon.com/512/3845/3845696.png"
 

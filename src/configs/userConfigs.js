@@ -10,7 +10,7 @@ export const getSender = (chat, user) => {
 
 export const isUserOnline = (User) => {
     const { onlineUsers } = ChatState()
-    return onlineUsers.map(u => u.userId).includes(User._id)
+    return onlineUsers.map(u => u.userId).includes(User?._id)
 }
 
 export const isAdmin = (chat, user) => {

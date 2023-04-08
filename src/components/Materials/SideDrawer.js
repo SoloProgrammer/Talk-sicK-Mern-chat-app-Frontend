@@ -25,7 +25,7 @@ function SideDrawer({ isOpen, onClose }) {
 
     const { showToast, setProfile, chats, CreateChat, archivedChats } = ChatState();
 
-    const [search, setSearch] = useState("")
+    const [keyword, setKeyword] = useState("")
     const [loading, setLoading] = useState(false)
     const [results, setResults] = useState(null);
 
@@ -33,11 +33,11 @@ function SideDrawer({ isOpen, onClose }) {
 
     const handleOnchange = (e) => {
         setResults(null)
-        setSearch(e.target.value);
+        setKeyword(e.target.value);
     }
     useEffect(() => {
-        setResults(null)
-        setSearch("");
+        setResults(null);
+        setKeyword("");
 
         setTimeout(() => {
             isOpen && document.querySelector('.SearchInput')?.focus()
@@ -46,7 +46,7 @@ function SideDrawer({ isOpen, onClose }) {
 
     const handleSearch = async (e) => {
         if (e.key === "Enter" || e.target.type === "button") {
-            if (search === "") return showToast("*Required", "Please Enter Something to Search", "error", 3000, "top-left");
+            if (keyword === "") return showToast("*Required", "Please Enter Something to Search", "error", 3000, "top-left");
 
             try {
                 setLoading(true)
@@ -55,16 +55,16 @@ function SideDrawer({ isOpen, onClose }) {
                         token: localStorage.getItem('token')
                     }
                 }
-                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config)
+                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${keyword}`, config)
                 const json = await res.json()
 
                 if (!json.status) HandleLogout()
 
                 setResults(json.searchResults)
-                setLoading(false)
             } catch (error) {
                 showToast("Error", error.message, "error", 3000)
             }
+            setLoading(false)
         }
     }
 
@@ -115,7 +115,7 @@ function SideDrawer({ isOpen, onClose }) {
                     <DrawerBody>
                         <Box >
                             <FormControl width={"full"} display="flex" justifyContent={"space-between"} alignItems="center" gap={".5rem"} onKeyDown={handleSearch}>
-                                <Input className='SearchInput' value={search} onChange={handleOnchange} variant={"filled"} placeholder='Search with Email or Name' />
+                                <Input className='SearchInput' value={keyword} onChange={handleOnchange} variant={"filled"} placeholder='Search with Email or Name' />
                                 <Button onClick={handleSearch}>
                                     <SearchIcon fontSize={"2lg"} m={1} />
                                 </Button>

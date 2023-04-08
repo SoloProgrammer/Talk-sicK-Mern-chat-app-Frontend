@@ -41,7 +41,7 @@ function Login({ value, inputValues, setInputValues }) {
     
         try {
           setLoading(true)
-          let avatar = pic ? pic : ""
+          let avatar = pic ? pic : defaultPic
           let payload = value === "login" ? JSON.stringify({ email, password }) : JSON.stringify({ name, email, password, avatar })
           const config = {
             method: "POST",

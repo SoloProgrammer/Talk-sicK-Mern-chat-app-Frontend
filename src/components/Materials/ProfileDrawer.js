@@ -397,7 +397,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                             maxLength="30"
                                         />
                                         :
-                                        <Text>
+                                        <Text textAlign={"center"}>
                                             {profileDetail.name}
                                         </Text>
                                 }

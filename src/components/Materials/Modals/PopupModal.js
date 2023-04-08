@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
     Modal,
     ModalOverlay,
@@ -32,34 +32,37 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
     const [searchResults, setSearchResults] = useState(null)
     const [groupName, setGroupName] = useState("")
 
-    const [search, setSearch] = useState("")
+    const [keyword, setKeyword] = useState("")
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate()
 
     const HandleSearch = (e) => {
-        setSearch(e.target.value);
+        setKeyword(e.target.value);
         setLoading(true);
     }
 
+    const inptRef = useRef()
     const SearchUsers = async () => {
-        if (search.length > 0) {
+        if (keyword.length > 0) {
             try {
                 let config = {
                     headers: {
                         token: localStorage.getItem('token')
                     }
                 }
-                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${search}`, config);
+                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${keyword}`, config);
                 const json = await res.json();
 
                 // let result = result1.filter(o1 => !result2.some(o2 => o1.id === o2.id));
 
-                if (addMember) {
-                    setSearchResults(json?.searchResults?.filter(u => !selectedChat?.users.some(U => U._id === u._id)).slice(0, 4))
-                }
-                else {
-                    setSearchResults(json?.searchResults.slice(0, 4))
+                if(inptRef.current.value.length){
+                    if (addMember) {
+                        setSearchResults(json?.searchResults?.filter(u => !selectedChat?.users.some(U => U._id === u._id)).slice(0, 4))
+                    }
+                    else {
+                        setSearchResults(json?.searchResults.slice(0, 4))
+                    }
                 }
 
             } catch (error) {
@@ -78,15 +81,15 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
         }, 200);
 
         // cleapUp function needed to 300ms delay in search.... 
-        return () => { clearTimeout(searchDelay) }
+        return () => clearTimeout(searchDelay)
 
         // eslint-disable-next-line
-    }, [search])
+    }, [keyword])
 
     useEffect(() => {
         setSearchResults(null)
         setSelectedUsers([])
-        setSearch("")
+        setKeyword("")
         setPic(null)
         setGroupName("")
 
@@ -208,7 +211,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                                 <Image width={"1.8rem"} src='https://cdn-icons-png.flaticon.com/512/1531/1531117.png' />
                                 <Text fontWeight={'medium'} fontSize="lg">Search Member</Text>
                             </Box>
-                            <Input value={search} onChange={HandleSearch} variant='flushed' placeholder='Type Name or Email.....' />
+                            <Input ref={inptRef} value={keyword} onChange={HandleSearch} variant='flushed' placeholder='Type Name or Email.....' />
                         </Box>
 
                     </ModalBody>

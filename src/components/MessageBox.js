@@ -142,7 +142,7 @@ function MessagesBox() {
 
         // console.log("outside",chatMessages);
 
-        chatMessagesCompare.map(cmp => {
+        chatMessagesCompare.forEach(cmp => {
 
           // console.log("inside map", selectedChatCompare._id,cmp.chatId);
 
@@ -154,7 +154,6 @@ function MessagesBox() {
 
             setChatMessages([...(chatMessagesCompare.filter(chm => chm.chatId !== selectedChatCompare._id)), chatWithNewMsgs])
           }
-          return 1
         })
       }
     };

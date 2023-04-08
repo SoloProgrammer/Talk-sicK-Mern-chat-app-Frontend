@@ -40,7 +40,7 @@ function MessagesBoxTopbar() {
                     <Avatar cursor={"pointer"} onClick={() => setProfile(sender)} boxShadow={"0 0 0 2px #fff"} src={sender?.avatar || defaultPic} />
                     <Text fontSize={{ base: "1.3rem", md: "1.4rem" }} fontWeight="normal">
                         {
-                            sender?.name
+                            (window.innerWidth < 770 && sender?.name.length > 16) ? sender?.name.slice(0,15) + "..." : sender?.name 
                         }
                     </Text>
                     {selectedChat?.pinnedBy.includes(user?._id)
