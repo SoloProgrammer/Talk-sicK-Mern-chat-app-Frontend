@@ -53,7 +53,7 @@ function AvatarBox({ m, startaChat, setIsHoverDisable, i, avatarBoxLoading }) {
                                 </Box>
                             </Box>
                             <Box display={"flex"} margin="1.5rem 0 .5rem 0" justifyContent={"end"}>
-                                <Text boxShadow={{ base: "0px 2px 3px rgba(0,0,0,.2)", md: "none" }} transition={".3s ease-in-out"} background={"rgb(241,243,244)"} marginBottom=".2rem" padding=".3rem 1rem" fontSize={".94rem"} _hover={{ boxShadow: "0px 2px 3px rgba(0,0,0,.2)" }}
+                                <Text boxShadow={{ base: "0px 1px 2px rgba(0,0,0,.3)", md: "none" }} transition={".3s ease-in-out"} background={"rgb(241,243,244)"} marginBottom=".2rem" padding=".3rem 1rem" fontSize={".94rem"} _hover={{ boxShadow: "0px 2px 3px rgba(0,0,0,.2)" }}
                                     cursor="pointer"
                                     onClick={() => startaChat(m.sender._id === user?._id ? user : m.sender)}
                                     borderRadius=".2rem"

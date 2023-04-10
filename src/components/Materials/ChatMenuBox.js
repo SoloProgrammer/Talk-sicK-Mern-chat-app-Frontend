@@ -14,7 +14,8 @@ function ChatMenuBox({ chat, i }) {
 
     function hideChatMenuBoxs() {
         elms.forEach(item => {
-            item.classList.remove('menu_open')
+            item.classList.remove('menu_open');
+            item.classList.remove('menu_adjustY');
         })
     }
 
@@ -25,7 +26,7 @@ function ChatMenuBox({ chat, i }) {
 
         hideChatMenuBoxs();
 
-        elm.classList.add('menu_open')
+        elm.classList.add('menu_open');
     }
 
     useEffect(() => {
@@ -87,10 +88,20 @@ function ChatMenuBox({ chat, i }) {
 
     return (
         <>
-            <Box id={`chatMenuIcon${i}`} className='chatMenuIcon arrowIcon' pos={"absolute"} right="6px" bottom={"4px"} cursor="pointer" onClick={(e) => handleChatMenuIconClick(e, i)}>
+            <Box id={`chatMenuIcon${i}`} className={`chatMenuIcon arrowIcon `} pos={"absolute"} right="6px" bottom={"4px"} cursor="pointer" onClick={(e) => handleChatMenuIconClick(e, i)}>
                 <Image width={"1rem"} src={downArrowCyan} />
                 <Box pos={"relative"}>
-                    <Box id={`chatmenu${i}`} className='chat_menu flex' flexDir={"column"} width={"10.8rem"}>
+                    <Box id={`chatmenu${i}`}
+
+                        className={`chat_menu flex 
+                           ${(
+                                (chats.length > 7 && (i === chats.length - 1 || i === chats.length - 2))
+                                ||
+                                (chats.length > 6 && (i === chats.length - 1))
+
+                            ) && "chat_menu_top10"}`}
+
+                        flexDir={"column"} width={"10.8rem"}>
 
                         <ConfirmBoxModal
                             handleFunc={() => chat.isGroupchat ? handleLeaveGrp(chat, onClose, setLoading) : handleDeleteChat(chat, onClose, setLoading)}

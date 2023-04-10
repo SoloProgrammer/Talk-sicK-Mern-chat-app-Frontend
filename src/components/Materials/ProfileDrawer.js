@@ -379,10 +379,10 @@ function ProfileDrawer({ width, align = "right" }) {
                                 }
                             </Avatar>
                         </label>
-                        <Box fontSize={"2xl"} color="gray.500" fontWeight="semibold" pos={"relative"} width="full" className='flex' marginTop={".5rem"}>
+                        <Box fontSize={"2xl"} color="gray.500" fontWeight="semibold" pos={"relative"} width="full" className='flex' marginTop={".5rem"}  alignItems={"flex-start"}>
 
                             {/* Profile name */}
-                            <Box className='InptBox flex nameInptBox' gap={".5rem"} >
+                            <Box className='InptBox flex nameInptBox' gap={".5rem"}>
                                 {
                                     isedit
                                         ?
@@ -407,12 +407,12 @@ function ProfileDrawer({ width, align = "right" }) {
                             {
                                 (profile.about) && (onlineUsers.map(U => U.userId).includes(profile._id)
                                     ?
-                                    <Text userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#29b764"} letterSpacing=".01rem" background="#effbf4">
+                                    <Text marginTop={".5rem"} userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#29b764"} letterSpacing=".01rem" background="#effbf4">
                                         online
                                     </Text>
 
                                     :
-                                    <Text userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#3e4240"} letterSpacing=".01rem" background="rgb(241, 243, 244)">
+                                    <Text marginTop={".5rem"} userSelect={"none"} fontSize={".7rem"} marginLeft=".5rem" borderRadius={".2rem"} padding=".1rem .4rem" paddingTop={".22rem"} display={"inline-block"} color={"#3e4240"} letterSpacing=".01rem" background="rgb(241, 243, 244)">
                                         offline
                                     </Text>)
                             }

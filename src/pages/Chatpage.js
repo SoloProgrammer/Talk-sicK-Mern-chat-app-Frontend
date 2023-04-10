@@ -125,7 +125,7 @@ function Chatpage() {
   let elms = document.querySelectorAll('.chat_menu');
   document.addEventListener('click', () => {
     elms.forEach(item => {
-      item.classList.remove('menu_open')
+      item.classList.remove('menu_open');
     })
   })
 

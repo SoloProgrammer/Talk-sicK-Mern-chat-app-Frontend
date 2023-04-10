@@ -38,7 +38,7 @@ function MessagesBoxTopbar() {
 
                 <Box display={"flex"} color="white" gap="1rem" className='msgleftTop' alignItems={"center"}>
                     <Avatar cursor={"pointer"} onClick={() => setProfile(sender)} boxShadow={"0 0 0 2px #fff"} src={sender?.avatar || defaultPic} />
-                    <Text fontSize={{ base: "1.3rem", md: "1.4rem" }} fontWeight="normal">
+                    <Text fontSize={{ base: "1.3rem", md: "1.4rem" }} fontWeight="normal" onClick={() => setProfile(sender)} cursor={"pointer"}>
                         {
                             (window.innerWidth < 770 && sender?.name.length > 16) ? sender?.name.slice(0,15) + "..." : sender?.name 
                         }

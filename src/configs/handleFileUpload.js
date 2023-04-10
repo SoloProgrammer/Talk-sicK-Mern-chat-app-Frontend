@@ -8,7 +8,7 @@ export const handleFileUpload = async (e, setLoading, showToast) => {
     if (pics.type === 'image/jpeg' || pics.type === 'image/png' || pics.type === 'image/jpg' || pics.type === 'image/gif') {
 
         if (Math.round(pics.size / 1024) < 5120) {
-            setLoading(true)
+            setLoading(true);
             const data = new FormData();
             data.append('file', pics);
             data.append('upload_preset', "Talk-o-Meter");
@@ -23,7 +23,6 @@ export const handleFileUpload = async (e, setLoading, showToast) => {
                 let res = await fetch(CLOUDINARY_URL, config)
                 let json = await res.json();
                 setLoading(false);
-
                 return json.url.toString();
 
             } catch (error) {

@@ -1,5 +1,6 @@
 :root {
     --scrollBar-color: rgb(226, 229, 229);
+    --scrollBar-color-dark: rgb(192, 192, 192);
 }
 
 .chaticon {
@@ -41,6 +42,10 @@
     transform: scale(0);
 }
 
+.chat_menu_top10{
+    top: -10rem !important;
+    transform-origin: bottom right !important;
+}
 
 .menu_open {
     transform: scale(1);
@@ -274,6 +279,16 @@
 .userChipBox::-webkit-scrollbar-thumb {
     background-color: var(--scrollBar-color);
     border-radius: 10rem;
+}
+
+.chakra-modal__body::-webkit-scrollbar {
+    width: .5rem;
+    display: none;
+    background: transparent;
+}
+.chakra-modal__body::-webkit-scrollbar-thumb {
+    background-color:var(--scrollBar-color-dark) ;
+    margin-right: .5rem;
 }
 
 .GroupUser:hover .Admin {

@@ -45,7 +45,7 @@ export const UserChip = ({ user, handleFunc }) => {
 
     return (
         <Box
-            background={"#92929245"}
+            background={"#acacac45"}
             height="fit-content"
             display={"flex"}
             gap=".5rem"

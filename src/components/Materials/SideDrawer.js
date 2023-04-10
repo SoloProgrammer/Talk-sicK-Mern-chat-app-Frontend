@@ -109,10 +109,10 @@ function SideDrawer({ isOpen, onClose }) {
                 size="xs"
             >
                 <DrawerOverlay />
-                <DrawerContent>
+                <DrawerContent overflow={"none !important"}>
                     <DrawerCloseButton />
                     <DrawerHeader fontFamily={"sans-serif"} color="lightslategray" textDecor={"underline"}>Search or Start a New Chat..!</DrawerHeader>
-                    <DrawerBody>
+                    <Box padding={"0 1.4rem .6rem 1.4rem"}>
                         <Box >
                             <FormControl width={"full"} display="flex" justifyContent={"space-between"} alignItems="center" gap={".5rem"} onKeyDown={handleSearch}>
                                 <Input className='SearchInput' value={keyword} onChange={handleOnchange} variant={"filled"} placeholder='Search with Email or Name' />
@@ -121,7 +121,9 @@ function SideDrawer({ isOpen, onClose }) {
                                 </Button>
                             </FormControl>
                         </Box>
-                        <Box display={"flex"} flexDir="column" gap={".5rem"} marginTop={5}>
+                    </Box>
+                    <DrawerBody paddingTop={"0"}>
+                        <Box display={"flex"} flexDir="column" gap={".5rem"} marginTop={5} overflowY={"auto"} padding={"0 0 0.5rem 0"} >
                             {
                                 loading ? <SearchLoading /> : results?.map(u => {
                                     return <UserListItem key={u._id} user={u} handleFunc={handleAccesschat} />
