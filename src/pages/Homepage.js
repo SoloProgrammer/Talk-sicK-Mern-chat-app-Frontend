@@ -9,7 +9,7 @@ function Homepage() {
     const navigate = useNavigate()
     useEffect(() => {
         let token = localStorage.getItem('token');
-        if (token) navigate('/chats')
+        if (token) navigate('/chats');
 
         setTimeout(() => document.querySelector('.userForm')?.classList.remove('hide'), 0);
     }, [navigate])

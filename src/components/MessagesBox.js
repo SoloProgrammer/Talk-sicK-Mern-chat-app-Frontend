@@ -17,7 +17,7 @@ var chatMessagesCompare;
 
 function MessageBox({ messages, setMessages }) {
 
-  const { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket } = ChatState();
+  const { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages } = ChatState();
 
   const navigate = useNavigate();
 
@@ -64,7 +64,15 @@ function MessageBox({ messages, setMessages }) {
 
       if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-      setMessages(json.allMessages)
+      setMessages(json.allMessages);
+
+      // This logic is very optimized for seening new messages!
+      
+      // Here we are checking if latestMessage from all the messages has not seen by the loggedIn user than only hit the seenMessaged API call else if all the messages are seen by the user than ignore the API call!
+      if (json.allMessages[json.allMessages.length - 1].chat.unseenMsgsCountBy[user?._id] > 0) {
+        console.log("yes");
+        seenMessages(selectedChat)
+      }
 
       setMessagesLoading(false);
       // optimization!!!!!!!!!!!!!!!
@@ -390,10 +398,10 @@ function MessageBox({ messages, setMessages }) {
                               !m.content.img
                               &&
                               selectedChat?.isGroupchat && m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id) &&
-                              <Text fontSize={".7rem"} fontWeight="normal" 
-                              _hover={{"textDecoration":"underline"}}
-                              cursor={"pointer"}
-                               onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}>
+                              <Text fontSize={".7rem"} fontWeight="normal"
+                                _hover={{ "textDecoration": "underline" }}
+                                cursor={"pointer"}
+                                onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}>
                                 {m.sender.name.split(" ")[0]}
                               </Text>
                             }

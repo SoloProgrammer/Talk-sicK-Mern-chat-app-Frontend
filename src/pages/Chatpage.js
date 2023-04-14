@@ -98,7 +98,7 @@ function Chatpage() {
         if (json.chats) {
           let UnseenMsgnotifications = []
           json.chats.forEach(chat => {
-            if (user && chat.latestMessage && !chat.archivedBy.includes(user._id) && !chat.mutedNotificationBy.includes(user?._id) && !(chat.latestMessage?.seenBy.includes(user._id))) {
+            if (user && chat.latestMessage && !chat.archivedBy.includes(user._id) && !chat.mutedNotificationBy.includes(user?._id) && !(chat.latestMessage?.seenBy.includes(user?._id))) {
               UnseenMsgnotifications.push(chat.latestMessage)
             }
           })

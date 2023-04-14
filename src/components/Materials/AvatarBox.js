@@ -1,7 +1,8 @@
-import { Avatar, Box, Spinner, Text } from '@chakra-ui/react'
+import { Avatar, AvatarBadge, Box, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React from 'react'
 import { defaultPic } from '../../configs/ImageConfigs'
 import { ChatState } from '../../Context/ChatProvider'
+import { isUserOnline } from '../../configs/userConfigs'
 
 function AvatarBox({ m, startaChat, setIsHoverDisable, i, avatarBoxLoading }) {
 
@@ -37,7 +38,17 @@ function AvatarBox({ m, startaChat, setIsHoverDisable, i, avatarBoxLoading }) {
                     <Spinner pos={"absolute"} top={"30%"} left="44%" color="gray" size="lg" />
                     :
                     <>
-                        <Avatar src={m.sender.avatar || defaultPic} size="lg" />
+                        <Avatar src={m.sender.avatar || defaultPic} size="lg">
+                            <Tooltip fontSize={".65rem"} label={isUserOnline(m.sender) ? "online" : "offline"} placement="bottom-start">
+                                <AvatarBadge
+                                    borderWidth="1.8px"
+                                    borderColor='#ffffff'
+                                    bg={isUserOnline(m.sender) ? '#00c200' : "darkgrey"}
+                                    right={"3.5px"}
+                                    bottom={"3.5px"}
+                                    boxSize='.6em' />
+                            </Tooltip>
+                        </Avatar>
                         <Box width={"100%"}>
                             <Box display="flex" flexDir={"column"} alignItems="start">
                                 <Text fontSize={"1.1rem"}>

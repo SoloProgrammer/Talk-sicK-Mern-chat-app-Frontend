@@ -45,7 +45,8 @@ export const UserChip = ({ user, handleFunc }) => {
 
     return (
         <Box
-            background={"#acacac45"}
+            // background={"#f7f7f7"}
+            background={"#f2f2f2"}
             height="fit-content"
             display={"flex"}
             gap=".5rem"
@@ -53,6 +54,7 @@ export const UserChip = ({ user, handleFunc }) => {
             width="fit-content"
             borderRadius="1rem"
             minW={"fit-content !important"}
+            boxShadow={"0 0 2px rgba(0,0,0,.4)"}
             alignItems={"center"}>
 
             <Avatar size="xs" src={user.avatar || defaultPic} />

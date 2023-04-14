@@ -219,7 +219,8 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                     {
                         (selectedUsers.length > 0) &&
                         <Box width={"100%"} padding="0 1.3rem">
-                            <Box margin={".9rem 0"} display={"flex"} className="userChipBox" flexWrap="nowrap" gap=".5rem" overflowX="auto" padding={"0 0"} paddingBottom=".5rem">
+                            <Text margin={".5rem .1rem"} fontWeight={"medium"} fontSize={".84rem"}>Selected Members ({selectedUsers.length})</Text>
+                            <Box margin={".9rem 0"} display={"flex"} className="userChipBox" flexWrap="nowrap" gap=".5rem" overflowX="auto" padding={"0.5rem 0.1rem"} marginTop={"-.4rem"}>
                                 {
                                     selectedUsers?.map((u, i) => {
                                         return <UserChip key={i} user={u} handleFunc={handleRemoveUsers} />

@@ -14,7 +14,7 @@ import { defaultPic } from '../configs/ImageConfigs'
 
 function ChatsBox() {
 
-  const { chats, archivedChats, viewArchivedChats, chatsLoading, user, selectedChat, setProfile, profile, seenMessages, notifications, setNotifications } = ChatState()
+  const { chats, archivedChats, viewArchivedChats, chatsLoading, user, selectedChat, setProfile, profile, notifications, setNotifications } = ChatState()
 
   const navigate = useNavigate();
 
@@ -67,19 +67,10 @@ function ChatsBox() {
   useEffect(() => {
 
     // This logic will instantely remove green color from datetime of latestMessage of selectedChat to indicate user that new message in this chat has been seen
-    let elem = document.getElementById(`DateTime${selectedChat?._id}`)
-    if (elem && elem.classList.contains('unSeen')) {
-      elem.classList.remove('unSeen');
-    }
-
-    // This logic will instantely remove unseenMsgCount by user ffrom selectedChat to indicate user all messages has been seen by user!
-    let elm = document.getElementById(`unseenMsgsCount${selectedChat?._id}`);
-    if (elm && elm.style.display !== "none") elm.style.display = "none"
-
-    if (selectedChat?.latestMessage && !(selectedChat.latestMessage.seenBy.includes(user?._id))) {
-      setTimeout(() => {
-        seenMessages(selectedChat)
-      }, 500);
+    // and unseenMsgCount from selectedChat!
+    if(selectedChat ) {
+      if(selectedChat.unseenMsgsCountBy) selectedChat.unseenMsgsCountBy[user?._id] = 0
+      if(selectedChat.latestMessage) selectedChat.latestMessage.seenBy.push(user?._id);
     }
 
     notifications.length && setNotifications(notifications.filter(noti => noti.chat._id !== selectedChat?._id))
@@ -197,7 +188,7 @@ function ChatsBox() {
                                     marginRight={{ base: ".2rem", md: "0" }}
                                     boxShadow="0 0 1px rgba(0,0,0,.5)"
                                     fontWeight="semibold" minW={"1.2rem"} padding={".08rem .26rem"} paddingTop=".18rem" id={`unseenMsgsCount${chat._id}`} className='flex transformPaddingPlus' background={"#0dcc74"} borderRadius="50%" >
-                                    <Text color={"white"}>{chat.unseenMsgsCountBy[user?._id]}</Text>
+                                    <Text color={"white"}>{chat.unseenMsgsCountBy[user?._id] > 99 ? "99+" : chat.unseenMsgsCountBy[user?._id]}</Text>
                                   </Box>
                                 }
                               </Box>

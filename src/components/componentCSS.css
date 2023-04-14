@@ -15,7 +15,9 @@
     padding: .5rem;
     animation: float 3s ease-in-out infinite;
 }
-
+.mb_0{
+    margin-bottom: 0 !important;
+}
 .chakra-slide {
     max-width: 355px !important;
 }
