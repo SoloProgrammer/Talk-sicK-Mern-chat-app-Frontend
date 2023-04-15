@@ -14,7 +14,7 @@ import { defaultPic } from '../configs/ImageConfigs'
 
 function ChatsBox() {
 
-  const { chats, archivedChats, viewArchivedChats, chatsLoading, user, selectedChat, setProfile, profile, notifications, setNotifications } = ChatState()
+  const { chats, archivedChats, viewArchivedChats, setChats, chatsLoading, user, selectedChat, setProfile, profile, notifications, setNotifications } = ChatState()
 
   const navigate = useNavigate();
 
@@ -67,11 +67,23 @@ function ChatsBox() {
   useEffect(() => {
 
     // This logic will instantely remove green color from datetime of latestMessage of selectedChat to indicate user that new message in this chat has been seen
-    // and unseenMsgCount from selectedChat!
-    if(selectedChat ) {
-      if(selectedChat.unseenMsgsCountBy) selectedChat.unseenMsgsCountBy[user?._id] = 0
-      if(selectedChat.latestMessage) selectedChat.latestMessage.seenBy.push(user?._id);
+    let elem = document.getElementById(`DateTime${selectedChat?._id}`)
+    if (elem && elem.classList.contains('unSeen')) {
+      elem.classList.remove('unSeen');
     }
+
+    let elm = document.getElementById(`unseenMsgsCount${selectedChat?._id}`);
+    if (elm && elm.style.display !== "none") elm.style.display = "none"
+    
+      let updatedChats = chats?.map(c => {
+        if (c._id === selectedChat?._id) {
+          if (c.unseenMsgsCountBy) c.unseenMsgsCountBy[user?._id] = 0
+          if (c.latestMessage) c.latestMessage.seenBy.push(user?._id)
+        }
+        return c;
+      });
+
+      setChats(updatedChats);
 
     notifications.length && setNotifications(notifications.filter(noti => noti.chat._id !== selectedChat?._id))
 

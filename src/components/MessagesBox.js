@@ -14,10 +14,12 @@ import MessageImageViewBox from './MessageImageViewBox'
 
 var selectedChatCompare;
 var chatMessagesCompare;
+var isFirstLoadOfMsgs = true;
 
 function MessageBox({ messages, setMessages }) {
 
   const { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages } = ChatState();
+  // setChats, getPinnedChats, getUnPinnedChats
 
   const navigate = useNavigate();
 
@@ -40,7 +42,8 @@ function MessageBox({ messages, setMessages }) {
     chatMessages.forEach((chatMsg, _) => {
       // console.log(Object.keys(chatMsg),selectedChat?._id);
       if (chatMsg.chatId === selectedChat?._id) {
-        setMessages(chatMsg.messages)
+        setMessages(chatMsg.messages);
+        isFirstLoadOfMsgs = false
         isChatMsg = true
       }
     });
@@ -50,6 +53,8 @@ function MessageBox({ messages, setMessages }) {
     try {
 
       setMessagesLoading(true)
+
+      isFirstLoadOfMsgs = true;
 
       let config = {
         headers: {
@@ -64,28 +69,31 @@ function MessageBox({ messages, setMessages }) {
 
       if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-      setMessages(json.allMessages);
+      if (selectedChatCompare?._id === json.allMessages[0].chat._id) setMessages(json.allMessages);
+      else setMessagesLoading(false)
 
-      // This logic is very optimized for seening new messages!
       
-      // Here we are checking if latestMessage from all the messages has not seen by the loggedIn user than only hit the seenMessaged API call else if all the messages are seen by the user than ignore the API call!
-      if (json.allMessages[json.allMessages.length - 1].chat.unseenMsgsCountBy[user?._id] > 0) {
-        console.log("yes");
-        seenMessages(selectedChat)
-      }
-
       setMessagesLoading(false);
       // optimization!!!!!!!!!!!!!!!
-
+      
       // setting fetching messages inside the chatmessages so when next time user click on the previous chat it will not refetch the chat messages instead it will take messages from this chatMessages state! 
+      
+      let updatedChatMsgs = [...chatMessages, { chatId: selectedChat?._id, messages: json.allMessages }]
+      setChatMessages(updatedChatMsgs)
+      
+      // This logic is very optimized for seening new messages!
 
-      setChatMessages([...chatMessages, { chatId: selectedChat?._id, messages: json.allMessages }])
+      // Here we are checking if latestMessage from all the messages has not seen by the loggedIn user than only hit the seenMessaged API call else if all the messages are seen by the user than ignore the API call!
+      if (json.allMessages[json.allMessages.length - 1].chat.unseenMsgsCountBy[user?._id] > 0) {
+        seenMessages(selectedChat,updatedChatMsgs);
+      }
 
       scrollBottom("messagesDisplay")
 
-
     } catch (error) {
-      showToast("Error", error.message, "error", 3000)
+      showToast("Error", error.message, "error", 3000);
+      window.alert(`Error Unable to load messages - Please reload the page!`);
+      window.location.reload(0)
     }
 
   }
@@ -101,9 +109,12 @@ function MessageBox({ messages, setMessages }) {
     selectedChat && fetchMessages()
     socket?.emit('join chat', selectedChat?._id)
     selectedChatCompare = selectedChat
-    chatMessagesCompare = chatMessages
     // eslint-disable-next-line
-  }, [selectedChat?._id, chatMessages])
+  }, [selectedChat?._id])
+
+  useEffect(() => {
+    chatMessagesCompare = chatMessages
+  }, [chatMessages])
 
   let avatarBoxs = document.querySelectorAll('.avatarBox');
 
@@ -247,6 +258,7 @@ function MessageBox({ messages, setMessages }) {
 
         // console.log(chatMessagesCompare);
 
+        // Updating chatmessages with the new messages recieved in the socket whether user is in the chatroom or not in the chatroom! 
         if (user?._id === lastMsg.sender._id) {
           chatMessagesCompare.forEach(chatMsg => {
 
@@ -258,6 +270,7 @@ function MessageBox({ messages, setMessages }) {
 
               // console.log("...", chatMsg, selectedChatCompare);
 
+              // updating the chatmessages of the chat id from which all the messages from with the new seen messages!
               setChatMessages([...(chatMessagesCompare.filter(cm => cm.chatId !== lastMsg.chat?._id)), chatMsg]) // cm := ChatMessage
             }
           })
@@ -265,7 +278,7 @@ function MessageBox({ messages, setMessages }) {
       })
     }
     // eslint-disable-next-line
-  }, [user])
+  }, [user]);
 
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
@@ -318,7 +331,7 @@ function MessageBox({ messages, setMessages }) {
                   return (
                     <Box key={i}>
                       {
-                        selectedChat.unseenMsgsCountBy && selectedChat.unseenMsgsCountBy[user?._id] > 0 && isFirstUnseenMessage(m, messages, i, user) && m.sender._id !== user?._id
+                        isFirstLoadOfMsgs && isFirstUnseenMessage(m, messages, i, user) && m.sender._id !== user?._id
                         &&
                         <Box pos={"relative"} borderBottom={"2px solid red"} margin="1.5rem 0">
                           <Text userSelect={"none"} boxShadow={"0 0 2px rgba(0,0,0,.2)"} pos={"absolute"} borderRadius=".9rem" color={"red.500"} background="white" top="-.8rem" left="-.2rem" fontWeight={"medium"} fontSize=".87rem" padding={".1rem 1rem"} >

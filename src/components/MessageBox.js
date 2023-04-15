@@ -21,6 +21,7 @@ var notificationsCompare;
 var chatMessagesCompare;
 var allchatsCompare;
 var archivedChatsCompare;
+var chatsFetchCount = 0;
 
 function MessagesBox() {
 
@@ -81,11 +82,22 @@ function MessagesBox() {
     setMessageText("")
     setIsEmojiPick(false)
     selectedChatCompare = selectedChat
-    chatMessagesCompare = chatMessages
     allchatsCompare = chats
     archivedChatsCompare = archivedChats
     // eslint-disable-next-line
   }, [selectedChat?._id, chatMessages]);
+
+  useEffect(() => {
+    chatMessagesCompare = chatMessages
+  }, [chatMessages]);
+
+
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    if (messages.length > 0) chatsFetchCount = 0
+    // eslint-disable-next-line
+  }, [messages])
 
   const handleEmojiClick = (emoji) => {
     setMessageText(messageText.concat(emoji.emoji))
@@ -102,7 +114,8 @@ function MessagesBox() {
 
     const messageReceivedEventListener = (newMessageRecieved, newMessages, user) => {
 
-      //..............
+      chatsFetchCount++
+      //..............  
       // this condition is used to check if the selected Chat by the user is equal to newmessage received in the chat then update the selected chat with the new chats using filter method and due to this selected chat is updated and user will not able to see the new message in the red when he received another new message when he is in the same chat only display that red color message eg: 1 new message when he is opening the chat first time when he received the new message! 
       if (selectedChatCompare && selectedChatCompare._id === newMessageRecieved.chat._id) {
         if (selectedChatCompare.archivedBy.includes(user._id)) {
@@ -132,13 +145,25 @@ function MessagesBox() {
           }
 
         }
-        refreshChats(user);
+        if (chatsFetchCount === 1) {
+          refreshChats(user);
+          setTimeout(() => {
+            chatsFetchCount = 0
+          }, 200);
+        }
+
       }
       else {
         // console.log("seenMessge");
         setMessages([...newMessages]);
         seenMessages(selectedChatCompare);
-        refreshChats(user);
+        if (chatsFetchCount === 1) {
+          refreshChats(user);
+          setTimeout(() => {
+            chatsFetchCount = 0
+          }, 200);
+        }
+
 
         // console.log("outside",chatMessages);
 
@@ -161,8 +186,6 @@ function MessagesBox() {
     // eslint-disable-next-line 
   }, [user]);
 
-  const [messages, setMessages] = useState([])
-
   const [loading, setLoading] = useState(false)
 
   const sendMessage = async () => {
@@ -170,7 +193,6 @@ function MessagesBox() {
     setLoading(true);
 
     try {
-
       let content;
       let messageSentBeep = new Audio(sentAudio)
 

@@ -183,7 +183,8 @@ const ChatProvider = ({ children }) => {
         }
     }
 
-    const seenMessages = async (selectedChat) => {
+    const seenMessages = async (selectedChat, updatedChatMsgs) => {
+
         try {
 
             let config = {
@@ -204,17 +205,32 @@ const ChatProvider = ({ children }) => {
             // ToDo gave an appropiatiate msg for the bad response from the server!
             if (!json.status) return
 
-            socket?.emit('seeing messages', json.messages, selectedChat._id)
+            socket?.emit('seeing messages', json.messages, selectedChat._id);
+
             // refresing the chats whenever a new or lastemessgge seen by user to show him in the chat that he has seen the latestmessage!
             setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
-
             // setSelectedChat(json.chats.filter(c => c._id === selectedChat?._id)[0])
             setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
+
+            // Updating the chatMessages with the new seen messages so whenever user open the chat of which we have updating the messages second time after browsing from other chats the message - (x new message) in red will not be shown to him in the messages box!
+            if (updatedChatMsgs) {
+                updatedChatMsgs.forEach(chatMsg => {
+                    if (chatMsg.chatId === selectedChat._id) {
+                        chatMsg = { chatId: selectedChat._id, messages: [...json.messages] }
+                        setChatMessages([...(updatedChatMsgs.filter(cm => cm.chatId !== selectedChat.id)), chatMsg]);
+                    }
+                });
+            }
+
 
         } catch (error) {
             setSelectedChat(null)
             setProfile(null)
-            showToast("Error", error.message, "error", 3000)
+            showToast("Error", error.message, "error", 3000);
+            setTimeout(() => {
+                window.alert("Network or Server Error, Plese reload the page!");
+                window.location.reload(0);
+            }, 200);
             return
         }
 
