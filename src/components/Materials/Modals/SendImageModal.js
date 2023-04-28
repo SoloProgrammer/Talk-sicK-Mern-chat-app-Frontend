@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Modal,
     ModalOverlay,
@@ -12,11 +12,16 @@ import {
 import ImageDropZone from '../ImageDropZone'
 import { ChatState } from '../../../Context/ChatProvider'
 
-function SendImageModal({ children, isOpen, onClose, }) {
+function SendImageModal({ children, isOpen, onClose }) {
 
     const { isClosable, setSendPic } = ChatState()
 
     const [pic, setPic] = useState(null);
+
+    useEffect(()=>{
+        isOpen && onClose();
+        // eslint-disable-next-line
+    },[window.location.href])
 
     return (
         <>

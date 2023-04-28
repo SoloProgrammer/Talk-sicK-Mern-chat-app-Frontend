@@ -44,6 +44,11 @@ function SideDrawer({ isOpen, onClose }) {
         }, 0);
     }, [isOpen])
 
+    useEffect(() =>{
+        isOpen && onClose()
+         // eslint-disable-next-line
+    },[navigate])
+
     const handleSearch = async (e) => {
         if (e.key === "Enter" || e.target.type === "button") {
             if (keyword === "") return showToast("*Required", "Please Enter Something to Search", "error", 3000, "top-left");

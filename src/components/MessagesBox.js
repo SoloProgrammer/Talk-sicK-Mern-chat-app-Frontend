@@ -14,9 +14,8 @@ import MessageImageViewBox from './MessageImageViewBox'
 
 var selectedChatCompare;
 var chatMessagesCompare;
-var isFirstLoadOfMsgs = true;
 
-function MessageBox({ messages, setMessages }) {
+function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   const { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages } = ChatState();
   // setChats, getPinnedChats, getUnPinnedChats
@@ -43,7 +42,7 @@ function MessageBox({ messages, setMessages }) {
       // console.log(Object.keys(chatMsg),selectedChat?._id);
       if (chatMsg.chatId === selectedChat?._id) {
         setMessages(chatMsg.messages);
-        isFirstLoadOfMsgs = false
+        setIsFirstLoadOfMsgs(false)
         isChatMsg = true
       }
     });
@@ -54,7 +53,7 @@ function MessageBox({ messages, setMessages }) {
 
       setMessagesLoading(true)
 
-      isFirstLoadOfMsgs = true;
+      setIsFirstLoadOfMsgs(true)
 
       let config = {
         headers: {
@@ -67,25 +66,28 @@ function MessageBox({ messages, setMessages }) {
 
       let json = await res.json();
 
-      if (!json.status) return showToast("Error", json.message, "error", 3000)
-
+      if (!json.status) return showToast("Error", json.message, "error", 3000);
+      
       if (selectedChatCompare?._id === json.allMessages[0].chat._id) setMessages(json.allMessages);
       else setMessagesLoading(false)
 
-      
       setMessagesLoading(false);
-      // optimization!!!!!!!!!!!!!!!
-      
+
+      // optimization code..!
+
       // setting fetching messages inside the chatmessages so when next time user click on the previous chat it will not refetch the chat messages instead it will take messages from this chatMessages state! 
-      
-      let updatedChatMsgs = [...chatMessages, { chatId: selectedChat?._id, messages: json.allMessages }]
+
+      // here we are using chatMessagesCompare bcz the below setChatMessages function doesn't update the state immediately and the below logic will consider empty when selected chat changed frquently by user so to store the previously loaded messages in the cached state i.e chatMessages state!
+
+      let updatedChatMsgs = [...chatMessagesCompare, { chatId: selectedChat?._id, messages: json.allMessages }]
+
       setChatMessages(updatedChatMsgs)
-      
+
       // This logic is very optimized for seening new messages!
 
       // Here we are checking if latestMessage from all the messages has not seen by the loggedIn user than only hit the seenMessaged API call else if all the messages are seen by the user than ignore the API call!
       if (json.allMessages[json.allMessages.length - 1].chat.unseenMsgsCountBy[user?._id] > 0) {
-        seenMessages(selectedChat,updatedChatMsgs);
+        seenMessages(selectedChat, updatedChatMsgs);
       }
 
       scrollBottom("messagesDisplay")

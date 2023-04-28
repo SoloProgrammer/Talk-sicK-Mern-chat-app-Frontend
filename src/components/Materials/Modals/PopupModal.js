@@ -23,6 +23,7 @@ import { defaultPic } from '../../../configs/ImageConfigs'
 import { server } from '../../../configs/serverURl'
 import { useNavigate } from 'react-router-dom'
 import { handleFileUpload } from '../../../configs/handleFileUpload'
+import { useDebounce } from '../../../CustomHooks/useDebounce'
 
 function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmemberLoading }) {
 
@@ -36,22 +37,29 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate()
+    
+    const searchQuery = useDebounce(keyword,300)
 
     const HandleSearch = (e) => {
         setKeyword(e.target.value);
         setLoading(true);
     }
 
+    useEffect(() =>{
+        isOpen && onClose()
+         // eslint-disable-next-line
+    },[navigate])
+
     const inptRef = useRef()
     const SearchUsers = async () => {
-        if (keyword.length > 0) {
+        if (searchQuery?.length > 0) {
             try {
                 let config = {
                     headers: {
                         token: localStorage.getItem('token')
                     }
                 }
-                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${keyword}`, config);
+                const res = await fetch(`${server.URL.production}/api/user/searchuser?search=${searchQuery}`, config);
                 const json = await res.json();
 
                 // let result = result1.filter(o1 => !result2.some(o2 => o1.id === o2.id));
@@ -75,16 +83,9 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
     }
 
     useEffect(() => {
-
-        let searchDelay = setTimeout(() => {
-            SearchUsers();
-        }, 200);
-
-        // cleapUp function needed to 300ms delay in search.... 
-        return () => clearTimeout(searchDelay)
-
+        SearchUsers()
         // eslint-disable-next-line
-    }, [keyword])
+    }, [searchQuery])
 
     useEffect(() => {
         setSearchResults(null)
@@ -96,7 +97,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
         // eslint-disable-next-line
     }, [isOpen])
 
-    const handleAddUsers = (user) => {
+    const handleSelectUsers = (user) => {
         if (!selectedUsers.some(u => u._id === user._id)) {
             setSelectedUsers([user, ...selectedUsers])
         }
@@ -219,7 +220,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                     {
                         (selectedUsers.length > 0) &&
                         <Box width={"100%"} padding="0 1.3rem">
-                            <Text margin={".5rem .1rem"} fontWeight={"medium"} fontSize={".84rem"}>Selected Members ({selectedUsers.length})</Text>
+                            <Text margin={".5rem .1rem"} fontWeight={"medium"} fontSize={".8rem"} fontFamily={"roboto"}>Selected Members ({selectedUsers.length})</Text>
                             <Box margin={".9rem 0"} display={"flex"} className="userChipBox" flexWrap="nowrap" gap=".5rem" overflowX="auto" padding={"0.5rem 0.1rem"} marginTop={"-.4rem"}>
                                 {
                                     selectedUsers?.map((u, i) => {
@@ -239,7 +240,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                         && <Box padding={"0 1.4rem"} className='selectedUserschips flex' flexDir={"column"} width="100%" gap=".6rem" >
                             {
                                 searchResults?.map((u, i) => {
-                                    return <UserListItem key={i} user={u} handleFunc={handleAddUsers} />
+                                    return <UserListItem key={i} user={u} handleFunc={handleSelectUsers} />
                                 })
                             }
                         </Box>

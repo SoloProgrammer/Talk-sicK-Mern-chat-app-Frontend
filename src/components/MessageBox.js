@@ -19,15 +19,15 @@ import { emojiIcon, sendBtn, sendBtnActive } from '../configs/ImageConfigs'
 var selectedChatCompare;
 var notificationsCompare;
 var chatMessagesCompare;
-var allchatsCompare;
-var archivedChatsCompare;
 var chatsFetchCount = 0;
 
 function MessagesBox() {
 
-  const { getPinnedChats, getUnPinnedChats, user, setChats, setArchivedChats, refreshChats, chats, archivedChats, setSelectedChat, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
+  const { getPinnedChats, getUnPinnedChats, user, setChats, setArchivedChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
 
-  const [messageText, setMessageText] = useState("")
+  const [messageText, setMessageText] = useState("");
+
+  const [isFirstLoadOfMsgs, setIsFirstLoadOfMsgs] = useState(true)
 
   const handleMessageTyping = (e) => {
 
@@ -82,8 +82,6 @@ function MessagesBox() {
     setMessageText("")
     setIsEmojiPick(false)
     selectedChatCompare = selectedChat
-    allchatsCompare = chats
-    archivedChatsCompare = archivedChats
     // eslint-disable-next-line
   }, [selectedChat?._id, chatMessages]);
 
@@ -115,16 +113,10 @@ function MessagesBox() {
     const messageReceivedEventListener = (newMessageRecieved, newMessages, user) => {
 
       chatsFetchCount++
-      //..............  
-      // this condition is used to check if the selected Chat by the user is equal to newmessage received in the chat then update the selected chat with the new chats using filter method and due to this selected chat is updated and user will not able to see the new message in the red when he received another new message when he is in the same chat only display that red color message eg: 1 new message when he is opening the chat first time when he received the new message! 
-      if (selectedChatCompare && selectedChatCompare._id === newMessageRecieved.chat._id) {
-        if (selectedChatCompare.archivedBy.includes(user._id)) {
-          setSelectedChat(archivedChatsCompare.filter(c => c._id === selectedChatCompare._id)[0])
-        }
-        else setSelectedChat(allchatsCompare.filter(c => c._id === selectedChatCompare?._id)[0])
-      }
-      //..............
 
+      // auming that user is in the chat and he has fetched the messeges before so now we are updating the firstloadMsgs value to false saying that messges are already loaded if not then still no problem when we are fetching the messeges if the user open the chats first time when he receives the new messges then in that function we are updating the  IsFirstLoadOfMsgs to true!
+      setIsFirstLoadOfMsgs(false);
+     
       if (!selectedChatCompare || selectedChatCompare?._id !== newMessageRecieved.chat._id) {
         // give notification
         let notificationBeep = new Audio(notifyAudio)
@@ -307,7 +299,7 @@ function MessagesBox() {
 
             <MessagesBoxTopbar />
 
-            <MessageBox messages={messages} setMessages={setMessages} />
+            <MessageBox messages={messages} setMessages={setMessages} isFirstLoadOfMsgs={isFirstLoadOfMsgs} setIsFirstLoadOfMsgs={setIsFirstLoadOfMsgs}/>
 
             <Box
               zIndex={3}

@@ -59,7 +59,7 @@ export const UserChip = ({ user, handleFunc }) => {
 
             <Avatar size="xs" src={user.avatar || defaultPic} />
 
-            <Text fontWeight={"medium"} fontSize=".9rem">{user.name}</Text>
+            <Text fontWeight={"medium"} fontSize=".86rem" fontFamily={"roboto"}>{user.name}</Text>
 
             <Tooltip label="Remove" placement='top'>
                 <Image

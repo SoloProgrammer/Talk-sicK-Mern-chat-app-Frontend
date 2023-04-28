@@ -32,25 +32,26 @@ export const getMessageDay = (msgTimestamps) => {
 
 export const isFirstMsgOfTheDay = (msgTimestamp, messages, i) => {
 
-    let msgDay = (new Date(msgTimestamp)).getDay()
+    let msgDay = (new Date(msgTimestamp)).getDate()
+    let msgMonth = (new Date(msgTimestamp)).getMonth()
+
 
     if (messages[i - 1]) {
-
-        let preMsgDay = (new Date(messages[i - 1].createdAt)).getDay()
-
+        
+        let preMsgDay = (new Date(messages[i - 1].createdAt)).getDate()
+        let preMsgMonth = (new Date(messages[i - 1].createdAt)).getMonth()
+        
         if (messages[i + 1]) {
-
-            let nextMsgDay = (new Date(messages[i + 1].createdAt)).getDay()
-
-            // console.log(preMsgDate,nextMsgDate);
-
-            if (msgDay !== preMsgDay && msgDay === nextMsgDay) {
-
-                // console.log(messages[i+1],messages[i-1]);
+            
+            let nextMsgDay = (new Date(messages[i + 1].createdAt)).getDate()
+            
+            if (preMsgMonth === msgMonth && msgDay !== preMsgDay && msgDay === nextMsgDay) {
+                
                 return true
             }
+            else if(preMsgMonth !== msgMonth && msgDay === preMsgDay && msgDay === nextMsgDay) return true
             else if (msgDay !== preMsgDay && msgDay !== nextMsgDay) return true
-
+            
         } else {
             if (msgDay !== preMsgDay) return true
         }
