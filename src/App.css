@@ -43,13 +43,13 @@ body {
     left: 0 !important;
 }
 
-.allchatsBox::-webkit-scrollbar {
+.allchatsBox::-webkit-scrollbar,.allchats::-webkit-scrollbar {
     width: .7rem;
     background: transparent;
     display: none;
 }
 
-.allchatsBox::-webkit-scrollbar-thumb {
+.allchatsBox::-webkit-scrollbar-thumb,.allchats::-webkit-scrollbar  {
     background: rgba(209, 209, 209, 0.644);
     border-radius: 2rem;
 }
@@ -205,6 +205,9 @@ body {
     .hide {
         transform: translateY(-200px);
         opacity: 0;
+    }
+    .allchats{
+        padding-bottom: .5rem;
     }
 }
 

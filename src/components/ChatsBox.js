@@ -74,16 +74,16 @@ function ChatsBox() {
 
     let elm = document.getElementById(`unseenMsgsCount${selectedChat?._id}`);
     if (elm && elm.style.display !== "none") elm.style.display = "none"
-    
-      let updatedChats = chats?.map(c => {
-        if (c._id === selectedChat?._id) {
-          if (c.unseenMsgsCountBy) c.unseenMsgsCountBy[user?._id] = 0
-          if (c.latestMessage) c.latestMessage.seenBy.push(user?._id)
-        }
-        return c;
-      });
 
-      setChats(updatedChats);
+    let updatedChats = chats?.map(c => {
+      if (c._id === selectedChat?._id) {
+        if (c.unseenMsgsCountBy) c.unseenMsgsCountBy[user?._id] = 0
+        if (c.latestMessage) c.latestMessage.seenBy.push(user?._id)
+      }
+      return c;
+    });
+
+    setChats(updatedChats);
 
     notifications.length && setNotifications(notifications.filter(noti => noti.chat._id !== selectedChat?._id))
 
@@ -93,7 +93,7 @@ function ChatsBox() {
   return (
     <Box pos={"relative"} display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
       <ChatsTopBar />
-      <Box overflowY={"auto"} pos={"relative"} height={"calc(100vh - 7.3rem)"} className="allchatsBox">
+      <Box pos={"relative"} height={"calc(100% - 10.2rem)"} className="allchatsBox" paddingBottom={{base:".7rem",md:".2rem"}}>
         {
           profile && profile._id === user._id &&
           <ProfileDrawer width="full" align="left" />
@@ -125,7 +125,7 @@ function ChatsBox() {
               !chatsLoading && ((chats?.length > 0) || (archivedChats.length > 0))
             )
             &&
-            <Box display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" paddingBottom={window.innerWidth > 770 ? "4.3rem" : "4.8rem"} className='allchats ' transition={".6s"}>
+            <Box overflowY={"auto"} height={"100%"} display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" className='allchats' transition={".6s"}>
               {
                 // if we have something in the archivedChats and viewArchivedChats is sets to true then display ArchivedChats else unArchivedchats
                 (archivedChats.length && viewArchivedChats ? archivedChats : chats)?.map((chat, i) => {

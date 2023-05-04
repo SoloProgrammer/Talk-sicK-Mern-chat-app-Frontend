@@ -287,7 +287,7 @@ function ProfileDrawer({ width, align = "right" }) {
             pos={"absolute"}
             transition="all .3s"
             zIndex={"2"}
-            top="0"
+            top="-3px"
             overflowY="auto"
             height={`${window.innerWidth > 770 ? `calc(100vh - ${profile?._id === user?._id ? "11rem" : "10.1rem"})` : `calc(100vh - ${profile?._id === user?._id ? "12rem" : "9.6rem"})`}`}
             paddingBottom={profile._id === user?._id ? "1rem" : "3rem"}
