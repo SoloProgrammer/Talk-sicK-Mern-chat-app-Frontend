@@ -16,7 +16,6 @@ function ProfileDrawer({ width, align = "right" }) {
     const { getPinnedChats, getUnPinnedChats, handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat, setAlertInfo } = useContext(ChatContext);
     // The context can be used like the above one also..!
 
-
     // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
 
     const [profileDetail, setProfileDetail] = useState({
