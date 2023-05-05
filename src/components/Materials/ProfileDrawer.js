@@ -289,12 +289,12 @@ function ProfileDrawer({ width, align = "right" }) {
             zIndex={"2"}
             top="-3px"
             overflowY="auto"
-            height={`${window.innerWidth > 770 ? `calc(100vh - ${profile?._id === user?._id ? "11rem" : "10.1rem"})` : `calc(100vh - ${profile?._id === user?._id ? "12rem" : "9.6rem"})`}`}
+            height={`${window.innerWidth > 770 ? `calc(100vh - ${profile?._id === user?._id ? "11rem" : "10.1rem"})` : `calc(100vh - ${profile?._id === user?._id ? "11rem" : "9.6rem"})`}`}
             paddingBottom={profile._id === user?._id ? "1rem" : "3rem"}
             boxShadow={"0 0 4px rgb(0 0 0 / 30%)"}
             background="white">
 
-            <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"} pos="relative" padding={"0 .53rem"} paddingTop="1rem" >
+            <Box className='DrawerInner TopHide' display={"flex"} flexDir="column" justifyContent={"flex-start"} gap={".5rem"} alignItems="flex-start" width={"full"} pos="relative" padding={"1rem .53rem .5rem"}>
 
 
                 {/* confirmBox modal for Removing profileAvatar */}
