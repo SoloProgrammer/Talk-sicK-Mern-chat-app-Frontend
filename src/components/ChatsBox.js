@@ -38,10 +38,9 @@ function ChatsBox() {
     let DateTime;
 
     let FormattedTime = getFormmatedTime(date)
+    let FormattedDate = getFormmatedDate(date);
 
     let currdate = new Date();
-
-    let FormattedDate = getFormmatedDate(date);
 
     let dayDiff = currdate.getDate() - date.getDate()
 
@@ -244,12 +243,11 @@ function ChatsBox() {
         }
         {
           chatsLoading &&
-          <Box height={"100%"} marginTop=".4em" >
+          <Box marginTop=".4em" overflowY={"auto"} className='ChatsSkeletonBox' height={"100%"}>
             <ChatsSkeleton />
           </Box>
         }
       </Box>
-
       <ChatFooter />
     </Box>
   )

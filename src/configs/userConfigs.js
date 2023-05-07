@@ -21,8 +21,8 @@ export const GroupMembers = ({ selectedChat }) => {
     const { profile, user } = ChatState()
 
     return (
-        <Tooltip isOpen label="Group members" fontSize={".8rem"} placement={profile ? "left" : 'bottom-end'} pointerEvents={"none"}>
-            <AvatarGroup size='sm' max={3}>
+        <Tooltip isOpen label={`${selectedChat?.users.length} Members`} fontSize={".7rem"} placement={profile ? "left" : 'bottom-end'} pointerEvents={"none"}>
+            <AvatarGroup size='sm' max={3} cursor={"pointer"}>
                 {
                     selectedChat?.users?.map((u, i) => {
                         return (
@@ -41,11 +41,36 @@ export const GroupMembers = ({ selectedChat }) => {
     )
 }
 
+export const GroupMemberNames = (members, me) => {
+    let membersArray = members.filter(m => m._id !== me?._id).map(m => m.name.split(' ')[0]);
+    let names, result;
+    membersArray.push('You')
+    names = membersArray.join(', ')
+
+    if (window.innerWidth > 1270) {
+        result = names.slice(0, 190)
+        if (names.length > 190) result = result.concat('...')
+    }
+    else if (window.innerWidth < 1270 && window.innerWidth > 970) {
+        result = names.slice(0, 98)
+        if (names.length > 98) result = result.concat('...')
+    }
+    else if (window.innerWidth > 770 && window.innerWidth < 970) {
+        result = names.slice(0, 54)
+        if (names.length > 54) result = result.concat('...')
+    }
+    else if (window.innerWidth < 770) {
+        result = names.slice(0, 47)
+        if (names.length > 47) result = result.concat('...')
+    }
+
+    return result;
+}
+
 export const UserChip = ({ user, handleFunc }) => {
 
     return (
         <Box
-            // background={"#f7f7f7"}
             background={"#f2f2f2"}
             height="fit-content"
             display={"flex"}

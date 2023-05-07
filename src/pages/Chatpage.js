@@ -76,7 +76,11 @@ function Chatpage() {
           }
           else navigate('/chats')
         }
-        else navigate('/chats')
+        else if(locaObj.pathname === '/chats/archived') setViewArchivedChats(true)
+        
+        else {
+          navigate('/chats');
+        }
 
       } catch (error) {
         return showToast("Error", error.message, "error", 3000)
@@ -88,7 +92,6 @@ function Chatpage() {
 
     if (locaObj.pathname === "/chats" || chats?.map(c => c._id).includes(chatId)) {
       setViewArchivedChats(false)
-      console.log("idugfui");
     }
     else if ((locaObj.pathname === "/chats/archived" || archivedChats.map(c => c._id).includes(chatId)) && archivedChats.length > 0) setViewArchivedChats(true)
 

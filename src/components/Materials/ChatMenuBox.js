@@ -123,7 +123,7 @@ function ChatMenuBox({ chat, i }) {
                             </span>
                         </ConfirmBoxModal>
 
-                        {!archivedChats.map(c => c._id).includes(chat._id) && <span className='flex' onClick={(e) => {
+                        {!(archivedChats?.map(c => c._id).includes(chat._id)) && <span className='flex' onClick={(e) => {
                             handlePinOrUnpinChat(chat);
                             e.stopPropagation();
                         }}>
@@ -135,16 +135,16 @@ function ChatMenuBox({ chat, i }) {
                             hanldeArchiveChatAction(chat);
                             e.stopPropagation();
                         }} >
-                            {archivedChats.map(c => c._id).includes(chat._id) ? "Unarchive Chat" : "Archive Chat"}
+                            {archivedChats?.map(c => c._id).includes(chat._id) ? "Unarchive Chat" : "Archive Chat"}
 
-                            {archivedChats.map(c => c._id).includes(chat._id)
+                            {archivedChats?.map(c => c._id).includes(chat._id)
                                 ?
                                 <Image src={unArchiveImg} width="1rem" />
                                 :
                                 <Image width="1.1rem" src={archiveImg} />}
                         </span>
 
-                        {!archivedChats.map(c => c._id).includes(chat._id)
+                        {!archivedChats?.map(c => c._id).includes(chat._id)
                             &&
                             <span onClick={() => handleNotificationAction(chat)} className='flex'>
                                 {chat.mutedNotificationBy?.includes(user?._id) ? 'Unmute notification' : "Mute notification"}

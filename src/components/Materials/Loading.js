@@ -17,7 +17,7 @@ export const ChatsSkeleton = () => {
 
     let chatsCount = new Array(15).fill(1)
     return (
-        <Box display={"flex"} flexDir="column" gap={".5rem"} padding="0 .3rem" paddingBottom={"5rem"} position="relative" >
+        <Box display={"flex"} flexDir="column" gap={".5rem"} padding="0 .3rem" paddingBottom={[".7rem",".4rem"]} position="relative" overflowY={"auto"} >
 
             {isChatCreating && <Box
                 boxShadow={"0 0 3px rgba(0,0,0,.3)"}

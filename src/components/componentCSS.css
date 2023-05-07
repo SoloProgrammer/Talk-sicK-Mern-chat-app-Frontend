@@ -247,7 +247,7 @@
     display: none;
 }
 
-.profileDrawer::-webkit-scrollbar {
+.profileDrawer::-webkit-scrollbar,.ChatsSkeletonBox::-webkit-scrollbar {
     display: none;
 }
 

@@ -1,7 +1,7 @@
 import { Avatar, Box, Image, Text, Tooltip } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { getSender, GroupMembers, isUserOnline } from '../../configs/userConfigs';
+import { getSender, GroupMemberNames, GroupMembers, isUserOnline } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
 import { defaultPic } from '../../configs/ImageConfigs';
 
@@ -34,33 +34,41 @@ function MessagesBoxTopbar() {
                 zIndex="3"
                 justifyContent="space-between"
                 alignItems={"center"}
+                onClick={() => setProfile(sender)}
+                cursor={"pointer"}
                 padding="0 .9rem">
 
-                <Box display={"flex"} color="white" gap="1rem" className='msgleftTop' alignItems={"center"}>
+                <Box display={"flex"} color="white" gap="1rem" className='msgleftTop' alignItems={"center"} >
                     <Avatar cursor={"pointer"} onClick={() => setProfile(sender)} boxShadow={"0 0 0 2px #fff"} src={sender?.avatar || defaultPic} />
-                    <Text fontSize={{ base: "1.3rem", md: "1.4rem" }} fontWeight="normal" onClick={() => setProfile(sender)} cursor={"pointer"}>
-                        {
-                            (window.innerWidth < 770 && sender?.name.length > 16) ? sender?.name.slice(0,15) + "..." : sender?.name 
-                        }
-                    </Text>
-                    {selectedChat?.pinnedBy.includes(user?._id)
-                        &&
-                        <Tooltip label="pinned" placement='top' fontSize={".7rem"}>
-                            <Box background={"white"} padding=".3rem" borderRadius={"50%"} boxShadow="inset 0 0 1.5px rgba(0,0,0,1)" >
-                                <Image width={".7rem"} src="https://cdn-icons-png.flaticon.com/512/1274/1274749.png" />
-                            </Box>
-                        </Tooltip>}
+                    <Box display={"flex"} flexDir={"column"}>
+                        <Box display={"flex"} alignItems={"center"} gap={".7rem"}>
+                            <Text fontSize={{ base: "1.3rem", md: "1.4rem" }} fontWeight="normal" onClick={() => setProfile(sender)} cursor={"pointer"}>
+                                {
+                                    (window.innerWidth < 770 && sender?.name.length > 16) ? sender?.name.slice(0, 15) + "..." : sender?.name
+                                }
+                            </Text>
+                            {selectedChat?.pinnedBy.includes(user?._id)
+                                &&
+                                <Tooltip label="pinned" placement='top' fontSize={".7rem"}>
+                                    <Box background={"white"} padding=".3rem" borderRadius={"50%"} boxShadow="inset 0 0 1.5px rgba(0,0,0,1)" >
+                                        <Image width={".7rem"} src="https://cdn-icons-png.flaticon.com/512/1274/1274749.png" />
+                                    </Box>
+                                </Tooltip>}
+                        </Box>
 
-                    <Text pos={"absolute"} bottom=".3rem" fontSize={".8rem"} color="floralwhite" letterSpacing=".01rem" left={"5rem"}>
-                        {isTyping
-                            ?
-                            selectedChat.isGroupchat ? (typingUser.split(" ")[0] + " is typing.....") : "typing....."
-                            :
-                            !selectedChat?.isGroupchat
-                            &&
-                            isUserOnline(sender) && "online"
-                        }
-                    </Text>
+                        <Text bottom=".3rem" fontSize={".8rem"} color="#fffffff2" letterSpacing=".01rem" left={"5rem"} fontWeight={"100"}>
+                            {isTyping
+                                ?
+                                selectedChat.isGroupchat ? (typingUser.split(" ")[0] + " is typing.....") : "typing....."
+                                :
+                                !selectedChat?.isGroupchat
+                                    ?
+                                    isUserOnline(sender) && "online"
+                                    :
+                                    GroupMemberNames(selectedChat.users, user)
+                            }
+                        </Text>
+                    </Box>
                 </Box>
                 <Box className='msgrightTop'>
                     {
