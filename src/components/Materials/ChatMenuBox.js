@@ -15,18 +15,23 @@ function ChatMenuBox({ chat, i }) {
     function hideChatMenuBoxs() {
         elms.forEach(item => {
             item.classList.remove('menu_open');
-            item.classList.remove('menu_adjustY');
+            item.classList.remove('chat_menu_top10');
         })
     }
 
     const handleChatMenuIconClick = (e, i) => {
         e.stopPropagation();
-
         let elm = document.getElementById(`chatmenu${i}`);
 
         hideChatMenuBoxs();
 
-        elm.classList.add('menu_open');
+        if (window.innerHeight - e.clientY <= 215) {
+            elm.classList.add('chat_menu_top10')
+        }
+        
+        setTimeout(() => {
+            elm.classList.add('menu_open');
+        }, 20);
     }
 
     useEffect(() => {
@@ -92,14 +97,7 @@ function ChatMenuBox({ chat, i }) {
                 <Image width={"1rem"} src={downArrowCyan} />
                 <Box pos={"relative"}>
                     <Box id={`chatmenu${i}`}
-
-                        className={`chat_menu flex 
-                           ${(
-                                (chats.length > 7 && (i === chats.length - 1 || i === chats.length - 2))
-                                ||
-                                (chats.length > 6 && (i === chats.length - 1))
-
-                            ) && "chat_menu_top10"}`}
+                        className={`chat_menu flex`}
 
                         flexDir={"column"} width={"10.8rem"}>
 
