@@ -38,9 +38,9 @@ function MessagesBoxTopbar() {
                 cursor={"pointer"}
                 padding="0 .9rem">
 
-                <Box display={"flex"} color="white" gap="1rem" className='msgleftTop' alignItems={"center"} >
+                <Box display={"flex"} color="white" gap="1.2rem" className='msgleftTop' alignItems={"center"} >
                     <Avatar cursor={"pointer"} onClick={() => setProfile(sender)} boxShadow={"0 0 0 2px #fff"} src={sender?.avatar || defaultPic} />
-                    <Box display={"flex"} flexDir={"column"}>
+                    <Box display={"flex"} flexDir={"column"} gap=".1rem">
                         <Box display={"flex"} alignItems={"center"} gap={".7rem"}>
                             <Text fontSize={{ base: "1.3rem", md: "1.4rem" }} fontWeight="normal" onClick={() => setProfile(sender)} cursor={"pointer"}>
                                 {
@@ -56,7 +56,7 @@ function MessagesBoxTopbar() {
                                 </Tooltip>}
                         </Box>
 
-                        <Text bottom=".3rem" fontSize={".8rem"} color="#fffffff2" letterSpacing=".01rem" left={"5rem"} fontWeight={"100"}>
+                        <Text bottom=".3rem" fontSize={".77rem"} color="#ffffffe0" letterSpacing=".01rem" left={"5rem"} fontWeight={"400"}>
                             {isTyping
                                 ?
                                 selectedChat.isGroupchat ? (typingUser.split(" ")[0] + " is typing.....") : "typing....."

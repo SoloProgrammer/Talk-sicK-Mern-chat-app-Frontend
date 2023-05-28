@@ -177,6 +177,10 @@ body {
     height: 100%;
     object-fit: contain;
 }
+.chakra-text a{
+    text-decoration: underline;
+    color: rgb(2, 117, 232) !important;
+}
 
 /* brand logo css ends............... */
 

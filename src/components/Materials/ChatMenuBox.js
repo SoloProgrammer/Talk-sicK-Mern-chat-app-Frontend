@@ -28,7 +28,7 @@ function ChatMenuBox({ chat, i }) {
         if (window.innerHeight - e.clientY <= 215) {
             elm.classList.add('chat_menu_top10')
         }
-        
+
         setTimeout(() => {
             elm.classList.add('menu_open');
         }, 20);
@@ -43,10 +43,14 @@ function ChatMenuBox({ chat, i }) {
 
     const [loading, setLoading] = useState(false);
 
-    const handleNotificationAction = async (chat) => {
+    const handleNotificationAction = async (e,chat) => {
+
+        e.stopPropagation()
 
         setTimeout(() => {
-            document.body.click()
+            elms.forEach(item => {
+                item.classList.remove('menu_open');
+            })
         }, 250);
 
         let updatedChats = chats.map(c => {
@@ -144,7 +148,7 @@ function ChatMenuBox({ chat, i }) {
 
                         {!archivedChats?.map(c => c._id).includes(chat._id)
                             &&
-                            <span onClick={() => handleNotificationAction(chat)} className='flex'>
+                            <span onClick={(e) => handleNotificationAction(e,chat)} className='flex'>
                                 {chat.mutedNotificationBy?.includes(user?._id) ? 'Unmute notification' : "Mute notification"}
                                 <Image width={`${chat.mutedNotificationBy?.includes(user?._id) ? "1.16rem" : "1.08rem"}`} src={`${chat.mutedNotificationBy?.includes(user?._id) ? bellDividedIcon : bellIcon} `} />
                             </span>}

@@ -11,6 +11,7 @@ import { ChatState } from '../Context/ChatProvider'
 import AvatarBox from './Materials/AvatarBox'
 import ProfileDrawer from './Materials/ProfileDrawer'
 import MessageImageViewBox from './MessageImageViewBox'
+import Linkify from 'react-linkify'
 
 var selectedChatCompare;
 var chatMessagesCompare;
@@ -442,11 +443,11 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
                                           backdropFilter="blur(24px)"
                                           maxH="25rem" />
                                       </Text>
-                                      <Text paddingTop={".6rem"} >{m.content?.message}</Text>
+                                      <Linkify><Text paddingTop={".6rem"} >{m.content?.message}</Text></Linkify>
                                     </Box>
                                   </>
                                   :
-                                  <Text>{m.content.message}</Text>
+                                  <Linkify className="linkify"><Text>{m.content.message}</Text></Linkify>
                               }
                             </Box>
 

@@ -11,6 +11,7 @@
     "emoji-picker-react": "^4.4.7",
     "randomcolor": "^0.6.2",
     "react-dropzone": "^14.2.3",
+    "react-linkify": "^1.0.0-alpha",
     "react-notification-badge": "^1.5.1",
     "react-router-dom": "^6.6.1",
     "react-scripts": "^5.0.1",

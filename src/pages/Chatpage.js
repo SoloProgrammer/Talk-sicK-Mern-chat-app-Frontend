@@ -12,14 +12,14 @@ function Chatpage() {
   const { getPinnedChats, getUnPinnedChats, getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat, setSendPic } = ChatState();
 
 
-  
+
   const navigate = useNavigate();
   const locaObj = useLocation();
-  
+
   let params = useParams();
   let { chatId } = params
   if (Object.keys(params).length < 1) params = null;
-  
+
   const fetchallchats = async () => {
     if (user) {
       setChatsLoading(true)
@@ -36,14 +36,14 @@ function Chatpage() {
         const json = await res.json();
 
         if (!json.status) return showToast("Error", json.message, "error", 3000)
-        
+
         let chatsFromServer = json.chats;
-        
+
         setChats([...getPinnedChats(chatsFromServer, user), ...getUnPinnedChats(chatsFromServer, user)]);
         setArchivedChats(chatsFromServer.filter(c => c.archivedBy.includes(user?._id)))
         setChatsLoading(false);
         isfetchChats && setIsfetchChats(false)
-        
+
         // Filled notificatons array with all the new messges from chats on first load of chatspage 
         if (chatsFromServer) {
           let UnseenMsgnotifications = []
@@ -65,19 +65,19 @@ function Chatpage() {
 
         // The below logic is for checking the url of the app if the usrl conatins the any of the chatId that he is the part of will be redirected to that chat directly i.e opening the chat without clicking on the chat directly from the url itself! 
 
-        if(params && chatId){ // checking for chatId params or any of the params are there in the url or not if not we will redirect the user to chats page! 
-          if(chats?.map(c => c._id).includes(chatId)){
+        if (params && chatId) { // checking for chatId params or any of the params are there in the url or not if not we will redirect the user to chats page! 
+          if (chats?.map(c => c._id).includes(chatId)) {
             setViewArchivedChats(false)
             setSelectedChat(chats.filter(c => c._id === chatId)[0])
           }
-          else if(archivedChats?.map(c => c._id).includes(chatId)){
+          else if (archivedChats?.map(c => c._id).includes(chatId)) {
             setSelectedChat(archivedChats.filter(c => c._id === chatId)[0])
             setViewArchivedChats(true)
           }
           else navigate('/chats')
         }
-        else if(locaObj.pathname === '/chats/archived') setViewArchivedChats(true)
-        
+        else if (locaObj.pathname === '/chats/archived') setViewArchivedChats(true)
+
         else {
           navigate('/chats');
         }
@@ -142,13 +142,14 @@ function Chatpage() {
   }, [profile])
 
   useEffect(() => {
-   !chats && setChatsLoading(true) // just showing the loading until user and then chat has been fully !loaded
+    !chats && setChatsLoading(true) // just showing the loading until user and then chat has been fully !loaded
 
     if ((isfetchChats === null || isfetchChats) && user && !chats) {
       localStorage.getItem('token') && fetchallchats()
     }
     // eslint-disable-next-line
   }, [isfetchChats, user]);
+
 
   let elms = document.querySelectorAll('.chat_menu');
   document.addEventListener('click', () => {

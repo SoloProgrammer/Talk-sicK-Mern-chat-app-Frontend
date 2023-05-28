@@ -60,8 +60,8 @@ export const GroupMemberNames = (members, me) => {
         if (names.length > 54) result = result.concat('...')
     }
     else if (window.innerWidth < 770) {
-        result = names.slice(0, 47)
-        if (names.length > 47) result = result.concat('...')
+        result = names.slice(0, 40)
+        if (names.length > 40) result = result.concat('...')
     }
 
     return result;
