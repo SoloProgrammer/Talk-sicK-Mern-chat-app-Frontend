@@ -11,8 +11,6 @@ import { HandleLogout } from '../configs/userConfigs';
 function Chatpage() {
   const { getPinnedChats, getUnPinnedChats, getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat, setSendPic } = ChatState();
 
-
-
   const navigate = useNavigate();
   const locaObj = useLocation();
 
@@ -63,7 +61,7 @@ function Chatpage() {
         let archivedChats = chatsFromServer.filter(c => c.archivedBy.includes(user?._id))
 
 
-        // The below logic is for checking the url of the app if the usrl conatins the any of the chatId that he is the part of will be redirected to that chat directly i.e opening the chat without clicking on the chat directly from the url itself! 
+        // The below logic is for checking the url of the app if the url conatins any of the chatId that he is the part of will be redirected to that chat directly i.e opening the chat without clicking on the chat directly from the url itself! 
 
         if (params && chatId) { // checking for chatId params or any of the params are there in the url or not if not we will redirect the user to chats page! 
           if (chats?.map(c => c._id).includes(chatId)) {
@@ -98,7 +96,7 @@ function Chatpage() {
     // else if (archivedChats.length < 1) navigate('/chats')
 
     if (params && !(chats?.map(chat => chat._id).includes(chatId)) && !archivedChats?.map(c => c._id).includes(chatId)) {
-      // If params are there and the chatId aslo there in the params so we will first fetchthe user and after fetching the user we will be ftching the chats and then after fetching the chats we will select/open the chat based on the chatId provided in the paramaters!
+      // If params are there and the chatId aslo there in the params so we will first fetch the user and after fetching the user we will be fetching the chats and then after fetching the chats we will select/open the chat based on the chatId provided in the paramaters!
       GetuserInfo()
     }
     else {

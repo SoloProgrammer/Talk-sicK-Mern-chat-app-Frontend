@@ -18,8 +18,8 @@ var chatMessagesCompare;
 
 function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
-  const { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages } = ChatState();
-  // setChats, getPinnedChats, getUnPinnedChats
+  const
+    { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages } = ChatState();
 
   const navigate = useNavigate();
 
@@ -68,7 +68,7 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
       let json = await res.json();
 
       if (!json.status) return showToast("Error", json.message, "error", 3000);
-      
+
       if (selectedChatCompare?._id === json.allMessages[0].chat._id) setMessages(json.allMessages);
       else setMessagesLoading(false)
 
@@ -427,7 +427,7 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
                                   ?
                                   <>
                                     <Box maxW={"35rem"} >
-                                      <Text width={"100%"} backgroundImage={!msgImg && `url(${m.content.img})`} backgroundPosition="center">
+                                      <Box width={"100%"} backgroundImage={!msgImg && `url(${m.content.img})`} backgroundPosition="center">
                                         <Image
                                           opacity={(msgImg && m.content.img === msgImg.img) && 0}
                                           onClick={() => {
@@ -442,12 +442,12 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
                                           objectFit={"contain"}
                                           backdropFilter="blur(24px)"
                                           maxH="25rem" />
-                                      </Text>
-                                      <Linkify><Text paddingTop={".6rem"} >{m.content?.message}</Text></Linkify>
+                                      </Box>
+                                      <Linkify options={{ target: 'blank' }}><Text paddingTop={".6rem"} >{m.content?.message}</Text></Linkify>
                                     </Box>
                                   </>
                                   :
-                                  <Linkify className="linkify"><Text>{m.content.message}</Text></Linkify>
+                                  <Linkify options={{ target: 'blank', style: { color: 'red', fontWeight: 'bold' } }} className="linkify"><Text>{m.content.message}</Text></Linkify>
                               }
                             </Box>
 

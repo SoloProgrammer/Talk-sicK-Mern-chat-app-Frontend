@@ -14,6 +14,7 @@ import chat1_icon from "../Images/chat1.jpg"
 import chat2_icon from "../Images/chat2.png"
 import SendImageModal from './Materials/Modals/SendImageModal'
 import { emojiIcon, sendBtn, sendBtnActive } from '../configs/ImageConfigs'
+import Linkify from 'react-linkify'
 
 
 var selectedChatCompare;
@@ -116,7 +117,7 @@ function MessagesBox() {
 
       // auming that user is in the chat and he has fetched the messeges before so now we are updating the firstloadMsgs value to false saying that messges are already loaded if not then still no problem when we are fetching the messeges if the user open the chats first time when he receives the new messges then in that function we are updating the  IsFirstLoadOfMsgs to true!
       setIsFirstLoadOfMsgs(false);
-     
+
       if (!selectedChatCompare || selectedChatCompare?._id !== newMessageRecieved.chat._id) {
         // give notification
         let notificationBeep = new Audio(notifyAudio)
@@ -201,7 +202,7 @@ function MessagesBox() {
           "Content-Type": "application/json",
           token: localStorage.getItem('token')
         },
-        body: JSON.stringify({ chatId: selectedChat?._id, content, receiverIds: selectedChat.users.filter(u => u._id !== user?._id).map(u => u._id) })
+        body: JSON.stringify({ chatId: selectedChat?._id, content, receiverIds: selectedChat.users.filter(u => u._id !== user?._id).map(u => u._id), msgType: "regular" })
       }
 
       setMessageText("");
@@ -222,14 +223,13 @@ function MessagesBox() {
 
       setMessages([...json.allMessages]);
 
-      chatMessages.map(chatMsg => {
+      chatMessages.forEach(chatMsg => {
         if (chatMsg.chatId === selectedChat?._id) {
 
           chatMsg = { chatId: selectedChat._id, messages: [...json.allMessages] }
 
           setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat._id)), chatMsg]) // cm := ChatMessage
         }
-        return 1
       })
 
       setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
@@ -299,7 +299,7 @@ function MessagesBox() {
 
             <MessagesBoxTopbar />
 
-            <MessageBox messages={messages} setMessages={setMessages} isFirstLoadOfMsgs={isFirstLoadOfMsgs} setIsFirstLoadOfMsgs={setIsFirstLoadOfMsgs}/>
+            <MessageBox messages={messages} setMessages={setMessages} isFirstLoadOfMsgs={isFirstLoadOfMsgs} setIsFirstLoadOfMsgs={setIsFirstLoadOfMsgs} />
 
             <Box
               zIndex={3}
@@ -326,14 +326,17 @@ function MessagesBox() {
                   </Box>
                 }
                 <FormControl width={"auto"} marginBottom=".5rem" onKeyDown={handleKeyDown} height={"3rem"} marginRight={{ base: "0", md: ".3rem" }}>
-                  <input
-                    onFocus={() => scrollBottom('messagesDisplay')}
-                    className='MessageBoxInput'
-                    placeholder={sendPic ? "Type your message OR Send Image...." : 'Type your message......'}
-                    id='text'
-                    type="text"
-                    value={messageText} onChange={handleMessageTyping}
-                  />
+                  <Linkify>
+                    <input
+                      onFocus={() => scrollBottom('messagesDisplay')}
+                      className='MessageBoxInput none'
+                      placeholder={sendPic ? "Type your message OR Send Image...." : 'Type your message......'}
+                      id='text'
+                      type="text"
+                      value={messageText}
+                      onChange={handleMessageTyping}
+                    />
+                  </Linkify>
                 </FormControl>
                 <Box className="flex" alignItems={"end"} paddingBottom=".5rem" justifyContent={'space-between'} padding="0 .5rem 0 0">
                   <Box className='flex' gap={"1rem"}>
