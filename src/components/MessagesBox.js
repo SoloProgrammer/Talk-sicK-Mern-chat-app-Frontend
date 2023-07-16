@@ -283,6 +283,19 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
     // eslint-disable-next-line
   }, [user]);
 
+  const getProperInfoMsg = (message) => {
+    const seperatedMsg = message.split(' ')
+    return (seperatedMsg[0] === user?.name?.split(' ')[0]
+      ?
+      'you ' : seperatedMsg[0] + " ")
+      +
+      seperatedMsg.slice(1, seperatedMsg.length - 1).join(' ') + " "
+      +
+      (seperatedMsg[seperatedMsg.length - 1] === user?.name.split(" ")[0]
+        ?
+        'you ' : seperatedMsg[seperatedMsg.length - 1])
+  }
+
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
 
@@ -355,113 +368,136 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
                           >{getMessageDay(m.createdAt)}</Text>
                         </Box>
                       }
-                      <Box key={i} className='flex' width={"100%"} justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}>
-                        <Box flexDir={m.sender._id === user?._id && "row-reverse"} display={"flex"} gap=".5rem" maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
+                      {
+                        !m.msgType || m.msgType === 'regular'
+                          ?
+                          <Box key={i} className='flex' width={"100%"} justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}>
+                            <Box flexDir={m.sender._id === user?._id && "row-reverse"} display={"flex"} gap=".5rem" maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
 
-                          {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
-                            (window.innerWidth < 770 || (islastMsgOfSender(messages, i, m.sender._id) || isLastMsgOfTheDay(m.createdAt, messages, i))) &&
-                            <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
-                              <Tooltip isDisabled={isHoverDisable} hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : m.sender.name) : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
-                                <Avatar
-                                  onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}
-                                  pos="relative" cursor={"pointer"} size={'sm'} src={m.sender._id === user?._id ? user?.avatar : m.sender.avatar || defaultPic} >
-                                  {
-                                    m.sender._id !== user?._id
-                                    &&
-                                    <AvatarBox m={m} startaChat={startaChat} setIsHoverDisable={setIsHoverDisable} i={i} avatarBoxLoading={avatarBoxLoading} />
-                                  }
-                                </Avatar>
-                              </Tooltip>
-                            </Box>
-                          }
-                          <Box
-                            padding={m.content.img ? ".3rem" : ".5rem"}
-                            fontSize={"1rem"}
-                            backgroundColor={m.sender._id !== user?._id ? "#effbff" : "#ffffdd"}
-                            key={i} pos="relative"
-                            width={"fit-content"}
-                            color={m.sender._id === user?._id ? "black" : "black"}
-                            minWidth={"3.3rem"}
-                            fontWeight={'400'}
-                            boxShadow={m.sender._id === user?._id ? "0px 0px 2px rgba(0,0,0,.3)" : "1px 2px 0px rgba(0,0,0,.15)"}
-                            borderTopLeftRadius={(m.sender._id === user?._id || (window.innerWidth > 770 && (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i)))) && ".5rem"}
-                            borderTopRightRadius=".5rem"
-                            borderBottomLeftRadius={".5rem"}
-                            position="relative"
-                            borderBottomRightRadius={(m.sender._id !== user?._id || (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))) && ".5rem"}
-                            minW={m.sender._id !== user?._id ? "80px" : "80px"}
-
-                            marginLeft=
-                            {window.innerWidth > 770
-                              &&
-                              (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))
-                              &&
-                              (m.sender._id !== user?._id)
-                              &&
-                              "2.5rem"}
-
-                            marginRight={window.innerWidth > 770
-                              &&
-                              (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))
-                              &&
-                              (m.sender._id === user?._id)
-                              && "2.5rem"}
-                            paddingBottom="1rem"
-                            paddingLeft={m.content?.message?.length === 1 && ".9rem"}
-                          >
-
-                            {
-                              !m.content.img
-                              &&
-                              selectedChat?.isGroupchat && m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id) &&
-                              <Text fontSize={".7rem"} fontWeight="normal"
-                                _hover={{ "textDecoration": "underline" }}
-                                cursor={"pointer"}
-                                onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}>
-                                {m.sender.name.split(" ")[0]}
-                              </Text>
-                            }
-                            <Box paddingLeft={(m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id)) && ".0rem"}>
-                              {
-                                m.content.img
-                                  ?
-                                  <>
-                                    <Box maxW={"35rem"} >
-                                      <Box width={"100%"} backgroundImage={!msgImg && `url(${m.content.img})`} backgroundPosition="center">
-                                        <Image
-                                          opacity={(msgImg && m.content.img === msgImg.img) && 0}
-                                          onClick={() => {
-                                            setMsgImg({ img: m.content.img, msg: m.content.message, senderId: m.sender._id });
-                                            navigate(`${window.location.pathname}/view/${m.sender._id}/image`)
-                                          }}
-                                          cursor={"pointer"}
-                                          borderRadius={".3rem"}
-                                          src={m.content.img}
-                                          preload="none"
-                                          width="100%" height={"100%"}
-                                          objectFit={"contain"}
-                                          backdropFilter="blur(24px)"
-                                          maxH="25rem" />
-                                      </Box>
-                                      <Linkify options={{ target: 'blank' }}><Text paddingTop={".6rem"} >{m.content?.message}</Text></Linkify>
-                                    </Box>
-                                  </>
-                                  :
-                                  <Linkify options={{ target: 'blank', style: { color: 'red', fontWeight: 'bold' } }} className="linkify"><Text>{m.content.message}</Text></Linkify>
+                              {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
+                                (window.innerWidth < 770 || (islastMsgOfSender(messages, i, m.sender._id) || isLastMsgOfTheDay(m.createdAt, messages, i))) &&
+                                <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
+                                  <Tooltip isDisabled={isHoverDisable} hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : m.sender.name) : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
+                                    <Avatar
+                                      onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}
+                                      pos="relative" cursor={"pointer"} size={'sm'} src={m.sender._id === user?._id ? user?.avatar : m.sender.avatar || defaultPic} >
+                                      {
+                                        m.sender._id !== user?._id
+                                        &&
+                                        <AvatarBox m={m} startaChat={startaChat} setIsHoverDisable={setIsHoverDisable} i={i} avatarBoxLoading={avatarBoxLoading} />
+                                      }
+                                    </Avatar>
+                                  </Tooltip>
+                                </Box>
                               }
-                            </Box>
+                              <Box
+                                padding={m.content.img ? ".3rem" : ".5rem"}
+                                fontSize={"1rem"}
+                                backgroundColor={m.sender._id !== user?._id ? "#effbff" : "#ffffdd"}
+                                key={i} pos="relative"
+                                width={"fit-content"}
+                                color={m.sender._id === user?._id ? "black" : "black"}
+                                minWidth={"3.3rem"}
+                                fontWeight={'400'}
+                                boxShadow={m.sender._id === user?._id ? "0px 0px 2px rgba(0,0,0,.3)" : "1px 2px 0px rgba(0,0,0,.15)"}
+                                borderTopLeftRadius={(m.sender._id === user?._id || (window.innerWidth > 770 && (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i)))) && ".5rem"}
+                                borderTopRightRadius=".5rem"
+                                borderBottomLeftRadius={".5rem"}
+                                position="relative"
+                                borderBottomRightRadius={(m.sender._id !== user?._id || (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))) && ".5rem"}
+                                minW={m.sender._id !== user?._id ? "80px" : "80px"}
 
-                            <Text pos={"absolute"} fontSize={".6rem"} right=".4rem" color={"black !important"} textShadow="none !important" display={"flex"} gap=".3rem">
-                              {getMsgTime(m.createdAt)}
+                                marginLeft=
+                                {window.innerWidth > 770
+                                  &&
+                                  (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))
+                                  &&
+                                  (m.sender._id !== user?._id)
+                                  &&
+                                  "2.5rem"}
+
+                                marginRight={window.innerWidth > 770
+                                  &&
+                                  (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))
+                                  &&
+                                  (m.sender._id === user?._id)
+                                  && "2.5rem"}
+                                paddingBottom="1rem"
+                                paddingLeft={m.content?.message?.length === 1 && ".9rem"}
+                              >
+
+                                {
+                                  !m.content.img
+                                  &&
+                                  selectedChat?.isGroupchat && m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id) &&
+                                  <Text fontSize={".7rem"} fontWeight="normal"
+                                    _hover={{ "textDecoration": "underline" }}
+                                    cursor={"pointer"}
+                                    onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}>
+                                    {m.sender.name.split(" ")[0]}
+                                  </Text>
+                                }
+                                <Box paddingLeft={(m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id)) && ".0rem"}>
+                                  {
+                                    m.content.img
+                                      ?
+                                      <>
+                                        <Box maxW={"35rem"} >
+                                          <Box width={"100%"} backgroundImage={!msgImg && `url(${m.content.img})`} backgroundPosition="center">
+                                            <Image
+                                              opacity={(msgImg && m.content.img === msgImg.img) && 0}
+                                              onClick={() => {
+                                                setMsgImg({ img: m.content.img, msg: m.content.message, senderId: m.sender._id });
+                                                navigate(`${window.location.pathname}/view/${m.sender._id}/image`)
+                                              }}
+                                              cursor={"pointer"}
+                                              borderRadius={".3rem"}
+                                              src={m.content.img}
+                                              preload="none"
+                                              width="100%" height={"100%"}
+                                              objectFit={"contain"}
+                                              backdropFilter="blur(24px)"
+                                              maxH="25rem" />
+                                          </Box>
+                                          <Linkify options={{ target: 'blank' }}><Text paddingTop={".6rem"} >{m.content?.message}</Text></Linkify>
+                                        </Box>
+                                      </>
+                                      :
+                                      <Linkify options={{ target: 'blank', style: { color: 'red', fontWeight: 'bold' } }} className="linkify"><Text>{m.content.message}</Text></Linkify>
+                                  }
+                                </Box>
+
+                                <Text pos={"absolute"} fontSize={".6rem"} right=".4rem" color={"black !important"} textShadow="none !important" display={"flex"} gap=".3rem">
+                                  {getMsgTime(m.createdAt)}
+                                  {
+                                    m.sender._id === user?._id
+                                    && <Image src={m.seenBy.length !== selectedChat.users.length ? unSeenCheckMark : seenCheckMark} opacity={m.seenBy.length !== selectedChat.users.length && ".5"} width=".95rem" display="inline-block" />
+                                  }
+                                </Text>
+
+                              </Box>
+                            </Box>
+                          </Box>
+                          :
+                          m.msgType === 'info'
+                          &&
+                          <Box display={"flex"} justifyContent={"center"}>
+                            <Text
+                              textAlign={"center"}
+                              bg={"rgba(0,0,0,.1)"}
+                              boxShadow={"1px 1px 2px rgba(0,0,0,.1)"}
+                              padding={".2rem 1.5rem"}
+                              borderRadius={".5rem"}
+                              fontSize={".8rem"}
+                              fontWeight={"medium"}
+                              margin={"0rem 0 1rem 0"}>
                               {
-                                m.sender._id === user?._id
-                                && <Image src={m.seenBy.length !== selectedChat.users.length ? unSeenCheckMark : seenCheckMark} opacity={m.seenBy.length !== selectedChat.users.length && ".5"} width=".95rem" display="inline-block" />
+                                getProperInfoMsg(m.content.message)
                               }
                             </Text>
-
                           </Box>
-                        </Box>
-                      </Box>
+
+                      }
                     </Box>
                   )
                 })

@@ -407,6 +407,50 @@ const ChatProvider = ({ children }) => {
         }
     }
 
+    async function setChatsandMessages(json) {
+        setMessages([...json.allMessages]);
+
+        chatMessages.forEach(chatMsg => {
+            if (chatMsg.chatId === selectedChat?._id) {
+
+                chatMsg = { chatId: selectedChat._id, messages: [...json.allMessages] }
+
+                setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat._id)), chatMsg]) // cm := ChatMessage
+            }
+        })
+
+        setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
+        setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
+    }
+
+    async function sendInfoMsg(msgType, content) {
+
+        try {
+            let config = {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    token: localStorage.getItem('token')
+                },
+                body: JSON.stringify({ chatId: selectedChat?._id, content, receiverIds: selectedChat.users.filter(u => u._id !== user?._id).map(u => u._id), msgType })
+            }
+
+            let res = await fetch(`${server.URL.production}/api/message/sendmessage`, config);
+
+            if (res.status === 401) return HandleLogout()
+
+            let json = await res.json();
+
+            if (!json.status) return showToast("Error", json.message, "error", 3000);
+
+            socket.emit('new message', json.fullmessage, json.allMessages)
+
+            setChatsandMessages(json)
+        } catch (error) {
+            showToast("Error", error.message, "error", 3000)
+        }
+    }
+
     const [sendPic, setSendPic] = useState(null)
 
     // state for determining all the popups in the app should be able to closed or not..! 
@@ -419,7 +463,7 @@ const ChatProvider = ({ children }) => {
     })
 
     return (
-        <ChatContext.Provider value={{ getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo }}>
+        <ChatContext.Provider value={{ getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg }}>
             {children}
         </ChatContext.Provider>
     )

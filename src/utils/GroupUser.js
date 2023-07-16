@@ -10,7 +10,7 @@ import ConfirmBoxModal from '../components/Materials/Modals/ConfirmBoxModal'
 
 function GroupUser({ u }) {
 
-    const { getPinnedChats, getUnPinnedChats, user, selectedChat, setIsClosable, showToast, setSelectedChat, archivedChats, setArchivedChats, setViewArchivedChats, setChats, setProfile, chats, CreateChat } = ChatState()
+    const { getPinnedChats, getUnPinnedChats, user, selectedChat, setIsClosable, showToast, setSelectedChat, archivedChats, setArchivedChats, setViewArchivedChats, setChats, setProfile, chats, CreateChat, sendInfoMsg } = ChatState()
 
     const [addAdminLoading, setAddAdminLoading] = useState(false)
     const [removeAdminLoading, setRemoveAdminLoading] = useState(false)
@@ -90,6 +90,8 @@ function GroupUser({ u }) {
             setIsClosable(true)
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
+
+            sendInfoMsg("info", { message: `${user?.name.split(' ')[0]} removed ${selectedChat?.users.filter(u => u._id === userId)[0].name.split(' ')[0]}` })
 
             setSelectedChat(json.chat);
 

@@ -19,6 +19,9 @@ function ChatsBox() {
   const navigate = useNavigate();
 
   const Trimlastestmsg = (msg) => {
+
+    // console.log(msg, selectedChat);
+
     let trimInd = window.innerWidth > 1300 ? 50 : 30
 
     if (window.innerWidth > 500 && window.innerWidth < 770) {
@@ -92,7 +95,7 @@ function ChatsBox() {
   return (
     <Box pos={"relative"} display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
       <ChatsTopBar />
-      <Box pos={"relative"} height={"calc(100% - 10.2rem)"} className="allchatsBox" paddingBottom={{base:".7rem",md:".2rem"}}>
+      <Box pos={"relative"} height={"calc(100% - 10.2rem)"} className="allchatsBox" paddingBottom={{ base: ".7rem", md: ".2rem" }}>
         {
           profile && profile._id === user._id &&
           <ProfileDrawer width="full" align="left" />

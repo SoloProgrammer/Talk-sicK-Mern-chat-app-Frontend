@@ -9,7 +9,7 @@ import { server } from '../configs/serverURl'
 
 function GroupMembersBox() {
 
-    const { getPinnedChats, getUnPinnedChats, selectedChat, showToast, user, setChats, setSelectedChat, archivedChats, setArchivedChats, setIsClosable } = ChatState()
+    const { getPinnedChats, getUnPinnedChats, selectedChat, showToast, user, setChats, setSelectedChat, archivedChats, setArchivedChats, setIsClosable, sendInfoMsg } = ChatState()
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -38,6 +38,7 @@ function GroupMembersBox() {
     const hanldeAddmember = async (users) => {
 
         // making array of user Ids...!
+        let userNames = users.map(u => u.name.split(' ')[0]).join(', ')
         users = users.map(u => u._id)
 
         setLoading(true)
@@ -60,6 +61,8 @@ function GroupMembersBox() {
             setLoading(false)
             setIsClosable(true)
             if (!json.status) return showToast("Error", json.message, "error", 3000)
+
+            sendInfoMsg("info", { message: `${user?.name.split(' ')[0]} added ${userNames}` })
 
             showToast("Great!", json.message, "success", 3000)
             setSelectedChat(json.chat)
