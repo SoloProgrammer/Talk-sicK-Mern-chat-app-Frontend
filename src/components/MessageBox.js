@@ -113,7 +113,7 @@ function MessageBox() {
 
     const messageReceivedEventListener = (newMessageRecieved, newMessages, user) => {
 
-      chatsFetchCount++
+      !chatsFetchCount && chatsFetchCount++
 
       // auming that user is in the chat and he has fetched the messeges before so now we are updating the firstloadMsgs value to false saying that messges are already loaded if not then still no problem when we are fetching the messeges if the user open the chats first time when he receives the new messges then in that function we are updating the  IsFirstLoadOfMsgs to true!
       setIsFirstLoadOfMsgs(false);
@@ -140,9 +140,6 @@ function MessageBox() {
         }
         if (chatsFetchCount === 1) {
           refreshChats(user);
-          setTimeout(() => {
-            chatsFetchCount = 0
-          }, 200);
         }
 
       }
@@ -151,7 +148,7 @@ function MessageBox() {
         setMessages([...newMessages]);
         seenMessages(selectedChatCompare);
         if (chatsFetchCount === 1) {
-          refreshChats(user);
+          refreshChats(user, selectedChatCompare);
           setTimeout(() => {
             chatsFetchCount = 0
           }, 200);

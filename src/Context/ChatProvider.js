@@ -85,7 +85,7 @@ const ChatProvider = ({ children }) => {
     const [viewArchivedChats, setViewArchivedChats] = useState(false);
 
     const [notifications, setNotifications] = useState([]);
-    
+
     const [sendPic, setSendPic] = useState(null)
 
     // state for determining all the popups in the app should be able to closed or not..! 
@@ -247,7 +247,7 @@ const ChatProvider = ({ children }) => {
 
     }
 
-    const refreshChats = async (u = user) => {
+    const refreshChats = async (u = user, selectedChat) => {
 
         try {
             const config = {

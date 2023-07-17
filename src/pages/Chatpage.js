@@ -17,13 +17,7 @@ function Chatpage() {
   let params = useParams();
   let { chatId } = params
   if (Object.keys(params).length < 1) params = null;
-
-  // useEffect(() => {
-  //   if (selectedChat){
-  //     setSelectedChat(chats.filter(c => c._id === selectedChat._id)[0])
-  //   }
-  // }, [chats])
-
+  
   const fetchallchats = async () => {
     if (user) {
       setChatsLoading(true)
