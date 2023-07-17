@@ -62,14 +62,14 @@ function GroupMembersBox() {
             setIsClosable(true)
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-            sendInfoMsg("info", { message: `${user?.name.split(' ')[0]} added ${userNames}` })
-
+            
             showToast("Great!", json.message, "success", 3000)
             setSelectedChat(json.chat)
-
+            
             setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
             setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)));
-
+            
+            sendInfoMsg("info", { message: `${user?.name.split(' ')[0]} added ${userNames}` })
             onClose()
         } catch (error) {
             showToast("Error", error.message, "error", 3000)

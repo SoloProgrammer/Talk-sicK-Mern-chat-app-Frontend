@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { ChatState } from '../Context/ChatProvider'
 import BrandLogo from '../utils/BrandLogo'
 import MessagesBoxTopbar from './Materials/MessagesBoxTopbar'
-import MessageBox from './MessagesBox'
+import MessagesBox from './MessagesBox'
 import EmojiPicker from 'emoji-picker-react';
 import { server } from '../configs/serverURl'
 import { HandleLogout } from '../configs/userConfigs'
@@ -22,9 +22,9 @@ var notificationsCompare;
 var chatMessagesCompare;
 var chatsFetchCount = 0;
 
-function MessagesBox() {
+function MessageBox() {
 
-  const { getPinnedChats, getUnPinnedChats, user, setChats, setArchivedChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic } = ChatState()
+  const { getPinnedChats, getUnPinnedChats, user, setChats, setArchivedChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic, messages, setMessages } = ChatState()
 
   const [messageText, setMessageText] = useState("");
 
@@ -91,7 +91,7 @@ function MessagesBox() {
   }, [chatMessages]);
 
 
-  const [messages, setMessages] = useState([]);
+  // const [] = useState([]);
 
   useEffect(() => {
     if (messages.length > 0) chatsFetchCount = 0
@@ -221,7 +221,7 @@ function MessagesBox() {
 
       socket.emit('new message', json.fullmessage, json.allMessages)
 
-      setMessages([...json.allMessages]);
+      setMessages(json.allMessages);
 
       chatMessages.forEach(chatMsg => {
         if (chatMsg.chatId === selectedChat?._id) {
@@ -299,7 +299,7 @@ function MessagesBox() {
 
             <MessagesBoxTopbar />
 
-            <MessageBox messages={messages} setMessages={setMessages} isFirstLoadOfMsgs={isFirstLoadOfMsgs} setIsFirstLoadOfMsgs={setIsFirstLoadOfMsgs} />
+            <MessagesBox messages={messages} setMessages={setMessages} isFirstLoadOfMsgs={isFirstLoadOfMsgs} setIsFirstLoadOfMsgs={setIsFirstLoadOfMsgs} />
 
             <Box
               zIndex={3}
@@ -394,4 +394,4 @@ function MessagesBox() {
   )
 }
 
-export default MessagesBox
+export default MessageBox

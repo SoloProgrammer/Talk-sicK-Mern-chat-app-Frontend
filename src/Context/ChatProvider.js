@@ -85,6 +85,17 @@ const ChatProvider = ({ children }) => {
     const [viewArchivedChats, setViewArchivedChats] = useState(false);
 
     const [notifications, setNotifications] = useState([]);
+    
+    const [sendPic, setSendPic] = useState(null)
+
+    // state for determining all the popups in the app should be able to closed or not..! 
+    const [isClosable, setIsClosable] = useState(true);
+
+    const [messages, setMessages] = useState([]);
+
+    const [alertInfo, setAlertInfo] = useState({
+        active: false
+    })
 
     const getPinnedChats = (chats, u) => {
         return chats.filter(c => c.pinnedBy.includes(u?._id) && !c.archivedBy.includes(u?._id))
@@ -257,6 +268,10 @@ const ChatProvider = ({ children }) => {
 
             setChats([...getPinnedChats(json.chats, u), ...getUnPinnedChats(json.chats, u)]);
 
+            if (selectedChat) {
+                setSelectedChat([...getPinnedChats(json.chats, u), ...getUnPinnedChats(json.chats, u)].filter(c => c._id === selectedChat._id)[0])
+            }
+
         } catch (error) {
             return showToast("Error", error.message, "error", 3000)
         }
@@ -407,8 +422,7 @@ const ChatProvider = ({ children }) => {
         }
     }
 
-    async function setChatsandMessages(json) {
-        setMessages([...json.allMessages]);
+    function setChatsandMessages(json) {
 
         chatMessages.forEach(chatMsg => {
             if (chatMsg.chatId === selectedChat?._id) {
@@ -443,24 +457,16 @@ const ChatProvider = ({ children }) => {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000);
 
+            setMessages(json.allMessages);
+
             socket.emit('new message', json.fullmessage, json.allMessages)
 
             setChatsandMessages(json)
+
         } catch (error) {
             showToast("Error", error.message, "error", 3000)
         }
     }
-
-    const [sendPic, setSendPic] = useState(null)
-
-    // state for determining all the popups in the app should be able to closed or not..! 
-    const [isClosable, setIsClosable] = useState(true);
-
-    const [messages, setMessages] = useState([]);
-
-    const [alertInfo, setAlertInfo] = useState({
-        active: false
-    })
 
     return (
         <ChatContext.Provider value={{ getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg }}>

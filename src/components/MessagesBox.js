@@ -2,7 +2,7 @@ import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { downloadImage, imageActionBtns, seenCheckMark, unSeenCheckMark, zoomInImage, zoomOutImage } from '../configs/ImageConfigs'
-import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay, isFirstUnseenMessage, islastMsgOfSender } from '../configs/messageConfigs'
+import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay, isFirstUnseenMessage, islastMsgOfSender, islastRegularMsgOfSender } from '../configs/messageConfigs'
 import { scrollBottom, scrollTop } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
 import { HandleLogout } from '../configs/userConfigs'
@@ -16,10 +16,10 @@ import Linkify from 'react-linkify'
 var selectedChatCompare;
 var chatMessagesCompare;
 
-function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
+function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   const
-    { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages } = ChatState();
+    { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages, messages, setMessages } = ChatState();
 
   const navigate = useNavigate();
 
@@ -246,7 +246,7 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
   // socket on for seen messges!
   useEffect(() => {
 
-    // this sockert is only for the user who send the lastestmesssage in the chat not for the user who seen the latestMessage in that chat!
+    // this socket is only for the user who send the lastestmesssage in the chat not for the user who seen the latestMessage in that chat!
     if (user && user._id) {
       socket?.on('seen messages', (messages, room) => {
 
@@ -371,12 +371,26 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
                       {
                         !m.msgType || m.msgType === 'regular'
                           ?
-                          <Box key={i} className='flex' width={"100%"} justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}>
-                            <Box flexDir={m.sender._id === user?._id && "row-reverse"} display={"flex"} gap=".5rem" maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
+                          <Box
+                            key={i}
+                            className='flex'
+                            width={"100%"}
+                            justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}>
+                            <Box
+                              flexDir={m.sender._id === user?._id && "row-reverse"}
+                              display={"flex"}
+                              gap=".5rem"
+                              maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
 
                               {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
-                                (window.innerWidth < 770 || (islastMsgOfSender(messages, i, m.sender._id) || isLastMsgOfTheDay(m.createdAt, messages, i))) &&
-                                <Box display={"flex"} flexDir="column" justifyContent={m.sender._id === user?._id && "flex-end"}>
+                                (window.innerWidth < 770
+                                  || (islastMsgOfSender(messages, i, m.sender._id)
+                                    || isLastMsgOfTheDay(m.createdAt, messages, i)
+                                    || islastRegularMsgOfSender(messages, i, m.sender._id))) &&
+                                <Box
+                                  display={"flex"}
+                                  flexDir="column"
+                                  justifyContent={m.sender._id === user?._id && "flex-end"}>
                                   <Tooltip isDisabled={isHoverDisable} hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : m.sender.name) : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
                                     <Avatar
                                       onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}
@@ -410,7 +424,7 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
                                 marginLeft=
                                 {window.innerWidth > 770
                                   &&
-                                  (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))
+                                  (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i) && !islastRegularMsgOfSender(messages, i, m.sender._id))
                                   &&
                                   (m.sender._id !== user?._id)
                                   &&
@@ -418,7 +432,7 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
 
                                 marginRight={window.innerWidth > 770
                                   &&
-                                  (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))
+                                  (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i) && !islastRegularMsgOfSender(messages, i, m.sender._id))
                                   &&
                                   (m.sender._id === user?._id)
                                   && "2.5rem"}
@@ -486,11 +500,12 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
                               textAlign={"center"}
                               bg={"rgba(0,0,0,.1)"}
                               boxShadow={"1px 1px 2px rgba(0,0,0,.1)"}
-                              padding={".2rem 1.5rem"}
+                              padding={".15rem 1.5rem"}
                               borderRadius={".5rem"}
                               fontSize={".8rem"}
                               fontWeight={"medium"}
-                              margin={"0rem 0 1rem 0"}>
+                              margin={"0rem 0 .5rem 0"}
+                            >
                               {
                                 getProperInfoMsg(m.content.message)
                               }
@@ -516,4 +531,4 @@ function MessageBox({ messages, setMessages, isFirstLoadOfMsgs, setIsFirstLoadOf
   )
 }
 
-export default MessageBox
+export default MessagesBox

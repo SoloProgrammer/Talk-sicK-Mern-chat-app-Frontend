@@ -37,21 +37,21 @@ export const isFirstMsgOfTheDay = (msgTimestamp, messages, i) => {
 
 
     if (messages[i - 1]) {
-        
+
         let preMsgDay = (new Date(messages[i - 1].createdAt)).getDate()
         let preMsgMonth = (new Date(messages[i - 1].createdAt)).getMonth()
-        
+
         if (messages[i + 1]) {
-            
+
             let nextMsgDay = (new Date(messages[i + 1].createdAt)).getDate()
-            
+
             if (preMsgMonth === msgMonth && msgDay !== preMsgDay && msgDay === nextMsgDay) {
-                
+
                 return true
             }
-            else if(preMsgMonth !== msgMonth && msgDay === preMsgDay && msgDay === nextMsgDay) return true
+            else if (preMsgMonth !== msgMonth && msgDay === preMsgDay && msgDay === nextMsgDay) return true
             else if (msgDay !== preMsgDay && msgDay !== nextMsgDay) return true
-            
+
         } else {
             if (msgDay !== preMsgDay) return true
         }
@@ -70,6 +70,10 @@ export const isLastMsgOfTheDay = (msgTimestamp, messages, i) => {
         if (msgdate !== nextMsgdate) return true
     }
 
+}
+
+export const islastRegularMsgOfSender = (messages, i, senderId) => {
+    return (messages[i + 1] === undefined || (messages[i + 1].sender._id === senderId && messages[i + 1].msgType === 'info'))
 }
 
 export const isFirstUnseenMessage = (m, messages, i, user) => {

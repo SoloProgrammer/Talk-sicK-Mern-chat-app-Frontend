@@ -18,6 +18,12 @@ function Chatpage() {
   let { chatId } = params
   if (Object.keys(params).length < 1) params = null;
 
+  // useEffect(() => {
+  //   if (selectedChat){
+  //     setSelectedChat(chats.filter(c => c._id === selectedChat._id)[0])
+  //   }
+  // }, [chats])
+
   const fetchallchats = async () => {
     if (user) {
       setChatsLoading(true)
@@ -128,7 +134,9 @@ function Chatpage() {
   useEffect(() => {
     let token = localStorage.getItem('token');
     if (!token) navigate('/')
-    else GetuserInfo()
+    else if(!user){
+      GetuserInfo()
+    }
 
     setSendPic(null)
     setTimeout(() => document.querySelector('.mainChatBox')?.classList.remove('hideleft'), 0);
