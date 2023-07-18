@@ -32,7 +32,7 @@ const ChatProvider = ({ children }) => {
                 'token': localStorage.getItem('token')
             }
         }
-        const res = await fetch(`${server.URL.production}/api/user/getuser`, config);
+        const res = await fetch(`${server.URL.local}/api/user/getuser`, config);
         return res.json()
     }
 
@@ -42,7 +42,7 @@ const ChatProvider = ({ children }) => {
 
     const [onlineUsers, setOnlineUsers] = useState([]);
 
-    const ENDPOINT = server.URL.production;
+    const ENDPOINT = server.URL.local;
 
     const [socket, setSocket] = useState(null);
 
@@ -123,7 +123,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ userId })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat`, config);
+            let res = await fetch(`${server.URL.local}/api/chat`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -181,7 +181,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ chatId: chat._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/pinORunpinchat`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/pinORunpinchat`, config);
 
             if (res.status === "401") HandleLogout()
 
@@ -207,7 +207,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ chatId: selectedChat?._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/message/seenMessage`, config);
+            let res = await fetch(`${server.URL.local}/api/message/seenMessage`, config);
 
             if (res.status === 401) return HandleLogout();
 
@@ -256,7 +256,7 @@ const ChatProvider = ({ children }) => {
                 }
             }
 
-            const res = await fetch(`${server.URL.production}/api/chat/allchats`, config);
+            const res = await fetch(`${server.URL.local}/api/chat/allchats`, config);
 
             if (res.status === 401) HandleLogout()
 
@@ -318,7 +318,7 @@ const ChatProvider = ({ children }) => {
                 },
                 body: JSON.stringify({ chatId: chat._id })
             }
-            let res = await fetch(`${server.URL.production}/api/chat/archiveOrUnarchiveChat`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/archiveOrUnarchiveChat`, config);
 
             if (res.status === "401") HandleLogout();
 
@@ -345,7 +345,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ chatId: chat?._id, userId: user?._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/groupremove`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/groupremove`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -389,7 +389,7 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ chatId: chat?._id })
             }
 
-            const res = await fetch(`${server.URL.production}/api/chat/deletechat`, config);
+            const res = await fetch(`${server.URL.local}/api/chat/deletechat`, config);
 
             if (res.status === 401) HandleLogout();
 
@@ -424,6 +424,8 @@ const ChatProvider = ({ children }) => {
 
     function setChatsandMessages(json) {
 
+        setMessages(json.allMessages);
+
         chatMessages.forEach(chatMsg => {
             if (chatMsg.chatId === selectedChat?._id) {
 
@@ -449,15 +451,13 @@ const ChatProvider = ({ children }) => {
                 body: JSON.stringify({ chatId: selectedChat?._id, content, receiverIds: selectedChat.users.filter(u => u._id !== user?._id).map(u => u._id), msgType })
             }
 
-            let res = await fetch(`${server.URL.production}/api/message/sendmessage`, config);
+            let res = await fetch(`${server.URL.local}/api/message/sendmessage`, config);
 
             if (res.status === 401) return HandleLogout()
 
             let json = await res.json();
 
             if (!json.status) return showToast("Error", json.message, "error", 3000);
-
-            setMessages(json.allMessages);
 
             socket.emit('new message', json.fullmessage, json.allMessages)
 

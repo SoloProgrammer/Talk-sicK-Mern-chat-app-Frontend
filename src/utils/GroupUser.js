@@ -38,7 +38,7 @@ function GroupUser({ u }) {
                 body: JSON.stringify({ userId, chatId: selectedChat?._id })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/${action}`, config)
+            let res = await fetch(`${server.URL.local}/api/chat/${action}`, config)
 
             if (res.status === 401) HandleLogout()
 
@@ -80,7 +80,7 @@ function GroupUser({ u }) {
                 body: JSON.stringify({ chatId: selectedChat?._id, userId })
             }
 
-            let res = await fetch(`${server.URL.production}/api/chat/groupremove`, config);
+            let res = await fetch(`${server.URL.local}/api/chat/groupremove`, config);
 
             if (res.status === 401) HandleLogout();
 

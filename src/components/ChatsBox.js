@@ -92,6 +92,19 @@ function ChatsBox() {
     // eslint-disable-next-line
   }, [selectedChat?._id]);
 
+  const getFormmatedInfoMsg = (latestMessage) => {
+
+    const seperatedMsg = latestMessage?.content.message.split(' ')
+
+    return (seperatedMsg.slice(1, seperatedMsg.length - 1).join(' ')
+      +
+      " " + (seperatedMsg[seperatedMsg.length - 1] === user?.name.split(' ')[0]
+        ?
+        "you"
+        :
+        seperatedMsg[seperatedMsg.length - 1]))
+  }
+
   return (
     <Box pos={"relative"} display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
       <ChatsTopBar />
@@ -225,7 +238,7 @@ function ChatsBox() {
                               ?
                               chat.latestMessage.msgType && chat.latestMessage.msgType === 'info'
                                 ?
-                                <>{chat.latestMessage?.content.message.split(' ').slice(1).join(' ')}</>
+                                <>{getFormmatedInfoMsg(chat?.latestMessage)}</>
                                 :
                                 <>{
                                   (chat.latestMessage.content.img ? <><i className="fa-regular fa-image" />&nbsp;{chat.latestMessage.content.img.substring(chat.latestMessage.content.img.lastIndexOf('.') + 1) === "gif" ? "gif" : "image"}</> : Trimlastestmsg(chat.latestMessage?.content.message))

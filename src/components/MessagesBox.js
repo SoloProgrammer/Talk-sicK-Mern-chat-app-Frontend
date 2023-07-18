@@ -61,7 +61,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
           token: localStorage.getItem('token')
         }
       }
-      let res = await fetch(`${server.URL.production}/api/message/fetchmessages/${selectedChat._id}`, config)
+      let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChat._id}`, config)
 
       if (res.status === 401) HandleLogout()
 
