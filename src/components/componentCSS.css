@@ -44,6 +44,13 @@
     transform: scale(0);
 }
 
+.textEllipsis{
+    overflow-x: hidden;
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .chat_menu_top10{
     top: -10rem !important;
     transform-origin: bottom right !important;

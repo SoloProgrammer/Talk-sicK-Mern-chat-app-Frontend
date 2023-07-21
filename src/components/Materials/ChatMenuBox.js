@@ -97,8 +97,8 @@ function ChatMenuBox({ chat, i }) {
 
     return (
         <>
-            <Box id={`chatMenuIcon${i}`} className={`chatMenuIcon arrowIcon `} pos={"absolute"} right="6px" bottom={"4px"} cursor="pointer" onClick={(e) => handleChatMenuIconClick(e, i)}>
-                <Image width={"1rem"} src={downArrowCyan} />
+            <Box id={`chatMenuIcon${i}`} className={`chatMenuIcon arrowIcon `} pos={""} w={"1.5rem"} right="6px" bottom={"4px"} cursor="pointer" onClick={(e) => handleChatMenuIconClick(e, i)}>
+                <Image minW={"1rem"} width={"1rem"} src={downArrowCyan} />
                 <Box pos={"relative"}>
                     <Box id={`chatmenu${i}`}
                         className={`chat_menu flex`}

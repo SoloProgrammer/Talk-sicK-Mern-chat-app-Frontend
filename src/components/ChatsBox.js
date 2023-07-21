@@ -18,24 +18,6 @@ function ChatsBox() {
 
   const navigate = useNavigate();
 
-  const Trimlastestmsg = (msg) => {
-
-    // console.log(msg, selectedChat);
-
-    let trimInd = window.innerWidth > 1300 ? 50 : 30
-
-    if (window.innerWidth > 500 && window.innerWidth < 770) {
-      trimInd = 40
-    } else if (window.innerWidth > 770 && window.innerWidth < 1000) {
-      trimInd = 25
-    } else if (window.innerWidth > 1000 && window.innerWidth < 1300) {
-      trimInd = 35
-    } else if (window.innerWidth <= 500 && window.innerWidth > 390) trimInd = 29
-    else if (window.innerWidth <= 390) trimInd = 23
-
-    return msg.length <= trimInd ? msg : msg.slice(0, trimInd).concat("...")
-  }
-
   const getDateTime = (timeStamps) => {
     let date = new Date(timeStamps)
     let DateTime;
@@ -106,7 +88,7 @@ function ChatsBox() {
   }
 
   return (
-    <Box pos={"relative"} display={{ base: selectedChat ? "none" : "block", md: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "40%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
+    <Box pos={"relative"} display={{ base: selectedChat ? "none" : "block", md: selectedChat ? "none" : "block", lg: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "100%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
       <ChatsTopBar />
       <Box pos={"relative"} height={"calc(100% - 10.2rem)"} className="allchatsBox" paddingBottom={{ base: ".7rem", md: ".2rem" }}>
         {
@@ -177,11 +159,11 @@ function ChatsBox() {
                         </Avatar>
                       </Box>
 
-                      <Box width={{ base: "calc(100% - 15%)", md: "calc(100% - 12%)" }}>
-                        <Box display={"flex"} justifyContent="space-between" width={"100%"}>
-                          <Box fontSize={"1rem"} fontWeight="semibold">
-                            <Box className='flex' gap={".7rem"}>
-                              <Text>
+                      <Box width={{ base: "calc(100% - 3.8rem)", md: "calc(100% - 4rem)" }}>
+                        <Box display={"flex"} justifyContent="space-between" width={"100%"} marginBottom={".4rem"}>
+                          <Box fontSize={"1rem"} fontWeight="semibold" className='flex' gap={".4rem"} w={"100%"} justifyContent={"space-between"}>
+                            <Box className='flex' justifyContent={"flex-start"} gap={".7rem"}  maxW={"calc(100% - 7rem)"}>
+                              <Text className='textEllipsis'>
                                 {
                                   (window.innerWidth < 770 && getSender(chat, user)?.name.length) > 24
                                     ?
@@ -197,16 +179,15 @@ function ChatsBox() {
                                 </Tooltip>
                               }
                             </Box>
-                          </Box>
-                          {chat.latestMessage &&
-                            <>
-                              <Box className='flex' gap={".3rem"}>
-                                <Text
+                            {chat.latestMessage &&
+                              <Box className='flex' gap={".3rem"} translateX={"5px"}>
+                                <Text 
+                                  whiteSpace={"nowrap"}
                                   fontSize={".75rem"}
                                   fontWeight="normal"
                                   id={`DateTime${chat._id}`}
                                   padding={".0 .3rem"}
-                                  className={`transformPaddingPlus flex ${(!(chat.latestMessage?.seenBy.includes(user?._id)) && selectedChat?._id !== chat._id) && "unSeen"}`}>
+                                  className={`transformPaddingPlu flex ${(!(chat.latestMessage?.seenBy.includes(user?._id)) && selectedChat?._id !== chat._id) && "unSeen"}`}>
                                   <>{getDateTime(chat.latestMessage.createdAt)}</>
                                 </Text>
                                 {chat.unseenMsgsCountBy && ((chat.unseenMsgsCountBy[user?._id] > 0) && selectedChat?._id !== chat._id)
@@ -214,26 +195,28 @@ function ChatsBox() {
                                   <Box fontSize={".6rem"}
                                     marginRight={{ base: ".2rem", md: "0" }}
                                     boxShadow="0 0 1px rgba(0,0,0,.5)"
-                                    fontWeight="semibold" minW={"1.2rem"} padding={".08rem .26rem"} paddingTop=".18rem" id={`unseenMsgsCount${chat._id}`} className='flex transformPaddingPlus' background={"#0dcc74"} borderRadius="50%" >
-                                    <Text color={"white"}>{chat.unseenMsgsCountBy[user?._id] > 99 ? "99+" : chat.unseenMsgsCountBy[user?._id]}</Text>
+                                    fontWeight="semibold" minW={"1.2rem"} padding={".08rem .26rem"} paddingTop=".18rem" id={`unseenMsgsCount${chat._id}`} className='flex transformPaddingPlu' background={"#0dcc74"} borderRadius="50%" >
+                                    <Text whiteSpace={"nowrap"} color={"white"}>{chat.unseenMsgsCountBy[user?._id] > 99 ? "99+" : chat.unseenMsgsCountBy[user?._id]}</Text>
                                   </Box>
                                 }
                               </Box>
-
-                            </>
-
-                          }
+                            }
+                          </Box>
                         </Box>
 
                         {/* latestmessage */}
-                        <Box marginTop=".18rem" fontSize={".8rem"} fontWeight="black" display={"inline-block"}>
+                        <Box marginTop=".18rem" fontSize={".8rem"} fontWeight="black" display="flex" gap=".3rem" alignItems={'center'}>
                           <span>
-                            {chat.latestMessage
-                              &&
-                              (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "}
+                            {
+                              chat.latestMessage
+                                ?
+                                (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "
+                                :
+                                "Bot: "
+                            }
                           </span>
 
-                          <Text display={"inline-block"} fontWeight="normal" fontSize={".87rem"}>
+                          <Text width={{ base: "calc(100% - 12%)", md: "calc(100% - 8%)" }} display={"inline-block"} fontWeight="normal" fontSize={".87rem"} whiteSpace={"nowrap"} textOverflow={'ellipsis'} overflowX={"hidden"} paddingRight={".4rem"}>
                             {chat.latestMessage
                               ?
                               chat.latestMessage.msgType && chat.latestMessage.msgType === 'info'
@@ -241,25 +224,27 @@ function ChatsBox() {
                                 <>{getFormmatedInfoMsg(chat?.latestMessage)}</>
                                 :
                                 <>{
-                                  (chat.latestMessage.content.img ? <><i className="fa-regular fa-image" />&nbsp;{chat.latestMessage.content.img.substring(chat.latestMessage.content.img.lastIndexOf('.') + 1) === "gif" ? "gif" : "image"}</> : Trimlastestmsg(chat.latestMessage?.content.message))
+                                  (chat.latestMessage.content.img ? <><i className="fa-regular fa-image" />&nbsp;{chat.latestMessage.content.img.substring(chat.latestMessage.content.img.lastIndexOf('.') + 1) === "gif" ? "gif" : "image"}</> : chat.latestMessage?.content.message)
                                 }</>
                               :
                               "No message yet!"}
                           </Text>
+
+                          <Box w={"fit-content"} display={"flex"} marginBottom={"-15px"} marginRight={{ base: "-5px", md: "-10px" }}>
+                            {
+                              chat.pinnedBy?.includes(user?._id)
+                              &&
+                              <Tooltip label="pinned" fontSize={".7rem"} placement="top">
+                                <Box pos={""} width={"1.5rem"}>
+                                  <Image w=".8rem" src="https://cdn-icons-png.flaticon.com/512/1274/1274749.png" />
+                                </Box>
+                              </Tooltip>
+                            }
+
+                            <ChatMenuBox chat={chat} i={i} />
+                          </Box>
                         </Box>
                       </Box>
-
-                      {
-                        chat.pinnedBy?.includes(user?._id)
-                        &&
-                        <Tooltip label="pinned" fontSize={".7rem"} placement="top">
-                          <Box pos={"absolute"} right="2rem" bottom={"6px"}>
-                            <Image width=".8rem" src="https://cdn-icons-png.flaticon.com/512/1274/1274749.png" />
-                          </Box>
-                        </Tooltip>
-                      }
-
-                      <ChatMenuBox chat={chat} i={i} />
 
                     </Box>
                   )

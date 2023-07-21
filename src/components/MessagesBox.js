@@ -94,9 +94,10 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       scrollBottom("messagesDisplay")
 
     } catch (error) {
+      console.log(error);
       showToast("Error", error.message, "error", 3000);
       window.alert(`Error Unable to load messages - Please reload the page!`);
-      window.location.reload(0)
+      // window.location.reload(0)
     }
 
   }
@@ -502,7 +503,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                               boxShadow={"1px 1px 2px rgba(0,0,0,.1)"}
                               padding={".15rem 1.5rem"}
                               borderRadius={".5rem"}
-                              fontSize={".8rem"}
+                              fontSize={".75rem"}
                               fontWeight={"medium"}
                               margin={"0rem 0 .5rem 0"}
                             >

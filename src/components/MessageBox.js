@@ -260,7 +260,7 @@ function MessageBox() {
   }, [sendPic])
 
   return (
-    <Box overflow={"hidden"} display={{ base: selectedChat ? "flex" : "none", md: "flex" }} className='messagesBox' width={{ base: "100%", md: "60%", lg: "64%" }}>
+    <Box overflow={"hidden"} display={{ base: selectedChat ? "flex" : "none", md: selectedChat ? "flex" : "none", lg: "flex" }} className='messagesBox' width={{ base: "100%", md: "100%", lg: "64%" }}>
       {
         !selectedChat ?
           <Box zIndex={1}
