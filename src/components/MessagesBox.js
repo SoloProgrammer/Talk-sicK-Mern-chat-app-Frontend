@@ -1,4 +1,4 @@
-import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
+import { Avatar, Box, Image, Spinner, Text, Tooltip, flatten } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { downloadImage, imageActionBtns, seenCheckMark, unSeenCheckMark, zoomInImage, zoomOutImage } from '../configs/ImageConfigs'
@@ -15,6 +15,8 @@ import Linkify from 'react-linkify'
 
 var selectedChatCompare;
 var chatMessagesCompare;
+var skipFromCompare;
+var isObservred;
 
 function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
@@ -29,9 +31,91 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }, 0);
   }, [profile])
 
+
+  const MessagesBox = document.querySelector('.MessagesBox')
+
+  // const [observed, setObserved] = useState(false)
+  const TopMessageObserver = new IntersectionObserver((entries) => {
+    let TopMsg = entries[0]
+    // console.log(TopMsg.target,TopMsg.isIntersecting,isObservred);
+    if (TopMsg.isIntersecting && !isObservred) {
+      console.log("--", TopMsg.target);
+      // setObserved(prev => !prev)
+      TopMessageObserver.unobserve(TopMsg.target)
+      isObservred = true
+      fetchMoreMessages()
+    }
+  }, { threshold: .9, root: MessagesBox })
+
+  let topMsg = document.querySelector('.messagesDay');
+
+  console.log(skipFromCompare);
+  setTimeout(() => {
+    if (skipFromCompare > 0 && selectedChatCompare?.totalMessages >= messagesLimit && topMsg) {
+      TopMessageObserver.observe(topMsg)
+    }
+  }, 1000);
+
   const [messagesLoading, setMessagesLoading] = useState(false);
 
+  let messagesLimit = 15
+  const [skipFrom, setSkipFrom] = useState()
+
+  useEffect(() => {
+    skipFromCompare = skipFrom
+  }, [skipFrom])
+
+  // console.log(selectedChat?.totalMessages);
+  const fetchMoreMessages = async () => {
+    let config = {
+      headers: {
+        token: localStorage.getItem('token')
+      }
+    }
+
+    let remainingMessages = selectedChat?.totalMessages - chatMessagesCompare.filter(ch => ch.chatId === selectedChat?._id)[0].messages.length
+
+    if ((remainingMessages) < messagesLimit) {
+      messagesLimit = remainingMessages
+    }
+
+    let res = await fetch(`${server.URL.local}/api/message/fetchlimitedmessages/${selectedChat._id}?skip=${skipFromCompare}&limit=${messagesLimit}`, config)
+
+    messagesLimit = 15
+
+    if (res.status === 401) HandleLogout()
+
+    let json = await res.json();
+
+    if (!json.status) return showToast("Error", json.message, "error", 3000);
+
+    if (selectedChatCompare?._id === json.allMessages[0].chat._id) setMessages(prev => [...json.allMessages, ...prev]);
+
+    (!skipFromCompare || skipFromCompare > 0) && setSkipFrom(skipFromCompare >= messagesLimit ? (skipFromCompare - messagesLimit) : 0)
+
+    let updatedChatMsgs = chatMessagesCompare.map(chatMsg => {
+      if (chatMsg.chatId === selectedChat?._id) chatMsg.messages = [...json.allMessages, ...chatMsg.messages]
+      return chatMsg
+    })
+
+    console.log("9999999999999999999999999999", updatedChatMsgs.filter(ch => ch.chatId === selectedChat?._id)[0].messages.length);
+    setChatMessages(updatedChatMsgs)
+
+    isObservred = skipFromCompare > 0 ? false : true
+
+    setTimeout(() => {
+      if (!isObservred && skipFromCompare === 0 && topMsg) {
+        console.log("uiyff");
+        isObservred = false
+        TopMessageObserver.observe(document.querySelector('.messagesDay'))
+      }
+    }, 1000);
+
+  }
+
   const fetchMessages = async () => {
+
+    isObservred = false
 
     if (!(selectedChat?.latestMessage)) {
       setMessages([])
@@ -45,6 +129,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
         setMessages(chatMsg.messages);
         setIsFirstLoadOfMsgs(false)
         isChatMsg = true
+        if (skipFromCompare && skipFromCompare !== 0) setSkipFrom(selectedChat?.totalMessages - (chatMsg.messages.length))
       }
     });
 
@@ -61,7 +146,11 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
           token: localStorage.getItem('token')
         }
       }
-      let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChat._id}`, config)
+      // let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChat._id}`, config)
+
+      let skipFrom = selectedChat?.totalMessages - (selectedChat.totalMessages >= messagesLimit ? messagesLimit : selectedChat?.totalMessages)
+
+      let res = await fetch(`${server.URL.local}/api/message/fetchlimitedmessages/${selectedChat._id}?skip=${skipFrom}&limit=${messagesLimit}`, config)
 
       if (res.status === 401) HandleLogout()
 
@@ -71,6 +160,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
       if (selectedChatCompare?._id === json.allMessages[0].chat._id) setMessages(json.allMessages);
       else setMessagesLoading(false)
+
+      selectedChat.totalMessages > messagesLimit && setSkipFrom(selectedChat?.totalMessages - (json.allMessages.length + messagesLimit))
 
       setMessagesLoading(false);
 
@@ -346,7 +437,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                 ?
                 messages.map((m, i) => {
                   return (
-                    <Box key={i}>
+                    <Box key={i} className='singleMessageBar'>
                       {
                         isFirstLoadOfMsgs && isFirstUnseenMessage(m, messages, i, user) && m.sender._id !== user?._id
                         &&

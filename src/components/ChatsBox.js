@@ -124,7 +124,7 @@ function ChatsBox() {
             &&
             <Box overflowY={"auto"} height={"100%"} display="flex" flexDir={"column"} gap=".2rem" margin=".2rem" className='allchats' transition={".6s"}>
               {
-                // if we have something in the archivedChats and viewArchivedChats is sets to true then display ArchivedChats else unArchivedchats
+                // if we have something in the archivedChats and viewArchivedChats is sets to true then display ArchivedChats else unArchivedchats/chats
                 (archivedChats.length && viewArchivedChats ? archivedChats : chats)?.map((chat, i) => {
                   return (
                     <Box
