@@ -251,7 +251,14 @@
 }
 
 #messagesDisplay::-webkit-scrollbar {
-    display: none;
+    width: 8px;
+    padding-right: .3rem;
+
+}
+#messagesDisplay::-webkit-scrollbar-thumb {
+    width: 23px;
+    background: rgb(188, 188, 188);
+    
 }
 
 .profileDrawer::-webkit-scrollbar,.ChatsSkeletonBox::-webkit-scrollbar {
@@ -333,6 +340,9 @@ textarea {
 }
 
 @media (max-width:770px) {
+    #messagesDisplay::-webkit-scrollbar {
+      display: none;
+    }
     .GroupUsersBox::-webkit-scrollbar {
         display: none;
         background: transparent;

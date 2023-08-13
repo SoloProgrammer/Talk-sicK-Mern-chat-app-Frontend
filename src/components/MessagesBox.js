@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { downloadImage, imageActionBtns, seenCheckMark, unSeenCheckMark, zoomInImage, zoomOutImage } from '../configs/ImageConfigs'
 import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay, isFirstUnseenMessage, islastMsgOfSender, islastRegularMsgOfSender } from '../configs/messageConfigs'
-import { scrollBottom, scrollTop } from '../configs/scrollConfigs'
+import { scrollBottom, scrollRevive, scrollTop } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
 import { HandleLogout } from '../configs/userConfigs'
 import { defaultPic } from '../configs/ImageConfigs'
@@ -14,9 +14,12 @@ import MessageImageViewBox from './MessageImageViewBox'
 import Linkify from 'react-linkify'
 
 var selectedChatCompare;
+var isFetchMoreMessages;
 var chatMessagesCompare;
 var skipFromCompare;
 var isObservred;
+var messageBoxPrevScrollHeight;
+var TopMsg;
 
 function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
@@ -31,119 +34,130 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }, 0);
   }, [profile])
 
-
   const MessagesBox = document.querySelector('.MessagesBox')
+
+  const getSelectedChatDownloadedMsgs = () => {
+    // it will return all the already downloaded messages from the server which is cached in the chatMessagesCompare
+    return chatMessagesCompare?.filter(ch => ch.chatId === selectedChatCompare?._id)[0]?.messages
+  }
+
+  const getMessagesContainer = () =>{
+    return document.querySelector('#messagesDisplay')
+  }
 
   // const [observed, setObserved] = useState(false)
   const TopMessageObserver = new IntersectionObserver((entries) => {
-    let TopMsg = entries[0]
+    TopMsg = entries[0]
     // console.log(TopMsg.target,TopMsg.isIntersecting,isObservred);
     if (TopMsg.isIntersecting && !isObservred) {
-      console.log("--", TopMsg.target);
       // setObserved(prev => !prev)
-      TopMessageObserver.unobserve(TopMsg.target)
-      isObservred = true
-      fetchMoreMessages()
+      if (getSelectedChatDownloadedMsgs().length !== selectedChatCompare?.totalMessages) {
+        TopMessageObserver.unobserve(TopMsg.target)
+        isObservred = true
+        fetchMoreMessages()
+      }
     }
   }, { threshold: .9, root: MessagesBox })
 
-  let topMsg = document.querySelector('.messagesDay');
-
-  console.log(skipFromCompare, selectedChatCompare?.totalMessages, chatMessagesCompare);
-  setTimeout(() => {
-    // console.log(skipFromCompare);
-    if (skipFromCompare > 0 && selectedChatCompare?.totalMessages >= messagesLimit && topMsg) {
-      TopMessageObserver.observe(topMsg)
-    }
-  }, 1000);
-
-  const [messagesLoading, setMessagesLoading] = useState(false);
+  let [topMsgDate, setTopMsgDate] = useState(document.querySelector('.messagesDay'));
 
   let messagesLimit = 15
   const [skipFrom, setSkipFrom] = useState()
 
   useEffect(() => {
     skipFromCompare = skipFrom
-  }, [skipFrom])
-
-  // console.log(selectedChat?.totalMessages);
-  const fetchMoreMessages = async () => {
-    let config = {
-      headers: {
-        token: localStorage.getItem('token')
-      }
-    }
-
-    let chatMsgs = chatMessagesCompare.filter(ch => ch.chatId === selectedChatCompare?._id)[0].messages
-
-    console.log("skipFromCompare", skipFromCompare, selectedChatCompare.totalMessages - chatMsgs.length);
-
-
-    if (skipFromCompare === (selectedChatCompare?.totalMessages - chatMsgs.length)) {
-      if (skipFromCompare < messagesLimit) {
-        skipFromCompare = 0
-        setSkipFrom(0)
-      }
-      else {
-        skipFromCompare = skipFromCompare - messagesLimit
-        setSkipFrom(skipFromCompare)
-      }
-      console.log("====", skipFromCompare);
-    }
-
-    let remainingMessages = selectedChatCompare?.totalMessages - chatMsgs.length
-
-    if ((remainingMessages) < messagesLimit) {
-      messagesLimit = remainingMessages
-    }
-
-    let res = await fetch(`${server.URL.local}/api/message/fetchlimitedmessages/${selectedChatCompare._id}?skip=${skipFromCompare}&limit=${messagesLimit}`, config)
-
-    messagesLimit = 15
-
-    if (res.status === 401) HandleLogout()
-
-    let json = await res.json();
-
-    if (!json.status) return showToast("Error", json.message, "error", 3000);
-
-    console.log(selectedChat?._id, json.allMessages[0].chat._id, selectedChatCompare?._id);
-
-    // if (selectedChat?._id === json.allMessages[0].chat._id) ;
-
-    (!skipFromCompare || skipFromCompare > 0) && setSkipFrom(skipFromCompare >= messagesLimit ? (skipFromCompare - messagesLimit) : 0)
-
-    let updatedChatMsgs = chatMessagesCompare.map(chatMsg => {
-      console.log(selectedChatCompare, chatMessagesCompare);
-      if (chatMsg.chatId === selectedChatCompare?._id) {
-        chatMsg.messages = [...json.allMessages, ...chatMsg.messages]
-        setMessages(chatMsg.messages)
-      }
-      return chatMsg
-    })
-
-    setChatMessages(updatedChatMsgs)
-
-    isObservred = skipFromCompare > 0 ? false : true
-
     setTimeout(() => {
-      if (!isObservred && topMsg && selectedChatCompare?.totalMessages !== chatMsgs.length) {
-        console.log("uiyff");
-        isObservred = false
-        TopMessageObserver.observe(document.querySelector('.messagesDay'))
+      if (skipFromCompare > 0 && selectedChatCompare?.totalMessages >= messagesLimit && topMsgDate && selectedChatCompare?.totalMessages !== getSelectedChatDownloadedMsgs()?.length) {
+        // console.log("1000 jke baad", skipFromCompare);
+        TopMessageObserver.observe(topMsgDate)
       }
     }, 1000);
+  }, [skipFrom, topMsgDate])
+
+
+  // console.log(selectedChat?.totalMessages);
+  const [loading, setLoading] = useState(false)
+  const fetchMoreMessages = async () => {
+    try {
+
+      let messgesContainer = getMessagesContainer();
+      messageBoxPrevScrollHeight = messgesContainer?.scrollHeight
+
+      setIsFirstLoadOfMsgs(false)
+      isFetchMoreMessages = true
+      let config = {
+        headers: {
+          token: localStorage.getItem('token')
+        }
+      }
+
+      let chatMsgs = getSelectedChatDownloadedMsgs()
+
+      if (skipFromCompare === (selectedChatCompare?.totalMessages - chatMsgs.length)) {
+        if (skipFromCompare < messagesLimit) {
+          skipFromCompare = 0
+          setSkipFrom(0)
+        }
+        else {
+          skipFromCompare = skipFromCompare - messagesLimit
+          setSkipFrom(skipFromCompare)
+        }
+      }
+
+      let remainingMessages = selectedChatCompare?.totalMessages - chatMsgs.length
+
+      if ((remainingMessages) < messagesLimit) {
+        messagesLimit = remainingMessages
+      }
+      setLoading(true)
+
+      let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChatCompare._id}?skip=${skipFromCompare}&limit=${messagesLimit}`, config)
+
+      messagesLimit = 15
+
+      if (res.status === 401) HandleLogout()
+
+      let json = await res.json();
+
+      if (!json.status) return showToast("Error", json.message, "error", 3000)
+
+        // if (selectedChat?._id === json.allMessages[0].chat._id) ;
+        (!skipFromCompare || skipFromCompare > 0) && setSkipFrom(skipFromCompare >= messagesLimit ? (skipFromCompare - messagesLimit) : 0)
+
+      setLoading(false)
+
+      let updatedChatMsgs = chatMessagesCompare.map(chatMsg => {
+        if (chatMsg.chatId === selectedChatCompare?._id) {
+          chatMsg.messages = [...json.allMessages, ...chatMsg.messages]
+          setMessages(chatMsg.messages)
+        }
+        return chatMsg
+      })
+
+      setChatMessages(updatedChatMsgs)
+
+      isObservred = skipFromCompare > 0 ? false : true
+
+      setTimeout(() => {
+        if (!isObservred && topMsgDate && selectedChatCompare?.totalMessages !== chatMsgs.length) {
+          // console.log("uiyff");
+          isObservred = false
+          TopMessageObserver.observe(document.querySelector('.messagesDay'))
+        }
+      }, 1000);
+    } catch (error) {
+      setLoading(false)
+      console.log(error);
+    }
 
   }
 
+  const [messagesLoading, setMessagesLoading] = useState(false);
   const fetchMessages = async () => {
 
     isObservred = false
 
-    if (!(selectedChat?.latestMessage)) {
-      setMessages([])
-      return
-    }
+    if (!(selectedChat?.totalMessages)) return setMessages([])
     // setMessagesLoading(true)
     let isChatMsg = false
     chatMessages.forEach((chatMsg, _) => {
@@ -152,7 +166,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
         setMessages(chatMsg.messages);
         setIsFirstLoadOfMsgs(false)
         isChatMsg = true
-        console.log("---------------", selectedChatCompare, selectedChatCompare?.totalMessages - (chatMsg.messages.length));
         setSkipFrom(selectedChatCompare?.totalMessages - (chatMsg.messages.length))
       }
     });
@@ -172,9 +185,10 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       }
       // let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChat._id}`, config)
 
+      // here we are not directly subtracting messageslimit from totolmessages as if totalmessages is less than messagesLimit like 8 < 15 then skipFrom value will be in negative which will throw error, so instead we checking that if totalmessages is greater or equal to messages limit than subtract the messageslimit or else subtract the totalmessages itself so skipfrom value will be 0 so all the messages will be fetch  
       let skipFrom = selectedChat?.totalMessages - (selectedChat.totalMessages >= messagesLimit ? messagesLimit : selectedChat?.totalMessages)
 
-      let res = await fetch(`${server.URL.local}/api/message/fetchlimitedmessages/${selectedChat._id}?skip=${skipFrom}&limit=${messagesLimit}`, config)
+      let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChat._id}?skip=${skipFrom}&limit=${messagesLimit}`, config)
 
       if (res.status === 401) HandleLogout()
 
@@ -218,18 +232,39 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   }
 
   useEffect(() => {
+
+    let messagesContainer =getMessagesContainer()
+    let messgeBoxCurrScrollHeight = messagesContainer?.scrollHeight
+    let toScrollVal = messgeBoxCurrScrollHeight - messageBoxPrevScrollHeight
+
+    // console.log(toScrollVal, currentMessgeBoxScrollHeight, messageBoxPrevScrollHeight);
+
     setTimeout(() => {
-      scrollBottom("messagesDisplay")
-    }, 20);
+      if (isFirstLoadOfMsgs || skipFromCompare === (selectedChatCompare?.totalMessages - messagesLimit) || !isFetchMoreMessages) setTimeout(() => scrollBottom("messagesDisplay"), 20);
+      else scrollRevive(messagesContainer, toScrollVal)
+      isFetchMoreMessages = false
+    }, 0);
+
+    setTopMsgDate(document.querySelector('.messagesDay'))
     // eslint-disable-next-line
   }, [messages])
 
   useEffect(() => {
-    // let chatMsg = chatMessagesCompare?.
-    // setSkipFrom(selectedChatCompare?.totalMessages - )
+    isFetchMoreMessages = false
     selectedChatCompare = selectedChat
+    let chatMsg = chatMessagesCompare?.filter(chMsh => chMsh.chatId === selectedChat?._id)[0]?.messages
+    if (chatMsg?.length === selectedChat?.totalMessages) {
+      isObservred = true
+      // console.log("isObserved");
+    }
+    // setSkipFrom(selectedChatCompare?.totalMessages - )
     selectedChat && fetchMessages()
     socket?.emit('join chat', selectedChat?._id)
+
+    setTimeout(() => {
+      scrollBottom("messagesDisplay")
+    }, 30);
+
     // eslint-disable-next-line
   }, [selectedChat?._id])
 
@@ -240,8 +275,10 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   let avatarBoxs = document.querySelectorAll('.avatarBox');
 
   function hideAvatarBoxs() {
-    avatarBoxs.forEach(elm => elm.style.display = 'none')
-    setAvatarBoxLoading(true)
+    if (!avatarBoxLoading) {
+      setAvatarBoxLoading(true)
+      avatarBoxs.forEach(elm => elm.style.display = 'none')
+    }
   }
 
   function startaChat(avatarUser) {
@@ -308,7 +345,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   const [scrollToTop, setScrollToTop] = useState(false);
 
-  let messagesContainer = document.querySelector('#messagesDisplay')
+  let messagesContainer =getMessagesContainer()
   // let [lastScrollvalue, setLastScrollvalue] = useState(0);
   let lastScrollvalue = 0
 
@@ -444,6 +481,15 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
           :
           <Box pos={"relative"} id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".3rem .4rem"} paddingTop=".6rem">
 
+
+            {
+              loading
+              &&
+              <Box position={'absolute'} zIndex={"99"} textColor={"blackAlpha.700"} display={"flex"} gap={".2rem"} boxShadow="0 0 3px rgba(0,0,0,.3)" width={"fit-content"} bg={"white"} left={"50%"} transform={'translate(-50%,0)'} top={"3px"} borderRadius={"1rem"} padding={".2rem 1rem"} fontSize={'.8rem'} alignItems={"center"}>
+                <i>Loading History...</i>
+                <img src="https://www.oceaneering.com/wp-content/plugins/bbpowerpack/assets/images/spinner.gif" style={{ width: "17px", height:"17px" }} alt="" />
+              </Box>
+            }
             {
               messages.length > 12 &&
               <Box position={'sticky'} boxShadow="0 0 3px rgba(0,0,0,.3)" cursor={"pointer"} top="0px" right={"20px"} zIndex="1" padding={".7rem"} background="white" borderRadius={"50%"} w="fit-content">

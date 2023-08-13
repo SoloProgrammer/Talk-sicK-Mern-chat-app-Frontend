@@ -61,7 +61,6 @@ const ChatProvider = ({ children }) => {
             socket.on('connected', () => setSocketConnected(true))
             socket.on('activeUsers', (users) => setOnlineUsers(users));
         }
-
         // eslint-disable-next-line 
     }, [user]);
 
