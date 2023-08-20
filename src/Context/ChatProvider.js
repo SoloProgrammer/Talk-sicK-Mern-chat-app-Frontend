@@ -56,10 +56,10 @@ const ChatProvider = ({ children }) => {
         let socketCreated = io(ENDPOINT, { transports: ['websocket', 'polling'] });
         setSocket(socketCreated)
 
-        if (socket) {
-            socket.emit('setup', user);
-            socket.on('connected', () => setSocketConnected(true))
-            socket.on('activeUsers', (users) => setOnlineUsers(users));
+        if (user) {
+            socketCreated?.emit('setup', user);
+            socketCreated?.on('connected', () => setSocketConnected(true))
+            socketCreated?.on('activeUsers', (users) => setOnlineUsers(users));
         }
         // eslint-disable-next-line 
     }, [user]);
@@ -458,7 +458,7 @@ const ChatProvider = ({ children }) => {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000);
 
-            socket.emit('new message', json.fullmessage, json.allMessages)
+            socket.emit('new message', json.fullmessage)
 
             setChatsandMessages(json)
 

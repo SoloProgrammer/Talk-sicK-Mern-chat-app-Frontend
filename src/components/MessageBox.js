@@ -107,11 +107,14 @@ function MessageBox() {
     // eslint-disable-next-line 
   }, [notifications])
 
-
+  const getSelectedChatDownloadedMsgs = () => {
+    // it will return all the already downloaded messages from the server which is cached in the chatMessagesCompare
+    return chatMessagesCompare?.filter(ch => ch.chatId === selectedChatCompare?._id)[0]?.messages
+  }
   // reciveing real time/live message from users with the help of socket servers!....................................................
   useEffect(() => {
 
-    const messageReceivedEventListener = (newMessageRecieved, newMessages, user) => {
+    const messageReceivedEventListener = (newMessageRecieved, user) => {
 
       !chatsFetchCount && chatsFetchCount++
 
@@ -145,7 +148,8 @@ function MessageBox() {
       }
       else {
         // console.log("seenMessge");
-        setMessages([...newMessages]);
+        let chatMsgs = getSelectedChatDownloadedMsgs()
+        setMessages([...chatMsgs, newMessageRecieved]);
         seenMessages(selectedChatCompare);
         if (chatsFetchCount === 1) {
           refreshChats(user, selectedChatCompare);
@@ -163,7 +167,7 @@ function MessageBox() {
 
           if (cmp.chatId === selectedChatCompare._id) {
 
-            let chatWithNewMsgs = { chatId: selectedChatCompare._id, messages: [...newMessages] }
+            let chatWithNewMsgs = { chatId: selectedChatCompare._id, messages: [...chatMsgs, newMessageRecieved] }
 
             // console.log("chatwithnewMessage", chatWithNewMsg);
 
@@ -214,16 +218,16 @@ function MessageBox() {
       if (!json.status) return showToast("Error", json.message, "error", 3000);
 
       messageSentBeep?.play();
-      messageSentBeep.remove()
+      messageSentBeep?.remove()
 
-      socket.emit('new message', json.fullmessage, json.allMessages)
+      socket.emit('new message', json.fullmessage)
 
-      setMessages(json.allMessages);
+      setMessages((prevMessages) => [...prevMessages, json.fullmessage]);
 
       chatMessages.forEach(chatMsg => {
         if (chatMsg.chatId === selectedChat?._id) {
 
-          chatMsg = { chatId: selectedChat._id, messages: [...json.allMessages] }
+          chatMsg = { chatId: selectedChat._id, messages: [...chatMsg.messages, json.fullmessage] }
 
           setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat._id)), chatMsg]) // cm := ChatMessage
         }

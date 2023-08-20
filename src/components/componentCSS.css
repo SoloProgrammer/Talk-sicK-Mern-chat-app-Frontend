@@ -258,7 +258,6 @@
 #messagesDisplay::-webkit-scrollbar-thumb {
     width: 23px;
     background: rgb(188, 188, 188);
-    
 }
 
 .profileDrawer::-webkit-scrollbar,.ChatsSkeletonBox::-webkit-scrollbar {

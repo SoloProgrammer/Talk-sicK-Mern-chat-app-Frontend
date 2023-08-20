@@ -8,7 +8,7 @@ export const scrollTop = (elmByid, ScrollBehavoiur = "auto") => {
     elm?.scrollTo({ top: -elm.scrollHeight, behavior: ScrollBehavoiur })
 }
 
-export const scrollRevive = (elm, scrollTo) => {
+export const scrollIntoView = (elm, scrollTo) => {
     // console.log(scrollTo);
     elm.scrollTop = scrollTo
 } 

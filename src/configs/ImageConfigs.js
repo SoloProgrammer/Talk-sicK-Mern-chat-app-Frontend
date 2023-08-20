@@ -47,9 +47,8 @@ window.addEventListener('click', () => {
     zoomCount = .5
 })
 
-export function zoomInImage() {
+export function zoomInImage(img) {
     if (zoomCount >= 3.5) return
-    let img = document.querySelector('.messageImage')
 
     if (zoomCount === 1) zoomCount += .5
     else zoomCount += 1
@@ -57,9 +56,8 @@ export function zoomInImage() {
     img.style.transform = `scale(${zoomCount})`
 }
 
-export function zoomOutImage() {
+export function zoomOutImage(img) {
     if (zoomCount <= 1) return
-    let img = document.querySelector('.messageImage')
 
     if (zoomCount === 1.5) zoomCount -= .5
     else zoomCount -= 1

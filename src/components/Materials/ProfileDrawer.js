@@ -282,7 +282,7 @@ function ProfileDrawer({ width, align = "right" }) {
     return (
         <Box
             className={`profileDrawer ${align === "right" ? "right0 translateXFull maxWidth520" : "left0 translateXFull-"}`}
-            width={{ base: "full", md: width }}
+            width={'full'}
             pos={"absolute"}
             transition="all .3s"
             zIndex={"2"}

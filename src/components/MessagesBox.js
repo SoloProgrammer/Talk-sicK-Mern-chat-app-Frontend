@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { downloadImage, imageActionBtns, seenCheckMark, unSeenCheckMark, zoomInImage, zoomOutImage } from '../configs/ImageConfigs'
 import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay, isFirstUnseenMessage, islastMsgOfSender, islastRegularMsgOfSender } from '../configs/messageConfigs'
-import { scrollBottom, scrollRevive, scrollTop } from '../configs/scrollConfigs'
+import { scrollBottom, scrollIntoView, scrollTop } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
 import { HandleLogout } from '../configs/userConfigs'
 import { defaultPic } from '../configs/ImageConfigs'
@@ -13,13 +13,7 @@ import ProfileDrawer from './Materials/ProfileDrawer'
 import MessageImageViewBox from './MessageImageViewBox'
 import Linkify from 'react-linkify'
 
-var selectedChatCompare;
-var isFetchMoreMessages;
-var chatMessagesCompare;
-var skipFromCompare;
-var isObservred;
-var messageBoxPrevScrollHeight;
-var TopMsg;
+var selectedChatCompare, isFetchMoreMessages, chatMessagesCompare, skipFromCompare, isObservred, messageBoxPrevScrollHeight, TopMsgDateElm, TopMessageObserver;
 
 function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
@@ -34,46 +28,50 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }, 0);
   }, [profile])
 
-  const MessagesBox = document.querySelector('.MessagesBox')
 
   const getSelectedChatDownloadedMsgs = () => {
     // it will return all the already downloaded messages from the server which is cached in the chatMessagesCompare
     return chatMessagesCompare?.filter(ch => ch.chatId === selectedChatCompare?._id)[0]?.messages
   }
 
-  const getMessagesContainer = () =>{
-    return document.querySelector('#messagesDisplay')
-  }
-
-  // const [observed, setObserved] = useState(false)
-  const TopMessageObserver = new IntersectionObserver((entries) => {
-    TopMsg = entries[0]
-    // console.log(TopMsg.target,TopMsg.isIntersecting,isObservred);
-    if (TopMsg.isIntersecting && !isObservred) {
-      // setObserved(prev => !prev)
-      if (getSelectedChatDownloadedMsgs().length !== selectedChatCompare?.totalMessages) {
-        TopMessageObserver.unobserve(TopMsg.target)
-        isObservred = true
-        fetchMoreMessages()
-      }
-    }
-  }, { threshold: .9, root: MessagesBox })
-
-  let [topMsgDate, setTopMsgDate] = useState(document.querySelector('.messagesDay'));
+  const getMessagesContainer = () => document.querySelector('#messagesDisplay')
 
   let messagesLimit = 15
   const [skipFrom, setSkipFrom] = useState()
 
+  // Observer useEffect....
+  useEffect(() => {
+    // Creating an observer object only once when the messgesComponent loads first time!
+    TopMessageObserver = new IntersectionObserver((entries) => {
+      // console.log('hey');
+      let TopMsg = entries[0]
+      // console.log(TopMsg.target,TopMsg.isIntersecting,isObservred);
+      if (TopMsg.isIntersecting && !isObservred) {
+        if (getSelectedChatDownloadedMsgs().length !== selectedChatCompare?.totalMessages) {
+          TopMessageObserver.unobserve(TopMsg.target)
+          isObservred = true
+          fetchMoreMessages()
+        }
+      }
+    }, { threshold: .9, root: getMessagesContainer() })
+
+    // Removing previously created Obserber object when component unmounted
+    return () => TopMessageObserver.disconnect()
+    // eslint-disable-next-line
+  }, [])
+
   useEffect(() => {
     skipFromCompare = skipFrom
-    setTimeout(() => {
-      if (skipFromCompare > 0 && selectedChatCompare?.totalMessages >= messagesLimit && topMsgDate && selectedChatCompare?.totalMessages !== getSelectedChatDownloadedMsgs()?.length) {
-        // console.log("1000 jke baad", skipFromCompare);
-        TopMessageObserver.observe(topMsgDate)
-      }
-    }, 1000);
-  }, [skipFrom, topMsgDate])
 
+    setTimeout(() => {
+
+      if (skipFromCompare > 0 && selectedChatCompare?.totalMessages >= messagesLimit && TopMsgDateElm && selectedChatCompare?.totalMessages !== getSelectedChatDownloadedMsgs()?.length) {
+        TopMessageObserver.observe(TopMsgDateElm)
+      }
+
+    }, 1000);
+    // eslint-disable-next-line
+  }, [skipFrom, TopMsgDateElm])
 
   // console.log(selectedChat?.totalMessages);
   const [loading, setLoading] = useState(false)
@@ -139,10 +137,11 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       isObservred = skipFromCompare > 0 ? false : true
 
       setTimeout(() => {
-        if (!isObservred && topMsgDate && selectedChatCompare?.totalMessages !== chatMsgs.length) {
+        if (!isObservred && TopMsgDateElm && selectedChatCompare?.totalMessages !== chatMsgs.length) {
           // console.log("uiyff");
           isObservred = false
-          TopMessageObserver.observe(document.querySelector('.messagesDay'))
+          TopMsgDateElm = document.querySelector('.messagesDay')
+          TopMessageObserver.observe(TopMsgDateElm)
         }
       }, 1000);
     } catch (error) {
@@ -217,6 +216,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
       // Here we are checking if latestMessage from all the messages has not seen by the loggedIn user than only hit the seenMessaged API call else if all the messages are seen by the user than ignore the API call!
       if (json.allMessages[json.allMessages.length - 1].chat.unseenMsgsCountBy[user?._id] > 0) {
+        console.log('okay inside this');
         seenMessages(selectedChat, updatedChatMsgs);
       }
 
@@ -230,34 +230,35 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }
 
   }
-
+  console.log(messages);
   useEffect(() => {
 
-    let messagesContainer =getMessagesContainer()
+    let messagesContainer = getMessagesContainer()
+
+    // Getting current scroll height of messagesContainer after new messges are loaded...!
     let messgeBoxCurrScrollHeight = messagesContainer?.scrollHeight
+
+    // Substracting the prevScrollHeight from currScrollHeight 
     let toScrollVal = messgeBoxCurrScrollHeight - messageBoxPrevScrollHeight
 
     // console.log(toScrollVal, currentMessgeBoxScrollHeight, messageBoxPrevScrollHeight);
 
     setTimeout(() => {
       if (isFirstLoadOfMsgs || skipFromCompare === (selectedChatCompare?.totalMessages - messagesLimit) || !isFetchMoreMessages) setTimeout(() => scrollBottom("messagesDisplay"), 20);
-      else scrollRevive(messagesContainer, toScrollVal)
+      else scrollIntoView(messagesContainer, toScrollVal)
       isFetchMoreMessages = false
     }, 0);
 
-    setTopMsgDate(document.querySelector('.messagesDay'))
+    TopMsgDateElm = document.querySelector('.messagesDay')
     // eslint-disable-next-line
   }, [messages])
 
   useEffect(() => {
     isFetchMoreMessages = false
     selectedChatCompare = selectedChat
-    let chatMsg = chatMessagesCompare?.filter(chMsh => chMsh.chatId === selectedChat?._id)[0]?.messages
-    if (chatMsg?.length === selectedChat?.totalMessages) {
-      isObservred = true
-      // console.log("isObserved");
-    }
-    // setSkipFrom(selectedChatCompare?.totalMessages - )
+
+    if (getSelectedChatDownloadedMsgs()?.length === selectedChat?.totalMessages) isObservred = true
+
     selectedChat && fetchMessages()
     socket?.emit('join chat', selectedChat?._id)
 
@@ -345,8 +346,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   const [scrollToTop, setScrollToTop] = useState(false);
 
-  let messagesContainer =getMessagesContainer()
-  // let [lastScrollvalue, setLastScrollvalue] = useState(0);
+  let messagesContainer = getMessagesContainer()
+
   let lastScrollvalue = 0
 
   messagesContainer?.addEventListener('scroll', () => {
@@ -372,10 +373,11 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   const [msgImg, setMsgImg] = useState(null);
 
   function handleImgActionCLick(action, src) {
-
     if (action === "Download") downloadImage(src)
-    if (action === "Zoom-in") zoomInImage()
-    if (action === "Zoom-out") zoomOutImage()
+
+    let img = document.querySelector('.messageImage')
+    if (action === "Zoom-in") zoomInImage(img)
+    if (action === "Zoom-out") zoomOutImage(img)
 
   }
 
@@ -487,7 +489,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
               &&
               <Box position={'absolute'} zIndex={"99"} textColor={"blackAlpha.700"} display={"flex"} gap={".2rem"} boxShadow="0 0 3px rgba(0,0,0,.3)" width={"fit-content"} bg={"white"} left={"50%"} transform={'translate(-50%,0)'} top={"3px"} borderRadius={"1rem"} padding={".2rem 1rem"} fontSize={'.8rem'} alignItems={"center"}>
                 <i>Loading History...</i>
-                <img src="https://www.oceaneering.com/wp-content/plugins/bbpowerpack/assets/images/spinner.gif" style={{ width: "17px", height:"17px" }} alt="" />
+                <img src="https://www.oceaneering.com/wp-content/plugins/bbpowerpack/assets/images/spinner.gif" style={{ width: "17px", height: "17px" }} alt="" />
               </Box>
             }
             {
@@ -559,6 +561,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                   justifyContent={m.sender._id === user?._id && "flex-end"}>
                                   <Tooltip isDisabled={isHoverDisable} hasArrow label={selectedChat?.isGroupchat ? (user?._id === m.sender._id ? "My Profile" : m.sender.name) : (user?._id === m.sender._id ? "My Profile" : m.sender.name)} placement="top">
                                     <Avatar
+                                      loading='lazy'
                                       onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}
                                       pos="relative" cursor={"pointer"} size={'sm'} src={m.sender._id === user?._id ? user?.avatar : m.sender.avatar || defaultPic} >
                                       {
