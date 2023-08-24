@@ -150,7 +150,6 @@ function Chatpage() {
     // eslint-disable-next-line
   }, [isfetchChats, user]);
 
-
   let elms = document.querySelectorAll('.chat_menu');
   document.addEventListener('click', () => {
     elms.forEach(item => {

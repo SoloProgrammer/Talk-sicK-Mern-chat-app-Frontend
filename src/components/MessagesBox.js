@@ -22,16 +22,37 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   const navigate = useNavigate();
 
+  const loadMessages = async (chatId, skip, limit) => {
+    skip = skip || 0
+    console.log('------------------------', skip, limit);
+    let config = {
+      headers: {
+        token: localStorage.getItem('token')
+      }
+    }
+    let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${chatId}?skip=${skip}&limit=${limit}`, config)
+
+    messagesLimit = 15
+
+    if (res.status === 401) HandleLogout()
+
+    let json = await res.json();
+
+    if (!json.status) return showToast("Error", json.message, "error", 3000)
+
+    return json.allMessages
+  }
+
   useEffect(() => {
     setTimeout(() => {
       document.querySelector('.profileDrawer')?.classList.remove('translateXFull')
     }, 0);
   }, [profile])
 
-
-  const getSelectedChatDownloadedMsgs = () => {
+  const getSelectedChatDownloadedMsgs = (chatId = selectedChatCompare?._id) => {
+    console.log(chatMessagesCompare,"---");
     // it will return all the already downloaded messages from the server which is cached in the chatMessagesCompare
-    return chatMessagesCompare?.filter(ch => ch.chatId === selectedChatCompare?._id)[0]?.messages
+    return chatMessagesCompare?.filter(ch => ch.chatId === chatId)[0]?.messages
   }
 
   const getMessagesContainer = () => document.querySelector('#messagesDisplay')
@@ -47,7 +68,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       let TopMsg = entries[0]
       // console.log(TopMsg.target,TopMsg.isIntersecting,isObservred);
       if (TopMsg.isIntersecting && !isObservred) {
-        if (getSelectedChatDownloadedMsgs().length !== selectedChatCompare?.totalMessages) {
+        if (getSelectedChatDownloadedMsgs()?.length !== selectedChatCompare?.totalMessages) {
           TopMessageObserver.unobserve(TopMsg.target)
           isObservred = true
           fetchMoreMessages()
@@ -83,11 +104,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
       setIsFirstLoadOfMsgs(false)
       isFetchMoreMessages = true
-      let config = {
-        headers: {
-          token: localStorage.getItem('token')
-        }
-      }
 
       let chatMsgs = getSelectedChatDownloadedMsgs()
 
@@ -109,24 +125,18 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       }
       setLoading(true)
 
-      let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChatCompare._id}?skip=${skipFromCompare}&limit=${messagesLimit}`, config)
+      const messages = await loadMessages(selectedChatCompare?._id, skipFromCompare, messagesLimit)
 
-      messagesLimit = 15
-
-      if (res.status === 401) HandleLogout()
-
-      let json = await res.json();
-
-      if (!json.status) return showToast("Error", json.message, "error", 3000)
-
-        // if (selectedChat?._id === json.allMessages[0].chat._id) ;
-        (!skipFromCompare || skipFromCompare > 0) && setSkipFrom(skipFromCompare >= messagesLimit ? (skipFromCompare - messagesLimit) : 0)
+      // This line fixes the unexpected bug/error which says:- loadMessages is not a function()--which is really wired bcz by adding this line of code that error vanishes!
+      messages && console.log();
+      // if (selectedChat?._id === json.allMessages[0].chat._id) ;
+      (!skipFromCompare || skipFromCompare > 0) && setSkipFrom(skipFromCompare >= messagesLimit ? (skipFromCompare - messagesLimit) : 0)
 
       setLoading(false)
 
       let updatedChatMsgs = chatMessagesCompare.map(chatMsg => {
         if (chatMsg.chatId === selectedChatCompare?._id) {
-          chatMsg.messages = [...json.allMessages, ...chatMsg.messages]
+          chatMsg.messages = [...messages, ...chatMsg.messages]
           setMessages(chatMsg.messages)
         }
         return chatMsg
@@ -198,7 +208,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       if (selectedChatCompare?._id === json.allMessages[0].chat._id) setMessages(json.allMessages);
       else setMessagesLoading(false)
 
-      selectedChat.totalMessages > messagesLimit && setSkipFrom(selectedChat?.totalMessages - (json.allMessages.length + messagesLimit))
+      selectedChat.totalMessages > messagesLimit && setSkipFrom(selectedChat?.totalMessages - json.allMessages.length)
 
       setMessagesLoading(false);
 
@@ -214,10 +224,9 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
       // This logic is very optimized for seening new messages!
 
-      // Here we are checking if latestMessage from all the messages has not seen by the loggedIn user than only hit the seenMessaged API call else if all the messages are seen by the user than ignore the API call!
+      // Here we are checking if latestMessage from all the messages has not seen by the loggedIn user than only hit the seenMessage API call else if all the messages are seen by the user than ignore the API call!
       if (json.allMessages[json.allMessages.length - 1].chat.unseenMsgsCountBy[user?._id] > 0) {
-        console.log('okay inside this');
-        seenMessages(selectedChat, updatedChatMsgs);
+        seenMessages(selectedChat);
       }
 
       scrollBottom("messagesDisplay")
@@ -230,8 +239,9 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }
 
   }
-  console.log(messages);
+  // console.log(messages);
   useEffect(() => {
+    console.log(messages);
 
     let messagesContainer = getMessagesContainer()
 
@@ -268,6 +278,13 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
     // eslint-disable-next-line
   }, [selectedChat?._id])
+
+  useEffect(() => {
+    if (selectedChatCompare || selectedChat) {
+      setSelectedChat(chats?.filter(ch => ch._id === selectedChatCompare?._id)[0])
+      selectedChatCompare = chats?.filter(ch => ch._id === selectedChatCompare?._id)[0]
+    }
+  }, [chats])
 
   useEffect(() => {
     chatMessagesCompare = chatMessages
@@ -403,13 +420,26 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   }, [locaObj, msgImg]);
 
   // socket on for seen messges!
+  console.log(messages, skipFromCompare);
+  console.log(chatMessages, chatMessagesCompare);
+
   useEffect(() => {
 
     // this socket is only for the user who send the lastestmesssage in the chat not for the user who seen the latestMessage in that chat!
     if (user && user._id) {
-      socket?.on('seen messages', (messages, room) => {
+      socket?.on('seen messages', async (room, totalMessages) => {
+        console.log(room, 'Room');
 
         // console.log(user,messages[messages.length - 1].sender,messages[messages.length - 1]);
+        const limit = getSelectedChatDownloadedMsgs(room).length
+
+        let chat = chats?.filter(ch => ch?._id === room)[0]
+        console.log('=============================', limit, totalMessages);
+        let skip = totalMessages - limit
+
+        const messages = await loadMessages(room, skip, limit + 1)
+        messages && console.log()
+
         let lastMsg = messages[messages.length - 1]
 
         // console.log(room, selectedChatCompare?._id);

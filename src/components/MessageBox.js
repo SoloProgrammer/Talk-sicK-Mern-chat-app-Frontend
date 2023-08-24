@@ -15,6 +15,7 @@ import chat2_icon from "../Images/chat2.png"
 import SendImageModal from './Materials/Modals/SendImageModal'
 import { emojiIcon, sendBtn, sendBtnActive } from '../configs/ImageConfigs'
 import Linkify from 'react-linkify'
+import { flushSync } from 'react-dom';
 
 
 var selectedChatCompare;
@@ -108,13 +109,35 @@ function MessageBox() {
   }, [notifications])
 
   const getSelectedChatDownloadedMsgs = () => {
+    console.log(selectedChatCompare, '[[[[');
     // it will return all the already downloaded messages from the server which is cached in the chatMessagesCompare
     return chatMessagesCompare?.filter(ch => ch.chatId === selectedChatCompare?._id)[0]?.messages
+  }
+
+  const updateChatMsgs = (newMessage) => {
+    chatMessagesCompare.forEach(cmp => {
+
+      // console.log("inside map", selectedChatCompare._id,cmp.chatId);
+
+      if (cmp.chatId === newMessage?.chat?._id) {
+
+        let chatWithNewMsgs = { chatId: newMessage?.chat._id, messages: [...cmp.messages, newMessage] }
+
+        // console.log("chatwithnewMessage", chatWithNewMsg);
+
+        setChatMessages([...(chatMessagesCompare.filter(chm => chm.chatId !== selectedChatCompare._id)), chatWithNewMsgs])
+        console.log('after');
+        // setIsFirstLoadOfMsgs(true)
+      }
+    })
   }
   // reciveing real time/live message from users with the help of socket servers!....................................................
   useEffect(() => {
 
-    const messageReceivedEventListener = (newMessageRecieved, user) => {
+    const messageReceivedEventListener = (newMessageRecieved, User) => {
+      if (!user) return
+
+      let chatMsgs = getSelectedChatDownloadedMsgs()
 
       !chatsFetchCount && chatsFetchCount++
 
@@ -122,6 +145,7 @@ function MessageBox() {
       setIsFirstLoadOfMsgs(false);
 
       if (!selectedChatCompare || selectedChatCompare?._id !== newMessageRecieved.chat._id) {
+
         // give notification
         let notificationBeep = new Audio(notifyAudio)
 
@@ -131,24 +155,24 @@ function MessageBox() {
 
           if ((notificationsCompare.length === 0) || (notificationsCompare.length > 0 && !(notificationsCompare.map(noti => noti.chat._id).includes(newMessageRecieved.chat._id)))) {
 
-            if (!newMessageRecieved.chat.archivedBy.includes(user._id) && !newMessageRecieved.chat.mutedNotificationBy.includes(user?._id)) {
+            if (!newMessageRecieved.chat.archivedBy.includes(User._id) && !newMessageRecieved.chat.mutedNotificationBy.includes(User?._id)) {
               setNotifications([newMessageRecieved, ...notificationsCompare]);
               notificationBeep.play()
               notificationBeep.remove();
             }
-            // console.log(".................", selectedChatCompare);
-            setChatMessages(chatMessagesCompare.filter(chatM => chatM.chatId !== newMessageRecieved.chat._id))
+            console.log("hhh");
+            // updateChatMsgs(newMessageRecieved)
+            setChatMessages(chatMessagesCompare?.filter(chm => chm.chatId !== newMessageRecieved?.chat?._id))
           }
 
         }
         if (chatsFetchCount === 1) {
-          refreshChats(user);
+          refreshChats(User);
         }
 
       }
       else {
         // console.log("seenMessge");
-        let chatMsgs = getSelectedChatDownloadedMsgs()
         setMessages([...chatMsgs, newMessageRecieved]);
         seenMessages(selectedChatCompare);
         if (chatsFetchCount === 1) {
@@ -157,28 +181,13 @@ function MessageBox() {
             chatsFetchCount = 0
           }, 200);
         }
+        updateChatMsgs(newMessageRecieved)
 
-
-        // console.log("outside",chatMessages);
-
-        chatMessagesCompare.forEach(cmp => {
-
-          // console.log("inside map", selectedChatCompare._id,cmp.chatId);
-
-          if (cmp.chatId === selectedChatCompare._id) {
-
-            let chatWithNewMsgs = { chatId: selectedChatCompare._id, messages: [...chatMsgs, newMessageRecieved] }
-
-            // console.log("chatwithnewMessage", chatWithNewMsg);
-
-            setChatMessages([...(chatMessagesCompare.filter(chm => chm.chatId !== selectedChatCompare._id)), chatWithNewMsgs])
-          }
-        })
       }
     };
     socket?.on("message recieved", messageReceivedEventListener);
     // eslint-disable-next-line 
-  }, [user]);
+  }, [socket, user]);
 
   const [loading, setLoading] = useState(false)
 
@@ -220,18 +229,25 @@ function MessageBox() {
       messageSentBeep?.play();
       messageSentBeep?.remove()
 
-      socket.emit('new message', json.fullmessage)
-
       setMessages((prevMessages) => [...prevMessages, json.fullmessage]);
 
-      chatMessages.forEach(chatMsg => {
-        if (chatMsg.chatId === selectedChat?._id) {
+      socket.emit('new message', json.fullmessage)
+      let chatMsg;
 
-          chatMsg = { chatId: selectedChat._id, messages: [...chatMsg.messages, json.fullmessage] }
+      if (chatMessages.length === 0 || !chatMessages.map(ch => ch.chatId).includes(selectedChat._id)) {
+        chatMsg = { chatId: selectedChat._id, messages: [json.fullmessage] }
+        flushSync(() => setChatMessages([...chatMessages, chatMsg])) // cm := ChatMessage
+      }
+      else {
+        chatMessages.forEach(chatMsg => {
+          if (chatMsg.chatId === selectedChat?._id) {
 
-          setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat._id)), chatMsg]) // cm := ChatMessage
-        }
-      })
+            chatMsg = { chatId: selectedChat._id, messages: [...chatMsg.messages, json.fullmessage] }
+
+            flushSync(() => setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat._id)), chatMsg])) // cm := ChatMessage
+          }
+        })
+      }
 
       setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
       setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);

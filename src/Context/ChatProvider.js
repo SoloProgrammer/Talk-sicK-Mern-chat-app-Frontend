@@ -215,7 +215,7 @@ const ChatProvider = ({ children }) => {
             // ToDo gave an appropiatiate msg for the bad response from the server!
             if (!json.status) return
 
-            socket?.emit('seeing messages', json.messages, selectedChat._id);
+            socket?.emit('seeing messages', selectedChat?._id, json?.messages[0].chat.totalMessages);
 
             // refresing the chats whenever a new or lastemessgge seen by user to show him in the chat that he has seen the latestmessage!
             setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
@@ -234,6 +234,7 @@ const ChatProvider = ({ children }) => {
 
 
         } catch (error) {
+            console.log('========', error);
             setSelectedChat(null)
             setProfile(null)
             showToast("Error", error.message, "error", 3000);
