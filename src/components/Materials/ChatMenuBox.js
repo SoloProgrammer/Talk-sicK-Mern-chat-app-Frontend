@@ -43,7 +43,7 @@ function ChatMenuBox({ chat, i }) {
 
     const [loading, setLoading] = useState(false);
 
-    const handleNotificationAction = async (e,chat) => {
+    const handleNotificationAction = async (e, chat) => {
 
         e.stopPropagation()
 
@@ -148,7 +148,7 @@ function ChatMenuBox({ chat, i }) {
 
                         {!archivedChats?.map(c => c._id).includes(chat._id)
                             &&
-                            <span onClick={(e) => handleNotificationAction(e,chat)} className='flex'>
+                            <span onClick={(e) => handleNotificationAction(e, chat)} className='flex'>
                                 {chat.mutedNotificationBy?.includes(user?._id) ? 'Unmute notification' : "Mute notification"}
                                 <Image width={`${chat.mutedNotificationBy?.includes(user?._id) ? "1.16rem" : "1.08rem"}`} src={`${chat.mutedNotificationBy?.includes(user?._id) ? bellDividedIcon : bellIcon} `} />
                             </span>}

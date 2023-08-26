@@ -24,7 +24,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   const loadMessages = async (chatId, skip, limit) => {
     skip = skip || 0
-    console.log('------------------------', skip, limit);
+    // console.log('------------------------', skip, limit);
     let config = {
       headers: {
         token: localStorage.getItem('token')
@@ -50,7 +50,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   }, [profile])
 
   const getSelectedChatDownloadedMsgs = (chatId = selectedChatCompare?._id) => {
-    console.log(chatMessagesCompare,"---");
+    // console.log(chatMessagesCompare, "---");
     // it will return all the already downloaded messages from the server which is cached in the chatMessagesCompare
     return chatMessagesCompare?.filter(ch => ch.chatId === chatId)[0]?.messages
   }
@@ -60,7 +60,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   let messagesLimit = 15
   const [skipFrom, setSkipFrom] = useState()
 
-  // Observer useEffect....
+  // Intersection Observer useEffect....
   useEffect(() => {
     // Creating an observer object only once when the messgesComponent loads first time!
     TopMessageObserver = new IntersectionObserver((entries) => {
@@ -86,7 +86,10 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
     setTimeout(() => {
 
-      if (skipFromCompare > 0 && selectedChatCompare?.totalMessages >= messagesLimit && TopMsgDateElm && selectedChatCompare?.totalMessages !== getSelectedChatDownloadedMsgs()?.length) {
+      if (skipFromCompare > 0
+        && selectedChatCompare?.totalMessages >= messagesLimit
+        && TopMsgDateElm
+        && selectedChatCompare?.totalMessages !== getSelectedChatDownloadedMsgs()?.length) {
         TopMessageObserver.observe(TopMsgDateElm)
       }
 
@@ -120,9 +123,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
       let remainingMessages = selectedChatCompare?.totalMessages - chatMsgs.length
 
-      if ((remainingMessages) < messagesLimit) {
-        messagesLimit = remainingMessages
-      }
+      if (remainingMessages < messagesLimit) messagesLimit = remainingMessages
+
       setLoading(true)
 
       const messages = await loadMessages(selectedChatCompare?._id, skipFromCompare, messagesLimit)
@@ -147,7 +149,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       isObservred = skipFromCompare > 0 ? false : true
 
       setTimeout(() => {
-        if (!isObservred && TopMsgDateElm && selectedChatCompare?.totalMessages !== chatMsgs.length) {
+        // && selectedChatCompare?.totalMessages !== chatMsgs.length removing this condition check for now as it is not needed for now 
+        if (!isObservred && TopMsgDateElm) {
           // console.log("uiyff");
           isObservred = false
           TopMsgDateElm = document.querySelector('.messagesDay')
@@ -239,9 +242,9 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }
 
   }
-  // console.log(messages);
+  console.log(chatMessages,chatMessagesCompare);
   useEffect(() => {
-    console.log(messages);
+    // console.log(messages);
 
     let messagesContainer = getMessagesContainer()
 
@@ -284,10 +287,12 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       setSelectedChat(chats?.filter(ch => ch._id === selectedChatCompare?._id)[0])
       selectedChatCompare = chats?.filter(ch => ch._id === selectedChatCompare?._id)[0]
     }
+    // eslint-disable-next-line
   }, [chats])
 
   useEffect(() => {
     chatMessagesCompare = chatMessages
+    // eslint-disable-next-line
   }, [chatMessages])
 
   let avatarBoxs = document.querySelectorAll('.avatarBox');
@@ -420,21 +425,20 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   }, [locaObj, msgImg]);
 
   // socket on for seen messges!
-  console.log(messages, skipFromCompare);
-  console.log(chatMessages, chatMessagesCompare);
+  // console.log(messages, skipFromCompare);
+  // console.log(chatMessages, chatMessagesCompare);
 
   useEffect(() => {
 
     // this socket is only for the user who send the lastestmesssage in the chat not for the user who seen the latestMessage in that chat!
     if (user && user._id) {
       socket?.on('seen messages', async (room, totalMessages) => {
-        console.log(room, 'Room');
+        // console.log(room, 'Room');
 
         // console.log(user,messages[messages.length - 1].sender,messages[messages.length - 1]);
-        const limit = getSelectedChatDownloadedMsgs(room).length
+        const limit = getSelectedChatDownloadedMsgs(room)?.length
 
-        let chat = chats?.filter(ch => ch?._id === room)[0]
-        console.log('=============================', limit, totalMessages);
+        // console.log('=============================', limit, totalMessages);
         let skip = totalMessages - limit
 
         const messages = await loadMessages(room, skip, limit + 1)
