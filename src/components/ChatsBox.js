@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import ChatMenuBox from './Materials/ChatMenuBox'
 import ChatFooter from './ChatFooter'
 import { ChatsSkeleton } from './Materials/Loading'
-import { defaultPic } from '../configs/ImageConfigs'
+import { defaultPic, seenCheckMark, unSeenCheckMark } from '../configs/ImageConfigs'
 
 
 function ChatsBox() {
@@ -62,7 +62,7 @@ function ChatsBox() {
     let updatedChats = chats?.map(c => {
       if (c._id === selectedChat?._id) {
         if (c.unseenMsgsCountBy) c.unseenMsgsCountBy[user?._id] = 0
-        if (c.latestMessage) c.latestMessage.seenBy.push(user?._id)
+        if (c.latestMessage && !c.latestMessage.seenBy.includes(user?._id)) c.latestMessage.seenBy.push(user?._id)
       }
       return c;
     });
@@ -86,6 +86,8 @@ function ChatsBox() {
         :
         seperatedMsg[seperatedMsg.length - 1]))
   }
+
+  // console.log(chats);
 
   return (
     <Box pos={"relative"} display={{ base: selectedChat ? "none" : "block", md: selectedChat ? "none" : "block", lg: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "100%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
@@ -132,7 +134,7 @@ function ChatsBox() {
                       onClick={() => { handleChatClick(chat, i) }}
                       display={"flex"}
                       width="100%"
-                      bg={selectedChat?._id === chat?._id ? "#2da89f61" : "rgb(241,243,244)"}
+                      bg={selectedChat?._id === chat?._id ? "#2da89f4a" : "rgb(241,243,244)"}
                       boxShadow={selectedChat?._id === chat?._id && "inset 0 0 0 1.1px #2baca1;"}
                       padding={"0.7rem 0.5rem"}
                       gap="1rem"
@@ -140,7 +142,7 @@ function ChatsBox() {
                       className="singleChatBox"
                       cursor="pointer"
                       pos={"relative"}
-                      _hover={{ base: { bg: "transperent" }, md: { bg: "#2da89f61" } }}
+                      _hover={{ base: { bg: "transperent" }, md: { bg: "#2da89f4a" } }}
                     >
                       <Box maxWidth={"67px"} >
                         <Avatar boxShadow={"0 0 0 3px #27aea4"} src={getSender(chat, user)?.avatar || defaultPic} >
@@ -162,7 +164,7 @@ function ChatsBox() {
                       <Box width={{ base: "calc(100% - 3.8rem)", md: "calc(100% - 4rem)" }}>
                         <Box display={"flex"} justifyContent="space-between" width={"100%"} marginBottom={".4rem"}>
                           <Box fontSize={"1rem"} fontWeight="semibold" className='flex' gap={".4rem"} w={"100%"} justifyContent={"space-between"}>
-                            <Box className='flex' justifyContent={"flex-start"} gap={".7rem"}  maxW={"calc(100% - 7rem)"}>
+                            <Box className='flex' justifyContent={"flex-start"} gap={".7rem"} maxW={"calc(100% - 7rem)"}>
                               <Text className='textEllipsis'>
                                 {
                                   (window.innerWidth < 770 && getSender(chat, user)?.name.length) > 24
@@ -174,14 +176,14 @@ function ChatsBox() {
                               </Text>
                               {chat?.mutedNotificationBy?.includes(user?._id)
                                 &&
-                                <Tooltip label="Notification muted" placement='top' fontSize={".8rem"}>
+                                <Tooltip label="Notification muted" placement='top' fontSize={".7rem"}>
                                   <Image width={"1rem"} src='https://cdn-icons-png.flaticon.com/512/4175/4175297.png' />
                                 </Tooltip>
                               }
                             </Box>
                             {chat.latestMessage &&
                               <Box className='flex' gap={".3rem"} translateX={"5px"}>
-                                <Text 
+                                <Text
                                   whiteSpace={"nowrap"}
                                   fontSize={".75rem"}
                                   fontWeight="normal"
@@ -208,13 +210,20 @@ function ChatsBox() {
                         <Box marginTop=".18rem" fontSize={".8rem"} fontWeight="black" display="flex" gap=".3rem" alignItems={'center'}>
                           <span>
                             {
-                              chat.latestMessage
+                              chat?.latestMessage
                                 ?
                                 (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "
                                 :
                                 "Bot: "
                             }
                           </span>
+                          {
+                            chat?.latestMessage
+                            && (chat.latestMessage.sender._id === user?._id) &&
+                            <Tooltip label={`${chat?.latestMessage.seenBy.length === chat.users.length ? 'seen' : 'dilivered'}`} fontSize={".7rem"} placement="top">
+                              <Image filter={`${chat?.latestMessage.seenBy.length === chat.users.length && 'hue-rotate(75deg)'}`} src={chat?.latestMessage.seenBy.length !== chat.users.length ? unSeenCheckMark : seenCheckMark} opacity={chat?.latestMessage.seenBy.length !== chat.users.length && ".5"} width=".95rem" display="inline-block" />
+                            </Tooltip>
+                          }
 
                           <Text width={{ base: "calc(100% - 12%)", md: "calc(100% - 8%)" }} display={"inline-block"} fontWeight="normal" fontSize={".87rem"} whiteSpace={"nowrap"} textOverflow={'ellipsis'} overflowX={"hidden"} paddingRight={".4rem"}>
                             {chat.latestMessage

@@ -109,7 +109,7 @@ function MessageBox() {
   }, [notifications])
 
   const getSelectedChatDownloadedMsgs = () => {
-    console.log(selectedChatCompare, '[[[[');
+    // console.log(selectedChatCompare, '[[[[');
     // it will return all the already downloaded messages from the server which is cached in the chatMessagesCompare
     return chatMessagesCompare?.filter(ch => ch.chatId === selectedChatCompare?._id)[0]?.messages
   }
@@ -126,7 +126,7 @@ function MessageBox() {
         // console.log("chatwithnewMessage", chatWithNewMsg);
 
         setChatMessages([...(chatMessagesCompare.filter(chm => chm.chatId !== selectedChatCompare._id)), chatWithNewMsgs])
-        console.log('after');
+        // console.log('after');
         // setIsFirstLoadOfMsgs(true)
       }
     })
@@ -160,7 +160,7 @@ function MessageBox() {
               notificationBeep.play()
               notificationBeep.remove();
             }
-            console.log("hhh");
+            // console.log("hhh");
             // updateChatMsgs(newMessageRecieved)
             setChatMessages(chatMessagesCompare?.filter(chm => chm.chatId !== newMessageRecieved?.chat?._id))
           }

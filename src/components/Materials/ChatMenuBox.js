@@ -119,13 +119,13 @@ function ChatMenuBox({ chat, i }) {
                             loading={loading}>
                             <span
                                 onClick={onOpen}
-                                className='flex'>
+                                className='flex shadow-left'>
                                 {!chat.isGroupchat ? "Delete Chat" : "Leave group"}
                                 <Image width="1.1rem" src={`${chat.isGroupchat ? leaveGrpImg : trashCanIcon}`} />
                             </span>
                         </ConfirmBoxModal>
 
-                        {!(archivedChats?.map(c => c._id).includes(chat._id)) && <span className='flex' onClick={(e) => {
+                        {!(archivedChats?.map(c => c._id).includes(chat._id)) && <span className='flex shadow-left' onClick={(e) => {
                             handlePinOrUnpinChat(chat);
                             e.stopPropagation();
                         }}>
@@ -133,7 +133,7 @@ function ChatMenuBox({ chat, i }) {
                             <Image width="1.1rem" src={`${chat.pinnedBy?.includes(user?._id) ? pinFilledIcon : pinOutlineIcon}`} />
                         </span>}
 
-                        <span className='flex' onClick={(e) => {
+                        <span className='flex shadow-left' onClick={(e) => {
                             hanldeArchiveChatAction(chat);
                             e.stopPropagation();
                         }} >
@@ -148,7 +148,7 @@ function ChatMenuBox({ chat, i }) {
 
                         {!archivedChats?.map(c => c._id).includes(chat._id)
                             &&
-                            <span onClick={(e) => handleNotificationAction(e, chat)} className='flex'>
+                            <span onClick={(e) => handleNotificationAction(e, chat)} className='flex shadow-left'>
                                 {chat.mutedNotificationBy?.includes(user?._id) ? 'Unmute notification' : "Mute notification"}
                                 <Image width={`${chat.mutedNotificationBy?.includes(user?._id) ? "1.16rem" : "1.08rem"}`} src={`${chat.mutedNotificationBy?.includes(user?._id) ? bellDividedIcon : bellIcon} `} />
                             </span>}

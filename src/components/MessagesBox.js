@@ -13,12 +13,12 @@ import ProfileDrawer from './Materials/ProfileDrawer'
 import MessageImageViewBox from './MessageImageViewBox'
 import Linkify from 'react-linkify'
 
-var selectedChatCompare, isFetchMoreMessages, chatMessagesCompare, skipFromCompare, isObservred, messageBoxPrevScrollHeight, TopMsgDateElm, TopMessageObserver;
+var selectedChatCompare, isFetchMoreMessages, chatMessagesCompare, skipFromCompare, isObservred, messageBoxPrevScrollHeight, TopMsgDateElm, TopMessageObserver, seenCount = 0;
 
 function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   const
-    { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages, messages, setMessages } = ChatState();
+    { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages, messages, setMessages, setChats } = ChatState();
 
   const navigate = useNavigate();
 
@@ -242,7 +242,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }
 
   }
-  console.log(chatMessages,chatMessagesCompare);
+  // console.log(chatMessages,chatMessagesCompare);
   useEffect(() => {
     // console.log(messages);
 
@@ -429,53 +429,74 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   // console.log(chatMessages, chatMessagesCompare);
 
   useEffect(() => {
-
     // this socket is only for the user who send the lastestmesssage in the chat not for the user who seen the latestMessage in that chat!
     if (user && user._id) {
-      socket?.on('seen messages', async (room, totalMessages) => {
-        // console.log(room, 'Room');
+      socket?.on('seen messages', async (room, totalMessages, updatedChat) => {
 
-        // console.log(user,messages[messages.length - 1].sender,messages[messages.length - 1]);
-        const limit = getSelectedChatDownloadedMsgs(room)?.length
+        if (seenCount < 1) {
 
-        // console.log('=============================', limit, totalMessages);
-        let skip = totalMessages - limit
+          !seenCount && seenCount++
 
-        const messages = await loadMessages(room, skip, limit + 1)
-        messages && console.log()
+          // console.log(updatedChat, 'updatedChat');
+          // console.log(updatedChat, chats.map(ch => {
+          //   if (ch._id === updatedChat._id) ch = updatedChat
+          //   return ch
+          // })); 
 
-        let lastMsg = messages[messages.length - 1]
+          setChats(chats.map(chat => {
+            if (chat._id === updatedChat._id) chat = updatedChat
+            return chat
+          }))
+          // console.log(user,messages[messages.length - 1].sender,messages[messages.length - 1]);
+          const limit = getSelectedChatDownloadedMsgs(room)?.length
 
-        // console.log(room, selectedChatCompare?._id);
+          // console.log('=============================', limit, totalMessages);
 
-        if ((selectedChatCompare && selectedChatCompare._id === room) && user._id === lastMsg.sender._id) {
-          setMessages([...messages]);
+          let skip = totalMessages - limit
+
+          const messages = await loadMessages(room, skip, limit + 1)
+          messages && console.log()
+
+          let lastMsg = messages[messages.length - 1]
+
+          // console.log(room, selectedChatCompare?._id);
+
+          if ((selectedChatCompare && selectedChatCompare._id === room) && user._id === lastMsg.sender._id) {
+            setMessages([...messages]);
+          }
+
+          // console.log(chatMessagesCompare);
+
+          // Updating chatmessages with the new messages recieved in the socket whether user is in the chatroom or not in the chatroom! 
+          if (user?._id === lastMsg.sender._id) {
+            chatMessagesCompare.forEach(chatMsg => {
+
+              // console.log(lastMsg.chat, chatMsg);
+
+              if (chatMsg.chatId === lastMsg.chat?._id) {
+
+                chatMsg = { chatId: lastMsg.chat?._id, messages: [...messages] }
+
+                // console.log("...", chatMsg, selectedChatCompare);
+
+                // updating the chatmessages of the chat id from which all the messages from with the new seen messages!
+                setChatMessages([...(chatMessagesCompare.filter(cm => cm.chatId !== lastMsg.chat?._id)), chatMsg]) // cm := ChatMessage
+              }
+            })
+          }
+
+          setTimeout(() => {
+            seenCount = 0
+          }, 300);
         }
 
-        // console.log(chatMessagesCompare);
-
-        // Updating chatmessages with the new messages recieved in the socket whether user is in the chatroom or not in the chatroom! 
-        if (user?._id === lastMsg.sender._id) {
-          chatMessagesCompare.forEach(chatMsg => {
-
-            // console.log(lastMsg.chat, chatMsg);
-
-            if (chatMsg.chatId === lastMsg.chat?._id) {
-
-              chatMsg = { chatId: lastMsg.chat?._id, messages: [...messages] }
-
-              // console.log("...", chatMsg, selectedChatCompare);
-
-              // updating the chatmessages of the chat id from which all the messages from with the new seen messages!
-              setChatMessages([...(chatMessagesCompare.filter(cm => cm.chatId !== lastMsg.chat?._id)), chatMsg]) // cm := ChatMessage
-            }
-          })
-        }
       })
     }
     // eslint-disable-next-line
   }, [user]);
+  // console.log(skipFromCompare, selectedChatCompare?.totalMessages);
 
+  // console.log(chatMessagesCompare);
   const getProperInfoMsg = (message) => {
     const seperatedMsg = message.split(' ')
     return (seperatedMsg[0] === user?.name?.split(' ')[0]
@@ -688,7 +709,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                   {getMsgTime(m.createdAt)}
                                   {
                                     m.sender._id === user?._id
-                                    && <Image src={m.seenBy.length !== selectedChat.users.length ? unSeenCheckMark : seenCheckMark} opacity={m.seenBy.length !== selectedChat.users.length && ".5"} width=".95rem" display="inline-block" />
+                                    && <Image filter={`${m?.seenBy.length === selectedChat?.users?.length && 'hue-rotate(90deg)'}`} src={m.seenBy.length !== selectedChat.users.length ? unSeenCheckMark : seenCheckMark} opacity={m.seenBy.length !== selectedChat.users.length && ".5"} width=".95rem" display="inline-block" />
                                   }
                                 </Text>
 

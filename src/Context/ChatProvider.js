@@ -215,7 +215,7 @@ const ChatProvider = ({ children }) => {
             // ToDo gave an appropiatiate msg for the bad response from the server!
             if (!json.status) return
 
-            socket?.emit('seeing messages', selectedChat?._id, json?.messages[0].chat.totalMessages);
+            socket?.emit('seeing messages', selectedChat?._id, json?.messages[0].chat.totalMessages, json.chats.filter(ch => ch._id === selectedChat._id)[0]);
 
             // refresing the chats whenever a new or lastemessgge seen by user to show him in the chat that he has seen the latestmessage!
             setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);

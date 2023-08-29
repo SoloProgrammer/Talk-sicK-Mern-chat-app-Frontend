@@ -21,7 +21,10 @@
 .chakra-slide {
     max-width: 355px !important;
 }
-
+.shadow-left:hover{
+    /* box-shadow: inset 3px 0px 0px rgba(var(--color),.8) !important; */
+    box-shadow: inset 3px 0px 0px rgba(0, 0,0,0.8) !important;
+}
 .sentBtn:active {
     transition: .2s ease-in-out;
     transform: scale(.8);
