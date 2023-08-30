@@ -48,7 +48,7 @@ const ChatProvider = ({ children }) => {
 
     const [isTyping, setIsTyping] = useState(null);
 
-    const [typingUser, setTypingUser] = useState(null) // this is needed inside the groupChat as we need to find who is typing in the whole group! 
+    const [typingInfo, setTypingInfo] = useState(null) // this is needed inside the groupChat as we need to find who is typing in the whole group! 
 
     //Socket.io connection with configuration........................................................
 
@@ -468,8 +468,22 @@ const ChatProvider = ({ children }) => {
         }
     }
 
+    // Socket/Effect for typing... funcionality
+    useEffect(() => {
+        if (socket && user) {
+            socket.on("typing", (u, room) => {
+                if (u !== user?.name) {
+                    setIsTyping(true);
+                    setTypingInfo({ user: u, chatId: room })
+                }
+
+            })
+            socket.on("stop typing", () => setIsTyping(false))
+        }
+    }, [socket, user])
+
     return (
-        <ChatContext.Provider value={{ getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingUser, setTypingUser, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg }}>
+        <ChatContext.Provider value={{ getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg }}>
             {children}
         </ChatContext.Provider>
     )

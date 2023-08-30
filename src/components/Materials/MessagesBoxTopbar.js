@@ -7,7 +7,7 @@ import { defaultPic } from '../../configs/ImageConfigs';
 
 function MessagesBoxTopbar() {
 
-    const { selectedChat, user, setSelectedChat, setProfile, isTyping, typingUser } = ChatState();
+    const { selectedChat, user, setSelectedChat, setProfile, isTyping, typingInfo } = ChatState();
 
     let navigate = useNavigate()
     const handleBack = () => {
@@ -57,9 +57,10 @@ function MessagesBoxTopbar() {
                         </Box>
 
                         <Text bottom=".3rem" fontSize={".77rem"} color="#ffffffe0" letterSpacing=".01rem" left={"5rem"} fontWeight={"400"}>
-                            {isTyping
+                            {isTyping && typingInfo?.chatId === selectedChat?._id
+
                                 ?
-                                selectedChat.isGroupchat ? (typingUser.split(" ")[0] + " is typing.....") : "typing....."
+                                selectedChat.isGroupchat ? (typingInfo.user.split(" ")[0] + " is typing.....") : "typing....."
                                 :
                                 !selectedChat?.isGroupchat
                                     ?

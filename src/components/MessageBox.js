@@ -25,7 +25,7 @@ var chatsFetchCount = 0;
 
 function MessageBox() {
 
-  const { getPinnedChats, getUnPinnedChats, user, setChats, setArchivedChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, setIsTyping, setTypingUser, sendPic, setSendPic, messages, setMessages } = ChatState()
+  const { getPinnedChats, getUnPinnedChats, user, setChats, setArchivedChats, refreshChats, setChatMessages, chatMessages, selectedChat, setProfile, profile, showToast, socket, seenMessages, notifications, setNotifications, socketConneted, sendPic, setSendPic, messages, setMessages } = ChatState()
 
   const [messageText, setMessageText] = useState("");
 
@@ -60,20 +60,7 @@ function MessageBox() {
 
     // eslint-disable-next-line
   }, [messageText])
-
-  useEffect(() => {
-    if (socket) {
-      socket.on("typing", (u, room) => {
-        if (selectedChatCompare && (u !== user?.name && room === selectedChatCompare._id)) {
-          setIsTyping(true);
-          setTypingUser(u)
-        }
-
-      })
-      socket.on("stop typing", () => setIsTyping(false))
-    }
-  })
-
+  
   const [isEmojiPick, setIsEmojiPick] = useState(false);
 
   window.addEventListener('click', () => {

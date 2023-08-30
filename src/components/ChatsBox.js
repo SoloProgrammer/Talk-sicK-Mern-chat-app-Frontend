@@ -14,7 +14,7 @@ import { defaultPic, seenCheckMark, unSeenCheckMark } from '../configs/ImageConf
 
 function ChatsBox() {
 
-  const { chats, archivedChats, viewArchivedChats, setChats, chatsLoading, user, selectedChat, setProfile, profile, notifications, setNotifications } = ChatState()
+  const { chats, archivedChats, viewArchivedChats, setChats, chatsLoading, user, selectedChat, setProfile, profile, notifications, setNotifications, isTyping, typingInfo } = ChatState()
 
   const navigate = useNavigate();
 
@@ -206,53 +206,65 @@ function ChatsBox() {
                           </Box>
                         </Box>
 
-                        {/* latestmessage */}
-                        <Box marginTop=".18rem" fontSize={".8rem"} fontWeight="black" display="flex" gap=".3rem" alignItems={'center'}>
-                          <span>
-                            {
-                              chat?.latestMessage
-                                ?
-                                (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "
-                                :
-                                "Bot: "
-                            }
-                          </span>
-                          {
-                            chat?.latestMessage
-                            && (chat.latestMessage.sender._id === user?._id) &&
-                            <Tooltip label={`${chat?.latestMessage.seenBy.length === chat.users.length ? 'seen' : 'dilivered'}`} fontSize={".7rem"} placement="top">
-                              <Image filter={`${chat?.latestMessage.seenBy.length === chat.users.length && 'hue-rotate(75deg)'}`} src={chat?.latestMessage.seenBy.length !== chat.users.length ? unSeenCheckMark : seenCheckMark} opacity={chat?.latestMessage.seenBy.length !== chat.users.length && ".5"} width=".95rem" display="inline-block" />
-                            </Tooltip>
-                          }
+                        {/* latestmessage & Typing.. */}
+                        {
+                          isTyping
+                            &&
+                            typingInfo?.chatId === chat?._id
+                            ?
+                            <Text marginTop={'-.05rem'} fontSize={'.9rem'} fontWeight={'500'} color={'#00d30d'} letterSpacing={'.02rem'} textTransform={'lowercase'}>
+                              {
+                                !chat?.isGroupchat ? "typing....." : typingInfo.user.split(' ')[0] + ' is typing.....'
+                              }
+                            </Text>
+                            :
+                            <Box marginTop=".18rem" fontSize={".8rem"} fontWeight="black" display="flex" gap=".3rem" alignItems={'center'}>
+                              <span>
+                                {
+                                  chat?.latestMessage
+                                    ?
+                                    (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "
+                                    :
+                                    "Bot: "
+                                }
+                              </span>
+                              {
+                                chat?.latestMessage
+                                && (chat.latestMessage.sender._id === user?._id) &&
+                                <Tooltip label={`${chat?.latestMessage.seenBy.length === chat.users.length ? 'seen' : 'dilivered'}`} fontSize={".7rem"} placement="top">
+                                  <Image filter={`${chat?.latestMessage.seenBy.length === chat.users.length && 'hue-rotate(75deg)'}`} src={chat?.latestMessage.seenBy.length !== chat.users.length ? unSeenCheckMark : seenCheckMark} opacity={chat?.latestMessage.seenBy.length !== chat.users.length && ".5"} width=".95rem" display="inline-block" />
+                                </Tooltip>
+                              }
 
-                          <Text width={{ base: "calc(100% - 12%)", md: "calc(100% - 8%)" }} display={"inline-block"} fontWeight="normal" fontSize={".87rem"} whiteSpace={"nowrap"} textOverflow={'ellipsis'} overflowX={"hidden"} paddingRight={".4rem"}>
-                            {chat.latestMessage
-                              ?
-                              chat.latestMessage.msgType && chat.latestMessage.msgType === 'info'
-                                ?
-                                <>{getFormmatedInfoMsg(chat?.latestMessage)}</>
-                                :
-                                <>{
-                                  (chat.latestMessage.content.img ? <><i className="fa-regular fa-image" />&nbsp;{chat.latestMessage.content.img.substring(chat.latestMessage.content.img.lastIndexOf('.') + 1) === "gif" ? "gif" : "image"}</> : chat.latestMessage?.content.message)
-                                }</>
-                              :
-                              "No message yet!"}
-                          </Text>
+                              <Text width={{ base: "calc(100% - 12%)", md: "calc(100% - 8%)" }} display={"inline-block"} fontWeight="normal" fontSize={".87rem"} whiteSpace={"nowrap"} textOverflow={'ellipsis'} overflowX={"hidden"} paddingRight={".4rem"}>
+                                {chat.latestMessage
+                                  ?
+                                  chat.latestMessage.msgType && chat.latestMessage.msgType === 'info'
+                                    ?
+                                    <>{getFormmatedInfoMsg(chat?.latestMessage)}</>
+                                    :
+                                    <>{
+                                      (chat.latestMessage.content.img ? <><i className="fa-regular fa-image" />&nbsp;{chat.latestMessage.content.img.substring(chat.latestMessage.content.img.lastIndexOf('.') + 1) === "gif" ? "gif" : "image"}</> : chat.latestMessage?.content.message)
+                                    }</>
+                                  :
+                                  "No message yet!"}
+                              </Text>
 
-                          <Box w={"fit-content"} display={"flex"} marginBottom={"-15px"} marginRight={{ base: "-5px", md: "-10px" }}>
-                            {
-                              chat.pinnedBy?.includes(user?._id)
-                              &&
-                              <Tooltip label="pinned" fontSize={".7rem"} placement="top">
-                                <Box pos={""} width={"1.5rem"}>
-                                  <Image w=".8rem" src="https://cdn-icons-png.flaticon.com/512/1274/1274749.png" />
-                                </Box>
-                              </Tooltip>
-                            }
+                              <Box w={"fit-content"} display={"flex"} marginBottom={"-15px"} marginRight={{ base: "-5px", md: "-10px" }}>
+                                {
+                                  chat.pinnedBy?.includes(user?._id)
+                                  &&
+                                  <Tooltip label="pinned" fontSize={".7rem"} placement="top">
+                                    <Box pos={""} width={"1.5rem"}>
+                                      <Image w=".8rem" src="https://cdn-icons-png.flaticon.com/512/1274/1274749.png" />
+                                    </Box>
+                                  </Tooltip>
+                                }
 
-                            <ChatMenuBox chat={chat} i={i} />
-                          </Box>
-                        </Box>
+                                <ChatMenuBox chat={chat} i={i} />
+                              </Box>
+                            </Box>
+                        }
                       </Box>
 
                     </Box>
