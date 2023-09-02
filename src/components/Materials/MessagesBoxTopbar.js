@@ -57,10 +57,19 @@ function MessagesBoxTopbar() {
                         </Box>
 
                         <Text bottom=".3rem" fontSize={".77rem"} color="#ffffffe0" letterSpacing=".01rem" left={"5rem"} fontWeight={"400"}>
-                            {isTyping && typingInfo?.chatId === selectedChat?._id
-
+                            {isTyping
+                                &&
+                                typingInfo.length > 0
+                                &&
+                                typingInfo?.map(tyInfo => tyInfo.chatId).includes(selectedChat?._id) // This condition shows the typing indicator only in the chat where actually the typing is typing 
+                                &&
+                                !typingInfo?.map(tyInfo => tyInfo.user._id).includes(user?._id) // This condition checks if the user who is typing in the chat should not seen the typing indicator for this own typing..
                                 ?
-                                selectedChat.isGroupchat ? (typingInfo.user.split(" ")[0] + " is typing.....") : "typing....."
+                                selectedChat.isGroupchat
+                                    ?
+                                    (typingInfo.filter(tyInfo => tyInfo.chatId === selectedChat?._id)[0].user.name.split(" ")[0] + " is typing.....")
+                                    :
+                                    "typing....."
                                 :
                                 !selectedChat?.isGroupchat
                                     ?

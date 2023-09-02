@@ -50,11 +50,11 @@ function MessageBox() {
 
     if (!socketConneted) return console.log("Socket disconnected!");
 
-    if (messageText.length > 0) socket.emit("typing", selectedChat?._id, user?.name);
+    if (messageText.length > 0) socket.emit("typing", selectedChatCompare?._id, user);
 
     let TypingDelay = setTimeout(() => {
-      socket.emit("stop typing", selectedChat?._id);
-    }, 2500);
+      socket.emit("stop typing", selectedChatCompare?._id, user);
+    }, 1500);
 
     return () => clearTimeout(TypingDelay)
 

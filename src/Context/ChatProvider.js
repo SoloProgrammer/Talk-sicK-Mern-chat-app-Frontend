@@ -48,7 +48,7 @@ const ChatProvider = ({ children }) => {
 
     const [isTyping, setIsTyping] = useState(null);
 
-    const [typingInfo, setTypingInfo] = useState(null) // this is needed inside the groupChat as we need to find who is typing in the whole group! 
+    const [typingInfo, setTypingInfo] = useState([]) // this is needed inside the groupChat as we need to find who is typing in the whole group! 
 
     //Socket.io connection with configuration........................................................
 
@@ -471,14 +471,16 @@ const ChatProvider = ({ children }) => {
     // Socket/Effect for typing... funcionality
     useEffect(() => {
         if (socket && user) {
-            socket.on("typing", (u, room) => {
-                if (u !== user?.name) {
+            socket.on("typing", (User, typingInfoData) => {
+                if (User._id !== user?._id) {
                     setIsTyping(true);
-                    setTypingInfo({ user: u, chatId: room })
+                    setTypingInfo(typingInfoData)
                 }
-
             })
-            socket.on("stop typing", () => setIsTyping(false))
+            socket.on("stop typing", (typingInfoData) => {
+                !typingInfoData.length && setIsTyping(false)
+                setTypingInfo(typingInfoData)
+            })
         }
     }, [socket, user])
 

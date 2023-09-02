@@ -210,11 +210,11 @@ function ChatsBox() {
                         {
                           isTyping
                             &&
-                            typingInfo?.chatId === chat?._id
+                            typingInfo.length > 0 && typingInfo?.map(tyInfo => tyInfo.chatId).includes(chat?._id)
                             ?
                             <Text marginTop={'-.05rem'} fontSize={'.9rem'} fontWeight={'500'} color={'#00d30d'} letterSpacing={'.02rem'} textTransform={'lowercase'}>
                               {
-                                !chat?.isGroupchat ? "typing....." : typingInfo.user.split(' ')[0] + ' is typing.....'
+                                !chat?.isGroupchat ? "typing....." : typingInfo.filter(tyInfo => tyInfo.chatId === chat._id)[0].user.name.split(' ')[0] + ' is typing.....'
                               }
                             </Text>
                             :
