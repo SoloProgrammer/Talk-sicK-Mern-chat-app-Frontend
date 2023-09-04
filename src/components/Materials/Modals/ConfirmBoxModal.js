@@ -13,12 +13,11 @@ import {
   FormControl,
   Box,
 } from '@chakra-ui/react'
-import { getSender } from '../../../configs/userConfigs'
 import { ChatState } from '../../../Context/ChatProvider'
 
-function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, loading }) {
+function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, loading, showCloseBtn }) {
 
-  const { user, isClosable } = ChatState();
+  const { isClosable } = ChatState();
 
   const handleFocus = () => {
     let elm = document.querySelector('.actionBtn')
@@ -34,20 +33,16 @@ function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, l
         <ModalOverlay />
         <ModalContent>
           <ModalHeader fontFamily={"Roboto"} color="lightslategray">
-            <Box fontSize={"1rem"} textTransform="capitalize" fontWeight={"medium"} marginRight=".5rem" className='flex' gap={".7rem"} alignItems="start" justifyContent={"start"}>
+            <Box fontSize={"1rem"} fontWeight={"medium"} marginRight=".5rem" className='flex' gap={".7rem"} alignItems="start" justifyContent={"start"}>
               <Image marginTop={".2rem"} src="https://cdn-icons-png.flaticon.com/512/4842/4842436.png" width="1.2rem" />
               <Text>
-                {
-                  !(modalDetail.chat.isGroupchat)
-                    ?
-                    <>
-                      {modalDetail.subtext} <b>{getSender(modalDetail.chat, user).name}!</b>
-                    </>
-                    :
-                    <>
-                      {modalDetail.subtext}  <b>{modalDetail.chat.chatName}!</b>
-                    </>
-                }
+                <span>
+                  {modalDetail.text}
+                </span>
+                &nbsp;
+                <span style={modalDetail.subtextStyles}>
+                  {modalDetail.subtext}
+                </span>
               </Text>
             </Box>
           </ModalHeader>
@@ -56,17 +51,45 @@ function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, l
           </ModalBody>
           <ModalFooter>
 
-            <FormControl width="100%" display={"flex"} justifyContent="end">
-              <Button marginRight={"1rem"} onClick={onClose} disabled={!isClosable}>Close</Button>
-              <Button
-                ref={initialRef}
-                className='actionBtn'
-                color={"red"}
-                onFocus={handleFocus}
-                isLoading={loading}
-                onClick={handleFunc}>
-                {modalDetail.btnCopy}
-              </Button>
+            <FormControl width="100%" display={"flex"} justifyContent="end" gap={'.5rem'} flexDir={modalDetail.btn2Copy && 'column'}>
+              {showCloseBtn && <Button height={'1.9rem'}
+                borderRadius={'3rem'} fontSize={'.9rem'} onClick={onClose} disabled={!isClosable}>Close</Button>}
+              {
+                modalDetail?.btn1?.copy
+                &&
+                <Button
+                  boxShadow={'0 0 0 1px #ff000063'}
+                  fontSize={'.9rem'}
+                  height={'1.9rem'}
+                  borderRadius={'3rem'}
+                  ref={initialRef}
+                  className='actionBtn'
+                  color={"red"}
+                  isLoading={loading.btn1}
+                  disabled={loading.btn1 || loading.btn2}
+                  data-value={modalDetail.btn1.dataValue}
+                  onClick={handleFunc}>
+                  {modalDetail.btn1.copy}
+                </Button>
+              }
+              {
+                modalDetail?.btn2?.copy
+                &&
+                <Button
+                  boxShadow={'0 0 0 1px #ff000063'}
+                  fontSize={'.9rem'}
+                  height={'1.9rem'}
+                  borderRadius={'3rem'}
+                  ref={initialRef}
+                  className='actionBtn'
+                  color={"red"}
+                  data-value={modalDetail.btn2.dataValue}
+                  isLoading={loading.btn2}
+                  disabled={loading.btn1 || loading.btn2}
+                  onClick={handleFunc}>
+                  {modalDetail.btn2.copy}
+                </Button>
+              }
             </FormControl>
           </ModalFooter>
         </ModalContent>

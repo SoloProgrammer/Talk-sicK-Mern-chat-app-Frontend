@@ -1,0 +1,16 @@
+.delMsgIcon:hover {
+    background: tomato;
+}
+
+.reactMsgIcon:hover {
+    background: deepskyblue;
+
+}
+
+.delMsgIcon:hover img {
+    filter: invert(1);
+}
+
+.reactMsgIcon:hover img {
+    filter: invert(1);
+}

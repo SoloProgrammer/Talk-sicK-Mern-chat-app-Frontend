@@ -334,7 +334,7 @@ const ChatProvider = ({ children }) => {
         }
 
         try {
-            setLoading(true)
+            setLoading({ btn1: true })
             setIsClosable(false)
             let config = {
                 method: 'POST',
@@ -351,7 +351,8 @@ const ChatProvider = ({ children }) => {
 
             let json = await res.json();
 
-            setLoading(false);
+            setLoading({ btn1: false })
+
             setIsClosable(true);
             onClose();
             if (!json.status) return showToast("Error", json.message, "error", 3000);
@@ -371,7 +372,7 @@ const ChatProvider = ({ children }) => {
 
         } catch (error) {
             showToast("Error", error.message, "error", 3000)
-            setLoading(false)
+            setLoading({ btn1: false })
             onClose();
         }
     }

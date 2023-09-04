@@ -12,6 +12,8 @@ import AvatarBox from './Materials/AvatarBox'
 import ProfileDrawer from './Materials/ProfileDrawer'
 import MessageImageViewBox from './MessageImageViewBox'
 import Linkify from 'react-linkify'
+import MessageActions from './MessageActionMenu/MessageActions'
+import MessageDeletedText from './Materials/MessageDeletedText'
 
 var selectedChatCompare, isFetchMoreMessages, chatMessagesCompare, skipFromCompare, isObservred, messageBoxPrevScrollHeight, TopMsgDateElm, TopMessageObserver, seenCount = 0;
 
@@ -588,6 +590,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                             userSelect={"none"}
                             pos={"absolute"}
                             className="messagesDay"
+                            fontSize={'.75rem'}
                           >{getMessageDay(m.createdAt)}</Text>
                         </Box>
                       }
@@ -596,14 +599,23 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                           ?
                           <Box
                             key={i}
-                            className='flex'
+                            className='flex messageStrip'
                             width={"100%"}
-                            justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}>
+                            justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}
+                          >
                             <Box
                               flexDir={m.sender._id === user?._id && "row-reverse"}
+                              pos={'relative'}
                               display={"flex"}
                               gap=".5rem"
                               maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
+
+                              {
+                                ((!m?.deleted?.value) || (m?.deleted.value && m?.deleted.for === 'myself') && m.sender._id !== user._id)
+                                &&
+                                <MessageActions message={m} user={user} />
+                              }
+
 
                               {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
                                 (window.innerWidth < 770
@@ -630,7 +642,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                               }
                               <Box
                                 padding={m.content.img ? ".3rem" : ".5rem"}
-                                fontSize={"1rem"}
+                                fontSize={".95rem"}
                                 backgroundColor={m.sender._id !== user?._id ? "#effbff" : "#ffffdd"}
                                 key={i} pos="relative"
                                 width={"fit-content"}
@@ -668,8 +680,11 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                   !m.content.img
                                   &&
                                   selectedChat?.isGroupchat && m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id) &&
-                                  <Text fontSize={".7rem"} fontWeight="normal"
+                                  <Text
+                                    fontSize={".7rem"}
+                                    fontWeight="normal"
                                     _hover={{ "textDecoration": "underline" }}
+                                    w={'fit-content'}
                                     cursor={"pointer"}
                                     onClick={(e) => handleMessageAvatarClick(m.sender._id === user?._id ? user : m.sender, i, e)}>
                                     {m.sender.name.split(" ")[0]}
@@ -677,39 +692,45 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                 }
                                 <Box paddingLeft={(m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id)) && ".0rem"}>
                                   {
-                                    m.content.img
+                                    (m?.deleted?.value && m?.deleted?.for === 'everyone') || (m?.deleted?.value && m?.deleted?.for === 'myself' && m.sender._id === user?._id)
                                       ?
-                                      <>
-                                        <Box maxW={"35rem"} >
-                                          <Box width={"100%"} backgroundImage={!msgImg && `url(${m.content.img})`} backgroundPosition="center">
-                                            <Image
-                                              opacity={(msgImg && m.content.img === msgImg.img) && 0}
-                                              onClick={() => {
-                                                setMsgImg({ img: m.content.img, msg: m.content.message, senderId: m.sender._id });
-                                                navigate(`${window.location.pathname}/view/${m.sender._id}/image`)
-                                              }}
-                                              cursor={"pointer"}
-                                              borderRadius={".3rem"}
-                                              src={m.content.img}
-                                              preload="none"
-                                              width="100%" height={"100%"}
-                                              objectFit={"contain"}
-                                              backdropFilter="blur(24px)"
-                                              maxH="25rem" />
-                                          </Box>
-                                          <Linkify options={{ target: 'blank' }}><Text paddingTop={".6rem"} >{m.content?.message}</Text></Linkify>
-                                        </Box>
-                                      </>
+                                      <MessageDeletedText flexDir={m.sender._id === user?._id ? 'row-reverse' : 'row'} iconSize={4} message={m} />
                                       :
-                                      <Linkify options={{ target: 'blank', style: { color: 'red', fontWeight: 'bold' } }} className="linkify"><Text>{m.content.message}</Text></Linkify>
+                                      m.content.img
+                                        ?
+                                        <>
+                                          <Box maxW={"35rem"} >
+                                            <Box width={"100%"} backgroundImage={!msgImg && `url(${m.content.img})`} backgroundPosition="center">
+                                              <Image
+                                                opacity={(msgImg && m.content.img === msgImg.img) && 0}
+                                                onClick={() => {
+                                                  setMsgImg({ img: m.content.img, msg: m.content.message, senderId: m.sender._id });
+                                                  navigate(`${window.location.pathname}/view/${m.sender._id}/image`)
+                                                }}
+                                                cursor={"pointer"}
+                                                borderRadius={".3rem"}
+                                                src={m.content.img}
+                                                preload="none"
+                                                width="100%" height={"100%"}
+                                                objectFit={"contain"}
+                                                backdropFilter="blur(24px)"
+                                                maxH="25rem" />
+                                            </Box>
+                                            <Linkify options={{ target: 'blank' }}><Text paddingTop={".6rem"} >{m.content?.message}</Text></Linkify>
+                                          </Box>
+                                        </>
+                                        :
+                                        <Linkify options={{ target: 'blank', style: { color: 'red', fontWeight: 'bold' } }} className="linkify"><Text>{m.content.message}</Text></Linkify>
                                   }
+
                                 </Box>
 
                                 <Text pos={"absolute"} fontSize={".6rem"} right=".4rem" color={"black !important"} textShadow="none !important" display={"flex"} gap=".3rem">
                                   {getMsgTime(m.createdAt)}
                                   {
-                                    m.sender._id === user?._id
-                                    && <Image filter={`${m?.seenBy.length === selectedChat?.users?.length && 'hue-rotate(90deg)'}`} src={m.seenBy.length !== selectedChat.users.length ? unSeenCheckMark : seenCheckMark} opacity={m.seenBy.length !== selectedChat.users.length && ".5"} width=".95rem" display="inline-block" />
+                                    m.sender._id === user?._id && !m?.deleted?.value
+                                    &&
+                                    <Image filter={`${m?.seenBy.length === selectedChat?.users?.length && 'hue-rotate(90deg)'}`} src={m.seenBy.length !== selectedChat.users.length ? unSeenCheckMark : seenCheckMark} opacity={m.seenBy.length !== selectedChat.users.length && ".5"} width=".95rem" display="inline-block" />
                                   }
                                 </Text>
 

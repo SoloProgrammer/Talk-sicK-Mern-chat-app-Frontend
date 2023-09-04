@@ -185,8 +185,20 @@ function GroupUser({ u }) {
                     {
                         u?._id !== user?._id && selectedChat.groupAdmin.map(u => u._id).includes(user?._id)
                         &&
-                        <ConfirmBoxModal handleFunc={() => handleRemoveFromGroup(u?._id)} isOpen={isOpen} onClose={onClose}
-                            modalDetail={{ chat: selectedChat, subtext: `Are you sure you want to remove (${u.name}) from `, btnCopy: "Remove" }} loading={removeUserLoading}>
+                        <ConfirmBoxModal
+                            handleFunc={() => handleRemoveFromGroup(u?._id)}
+                            isOpen={isOpen}
+                            onClose={onClose}
+                            modalDetail={
+                                {
+                                    chat: selectedChat,
+                                    text: `Are you sure you want to remove (${u.name}) from `,
+                                    subtext: selectedChat.chatName,
+                                    btn1: { copy: "Remove" },
+                                }
+                            }
+                            showCloseBtn={true}
+                            loading={{ btn1: removeUserLoading }}>
                             <Tooltip label={"Remove from group"} placement="top">
                                 <Image onClick={onOpen} cursor={"pointer"} width="1.35rem" height={"1.35rem"} src="https://cdn-icons-png.flaticon.com/512/9404/9404050.png" />
                             </Tooltip>

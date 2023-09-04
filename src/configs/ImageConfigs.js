@@ -40,6 +40,7 @@ export const bellDividedIcon = "https://cdn-icons-png.flaticon.com/512/4175/4175
 
 export const bellIcon = "https://cdn-icons-png.flaticon.com/512/3239/3239952.png"
 
+export const stopIcon = "https://cdn-icons-png.flaticon.com/512/2576/2576762.png"
 
 export let zoomCount = 0.5
 

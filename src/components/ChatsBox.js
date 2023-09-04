@@ -10,6 +10,7 @@ import ChatMenuBox from './Materials/ChatMenuBox'
 import ChatFooter from './ChatFooter'
 import { ChatsSkeleton } from './Materials/Loading'
 import { defaultPic, seenCheckMark, unSeenCheckMark } from '../configs/ImageConfigs'
+import MessageDeletedText from './Materials/MessageDeletedText'
 
 
 function ChatsBox() {
@@ -218,19 +219,23 @@ function ChatsBox() {
                               }
                             </Text>
                             :
-                            <Box marginTop=".18rem" fontSize={".8rem"} fontWeight="black" display="flex" gap=".3rem" alignItems={'center'}>
-                              <span>
-                                {
-                                  chat?.latestMessage
-                                    ?
-                                    (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "
-                                    :
-                                    "Bot: "
-                                }
-                              </span>
+                            <Box marginTop=".18rem" fontSize={".8rem"} fontWeight="black" display="flex" gap=".3rem" alignItems={'center'} justifyContent={'space-between'}>
                               {
-                                chat?.latestMessage
-                                && (chat.latestMessage.sender._id === user?._id) &&
+                                (!chat.latestMessage?.deleted?.value 
+                                  || (chat.latestMessage.deleted.for === 'everyone' && chat.latestMessage.sender?._id !== user?._id)
+                                  || (chat.latestMessage.deleted.for === 'myself') && chat.latestMessage.sender?._id !== user?._id)
+                                &&
+                                (chat?.latestMessage
+                                  ?
+                                  (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "
+                                  :
+                                  "Bot: ")
+                              }
+                              {
+                                chat?.latestMessage && !chat.latestMessage?.deleted?.value
+                                &&
+                                (chat.latestMessage.sender._id === user?._id)
+                                &&
                                 <Tooltip label={`${chat?.latestMessage.seenBy.length === chat.users.length ? 'seen' : 'dilivered'}`} fontSize={".7rem"} placement="top">
                                   <Image filter={`${chat?.latestMessage.seenBy.length === chat.users.length && 'hue-rotate(75deg)'}`} src={chat?.latestMessage.seenBy.length !== chat.users.length ? unSeenCheckMark : seenCheckMark} opacity={chat?.latestMessage.seenBy.length !== chat.users.length && ".5"} width=".95rem" display="inline-block" />
                                 </Tooltip>
@@ -239,13 +244,17 @@ function ChatsBox() {
                               <Text width={{ base: "calc(100% - 12%)", md: "calc(100% - 8%)" }} display={"inline-block"} fontWeight="normal" fontSize={".87rem"} whiteSpace={"nowrap"} textOverflow={'ellipsis'} overflowX={"hidden"} paddingRight={".4rem"}>
                                 {chat.latestMessage
                                   ?
-                                  chat.latestMessage.msgType && chat.latestMessage.msgType === 'info'
+                                  chat.latestMessage.deleted.value && (chat.latestMessage.deleted.for === 'everyone' || (chat.latestMessage.deleted.for === 'myself' && chat.latestMessage.sender._id === user?._id))
                                     ?
-                                    <>{getFormmatedInfoMsg(chat?.latestMessage)}</>
+                                    <MessageDeletedText iconSize={4} message={chat?.latestMessage} />
                                     :
-                                    <>{
-                                      (chat.latestMessage.content.img ? <><i className="fa-regular fa-image" />&nbsp;{chat.latestMessage.content.img.substring(chat.latestMessage.content.img.lastIndexOf('.') + 1) === "gif" ? "gif" : "image"}</> : chat.latestMessage?.content.message)
-                                    }</>
+                                    chat.latestMessage.msgType && chat.latestMessage.msgType === 'info'
+                                      ?
+                                      <>{getFormmatedInfoMsg(chat?.latestMessage)}</>
+                                      :
+                                      <>{
+                                        (chat.latestMessage.content.img ? <><i className="fa-regular fa-image" />&nbsp;{chat.latestMessage.content.img.substring(chat.latestMessage.content.img.lastIndexOf('.') + 1) === "gif" ? "gif" : "image"}</> : chat.latestMessage?.content.message)
+                                      }</>
                                   :
                                   "No message yet!"}
                               </Text>

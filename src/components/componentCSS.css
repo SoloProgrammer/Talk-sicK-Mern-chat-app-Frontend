@@ -223,6 +223,14 @@
     display: none;
 }
 
+.messageStrip:hover .messageActionBox
+{
+    opacity: 1;
+}
+.messageStrip:hover .messageActionBox .msgActionItem
+{
+    transform: scale(1)
+}
 .transformPaddingPlus {
     transform: translate(.4rem, -.5rem);
     padding: 0 .3rem;

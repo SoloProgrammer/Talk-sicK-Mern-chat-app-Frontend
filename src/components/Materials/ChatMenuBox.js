@@ -1,7 +1,7 @@
 import { Box, Image, useDisclosure } from '@chakra-ui/react'
 import React, { useState, useEffect } from 'react'
 import { server } from '../../configs/serverURl';
-import { HandleLogout } from '../../configs/userConfigs';
+import { HandleLogout, getSender } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
 import ConfirmBoxModal from './Modals/ConfirmBoxModal';
 import { archiveImg, downArrowCyan, unArchiveImg, leaveGrpImg, trashCanIcon, pinFilledIcon, pinOutlineIcon, bellIcon, bellDividedIcon } from '../../configs/ImageConfigs';
@@ -112,10 +112,12 @@ function ChatMenuBox({ chat, i }) {
                             modalDetail={
                                 {
                                     chat: chat,
-                                    subtext: !chat.isGroupchat ? "Are you Sure You want to Delete Chat with" : "Are you Sure You want to Leave",
-                                    btnCopy: !chat.isGroupchat ? "Delete" : "Leave"
+                                    text: !chat.isGroupchat ? "Are you Sure You want to Delete Chat with" : "Are you Sure You want to Leave",
+                                    subtext: chat.isGroupchat ? chat.chatName : getSender(chat, user)?.name,
+                                    btn1: { copy: !chat.isGroupchat ? "Delete" : "Leave" }
                                 }
                             }
+                            showCloseBtn={true}
                             loading={loading}>
                             <span
                                 onClick={onOpen}

@@ -249,7 +249,9 @@ function ProfileDrawer({ width, align = "right" }) {
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState({
+        btn1: false
+    });
 
     const handleRemoveProfileAvatar = async (e) => {
         e.stopPropagation()
@@ -378,7 +380,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                 }
                             </Avatar>
                         </label>
-                        <Box fontSize={"2xl"} color="gray.500" fontWeight="semibold" pos={"relative"} width="full" className='flex' marginTop={".5rem"}  alignItems={"flex-start"}>
+                        <Box fontSize={"2xl"} color="gray.500" fontWeight="semibold" pos={"relative"} width="full" className='flex' marginTop={".5rem"} alignItems={"flex-start"}>
 
                             {/* Profile name */}
                             <Box className='InptBox flex nameInptBox' gap={".5rem"}>
@@ -544,8 +546,20 @@ function ProfileDrawer({ width, align = "right" }) {
                 {
                     (profile?._id !== user?._id && profile.isGrpProfile)
                     &&
-                    <ConfirmBoxModal handleFunc={() => handleLeaveGrp(selectedChat, onClose, setLoading)} isOpen={isOpen} onClose={onClose}
-                        modalDetail={{ chat: selectedChat, subtext: "Are you Sure You want to Leave", btnCopy: "Leave" }} loading={loading}>
+                    <ConfirmBoxModal
+                        handleFunc={() => handleLeaveGrp(selectedChat, onClose, setLoading)}
+                        isOpen={isOpen}
+                        onClose={onClose}
+                        modalDetail={
+                            {
+                                chat: selectedChat,
+                                text: "Are you Sure You want to Leave",
+                                subtext: selectedChat?.chatName,
+                                btn1: { copy: "Leave" }
+                            }
+                        }
+                        showCloseBtn={true}
+                        loading={loading}>
                         <Box padding={{ base: "0 .8rem", md: "0 1.1rem" }} width={"100%"}>
                             <Box
                                 _hover={{ bg: "gray.200", boxShadow: "0 0 2px rgba(0,0,0,.1)" }}
