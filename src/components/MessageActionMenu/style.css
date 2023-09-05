@@ -14,3 +14,15 @@
 .reactMsgIcon:hover img {
     filter: invert(1);
 }
+
+.EmojiPickerBx {
+    visibility: hidden;
+    transform: translateX(-50%) scale(0);
+    transform-origin: bottom;
+}
+
+.reactMsgIcon:hover .EmojiPickerBx {
+    transition-delay: .1s;
+    visibility: visible;
+    transform: translateX(-50%) scale(1);
+}

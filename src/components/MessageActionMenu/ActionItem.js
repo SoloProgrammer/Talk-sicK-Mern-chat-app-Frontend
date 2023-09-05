@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react'
 import React from 'react'
 
-const ActionItem = ({ itemImgSrc, classNames, onOpen }) => {
+const ActionItem = ({ itemImgSrc, classNames, handleFunc, children }) => {
     return (
         <Box
             bg={'white'}
@@ -15,8 +15,10 @@ const ActionItem = ({ itemImgSrc, classNames, onOpen }) => {
             boxShadow={'0 0 2px rgba(0,0,0,.2)'}
             cursor={'pointer'}
             className={`msgActionItem ${classNames}`}
-            onClick={onOpen}
+            pos={'relative'}
+            onClick={handleFunc}
             >
+            {children}
             <img width={'100%'} height={'100%'} src={itemImgSrc} alt="" />
         </Box>
     )

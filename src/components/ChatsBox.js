@@ -220,16 +220,17 @@ function ChatsBox() {
                             </Text>
                             :
                             <Box marginTop=".18rem" fontSize={".8rem"} fontWeight="black" display="flex" gap=".3rem" alignItems={'center'} justifyContent={'space-between'}>
+                              {/* This will render who sended the latestMessage - like this you: OR AnyXYz:  */}
                               {
-                                (!chat.latestMessage?.deleted?.value 
+                                (!chat.latestMessage?.deleted?.value
                                   || (chat.latestMessage.deleted.for === 'everyone' && chat.latestMessage.sender?._id !== user?._id)
-                                  || (chat.latestMessage.deleted.for === 'myself') && chat.latestMessage.sender?._id !== user?._id)
+                                  || (chat.latestMessage.deleted.for === 'myself')
+                                  &&
+                                  chat.latestMessage.sender?._id !== user?._id)
                                 &&
                                 (chat?.latestMessage
-                                  ?
-                                  (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": "
-                                  :
-                                  "Bot: ")
+                                  &&
+                                  (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": ")
                               }
                               {
                                 chat?.latestMessage && !chat.latestMessage?.deleted?.value
@@ -244,7 +245,8 @@ function ChatsBox() {
                               <Text width={{ base: "calc(100% - 12%)", md: "calc(100% - 8%)" }} display={"inline-block"} fontWeight="normal" fontSize={".87rem"} whiteSpace={"nowrap"} textOverflow={'ellipsis'} overflowX={"hidden"} paddingRight={".4rem"}>
                                 {chat.latestMessage
                                   ?
-                                  chat.latestMessage.deleted.value && (chat.latestMessage.deleted.for === 'everyone' || (chat.latestMessage.deleted.for === 'myself' && chat.latestMessage.sender._id === user?._id))
+                                  chat.latestMessage.deleted.value &&
+                                    (chat.latestMessage.deleted.for === 'everyone' || (chat.latestMessage.deleted.for === 'myself' && chat.latestMessage.sender._id === user?._id))
                                     ?
                                     <MessageDeletedText iconSize={4} message={chat?.latestMessage} />
                                     :

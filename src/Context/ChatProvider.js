@@ -6,8 +6,12 @@ import io from 'socket.io-client'
 import { useNavigate } from 'react-router-dom';
 
 export const ChatContext = createContext();
+var socketActiveCount = 0;
+var chatMessagesCompare;
+var MessagesCompare;
 
 const ChatProvider = ({ children }) => {
+
 
     const navigate = useNavigate();
 
@@ -48,9 +52,7 @@ const ChatProvider = ({ children }) => {
 
     const [isTyping, setIsTyping] = useState(null);
 
-    const [typingInfo, setTypingInfo] = useState([]) // this is needed inside the groupChat as we need to find who is typing in the whole group! 
-
-    //Socket.io connection with configuration........................................................
+    const [typingInfo, setTypingInfo] = useState([]) // this state is needed for the groupChat as we need to find who is typing in the whole group! 
 
     useEffect(() => {
         let socketCreated = io(ENDPOINT, { transports: ['websocket', 'polling'] });
@@ -64,6 +66,7 @@ const ChatProvider = ({ children }) => {
         // eslint-disable-next-line 
     }, [user]);
 
+    //Socket.io connection with configuration........................................................
 
     const [chats, setChats] = useState(null);
 
@@ -469,6 +472,15 @@ const ChatProvider = ({ children }) => {
         }
     }
 
+    
+    useEffect(() =>{
+        chatMessagesCompare = chatMessages
+    },[chatMessages])   
+
+     useEffect(() =>{
+        MessagesCompare = messages
+    },[messages])
+
     // Socket/Effect for typing... funcionality
     useEffect(() => {
         if (socket && user) {
@@ -484,6 +496,49 @@ const ChatProvider = ({ children }) => {
             })
         }
     }, [socket, user])
+
+    // socket for updating messages and cached messages and latestmessage of chat when sender deletes its message in the chat! 
+    useEffect(() => {
+        if (socket && user && chats?.length && chatMessagesCompare?.length && MessagesCompare?.length) {
+
+            socket.on("deleted message", (deletedMsg) => {
+                socketActiveCount += 1
+                if (deletedMsg?.sender?._id !== user?._id && socketActiveCount === 1) {
+                    console.log("deleted", MessagesCompare, chatMessagesCompare, chats, deletedMsg);
+                    let updatedmessages;
+                    if (MessagesCompare.length > 0 && MessagesCompare[0].chat._id === deletedMsg.chat._id) {
+                        updatedmessages = MessagesCompare?.map(m => {
+                            m = m._id === deletedMsg?._id ? deletedMsg : m
+                            return m
+                        })
+                        setMessages(updatedmessages)
+                    }
+
+                    if (chatMessagesCompare.length && chatMessagesCompare.map(chm => chm.chatId).includes(deletedMsg.chat._id)) {
+
+                        updatedmessages = chatMessagesCompare.filter(chm => chm.chatId === deletedMsg.chat._id)[0].messages.map(m => {
+                            m = m._id === deletedMsg?._id ? deletedMsg : m
+                            return m
+                        })
+                        setChatMessages(chatMessagesCompare.map(chm => {
+                            chm.messages = chm.chatId === deletedMsg.chat._id ? updatedmessages : chm.messages
+                            return chm
+                        }))
+                    }
+                    
+                    if (chats.map(ch => ch?.latestMessage?._id).includes(deletedMsg?._id)) {
+                        setChats(chats.map(ch => {
+                            ch.latestMessage = ch?.latestMessage?._id === deletedMsg?._id ? deletedMsg : ch.latestMessage
+                            return ch;
+                        }))
+                    }
+                    setTimeout(() => {
+                        socketActiveCount = 0
+                    }, 1000);
+                }
+            })
+        }
+    }, [socket, user, chats, chatMessages, messages])
 
     return (
         <ChatContext.Provider value={{ getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg }}>

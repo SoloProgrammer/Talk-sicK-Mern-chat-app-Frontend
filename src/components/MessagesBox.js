@@ -404,7 +404,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     if (action === "Zoom-out") zoomOutImage(img)
 
   }
-
+  // console.log(messages,chatMessages);
   useEffect(() => {
     let img = document.querySelector('.messageImage')
     setTimeout(() => {
@@ -512,6 +512,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
         'you ' : seperatedMsg[seperatedMsg.length - 1])
   }
 
+  // State to open/close EmojiPicker in messageActionComponent
+
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
 
@@ -606,12 +608,13 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                             <Box
                               flexDir={m.sender._id === user?._id && "row-reverse"}
                               pos={'relative'}
+                              key={i}
                               display={"flex"}
                               gap=".5rem"
                               maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
 
                               {
-                                ((!m?.deleted?.value) || (m?.deleted.value && m?.deleted.for === 'myself') && m.sender._id !== user._id)
+                                (((!m?.deleted?.value) || (m?.deleted.value && m?.deleted.for === 'myself')) && m.sender._id !== user._id)
                                 &&
                                 <MessageActions message={m} user={user} />
                               }
@@ -675,7 +678,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                 paddingBottom="1rem"
                                 paddingLeft={m.content?.message?.length === 1 && ".9rem"}
                               >
-
                                 {
                                   !m.content.img
                                   &&
