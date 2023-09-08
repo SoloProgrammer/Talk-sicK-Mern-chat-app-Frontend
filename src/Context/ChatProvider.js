@@ -472,14 +472,14 @@ const ChatProvider = ({ children }) => {
         }
     }
 
-    
-    useEffect(() =>{
-        chatMessagesCompare = chatMessages
-    },[chatMessages])   
 
-     useEffect(() =>{
+    useEffect(() => {
+        chatMessagesCompare = chatMessages
+    }, [chatMessages])
+
+    useEffect(() => {
         MessagesCompare = messages
-    },[messages])
+    }, [messages])
 
     // Socket/Effect for typing... funcionality
     useEffect(() => {
@@ -497,6 +497,7 @@ const ChatProvider = ({ children }) => {
         }
     }, [socket, user])
 
+    const [isMessagesUpdated, setIsMessagesUpdated] = useState(false)
     // socket for updating messages and cached messages and latestmessage of chat when sender deletes its message in the chat! 
     useEffect(() => {
         if (socket && user && chats?.length && chatMessagesCompare?.length && MessagesCompare?.length) {
@@ -504,6 +505,7 @@ const ChatProvider = ({ children }) => {
             socket.on("deleted message", (deletedMsg) => {
                 socketActiveCount += 1
                 if (deletedMsg?.sender?._id !== user?._id && socketActiveCount === 1) {
+                    setIsMessagesUpdated(true)
                     console.log("deleted", MessagesCompare, chatMessagesCompare, chats, deletedMsg);
                     let updatedmessages;
                     if (MessagesCompare.length > 0 && MessagesCompare[0].chat._id === deletedMsg.chat._id) {
@@ -525,7 +527,7 @@ const ChatProvider = ({ children }) => {
                             return chm
                         }))
                     }
-                    
+
                     if (chats.map(ch => ch?.latestMessage?._id).includes(deletedMsg?._id)) {
                         setChats(chats.map(ch => {
                             ch.latestMessage = ch?.latestMessage?._id === deletedMsg?._id ? deletedMsg : ch.latestMessage
@@ -541,7 +543,7 @@ const ChatProvider = ({ children }) => {
     }, [socket, user, chats, chatMessages, messages])
 
     return (
-        <ChatContext.Provider value={{ getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg }}>
+        <ChatContext.Provider value={{ isMessagesUpdated, setIsMessagesUpdated, getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg }}>
             {children}
         </ChatContext.Provider>
     )

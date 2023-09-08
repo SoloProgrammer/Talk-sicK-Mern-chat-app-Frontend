@@ -20,7 +20,7 @@ var selectedChatCompare, isFetchMoreMessages, chatMessagesCompare, skipFromCompa
 function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   const
-    { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages, messages, setMessages, setChats } = ChatState();
+    { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages, messages, setMessages, setChats, isMessagesUpdated, setIsMessagesUpdated } = ChatState();
 
   const navigate = useNavigate();
 
@@ -258,8 +258,12 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
     // console.log(toScrollVal, currentMessgeBoxScrollHeight, messageBoxPrevScrollHeight);
 
+    if (isMessagesUpdated) return setIsMessagesUpdated(false)
+
     setTimeout(() => {
-      if (isFirstLoadOfMsgs || skipFromCompare === (selectedChatCompare?.totalMessages - messagesLimit) || !isFetchMoreMessages) setTimeout(() => scrollBottom("messagesDisplay"), 20);
+      if (isFirstLoadOfMsgs || skipFromCompare === (selectedChatCompare?.totalMessages - messagesLimit) || !isFetchMoreMessages) {
+        setTimeout(() => scrollBottom("messagesDisplay"), 20);
+      }
       else scrollIntoView(messagesContainer, toScrollVal)
       isFetchMoreMessages = false
     }, 0);
@@ -375,6 +379,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   let lastScrollvalue = 0
 
   messagesContainer?.addEventListener('scroll', () => {
+    hidemessageActionMenu()
+    hideEmojiBoxs()
     const currScroll = messagesContainer?.scrollTop;
 
     // if the user is at the top of messagesContainer then set scrolltotop to false as now user will able to scroll down!
@@ -512,7 +518,20 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
         'you ' : seperatedMsg[seperatedMsg.length - 1])
   }
 
-  // State to open/close EmojiPicker in messageActionComponent
+  function hidemessageActionMenu() {
+    let messageStrips = document.querySelectorAll('.messageStrip')
+    messageStrips?.forEach(box => box.classList.remove('active'))
+  }
+
+  function hideEmojiBoxs() {
+    let EmojiBoxs = document.querySelectorAll('.EmojiPickerBx')
+    EmojiBoxs?.forEach(box => box.classList.remove('active'))
+  }
+
+  messagesContainer?.addEventListener('click', () => {
+    hideEmojiBoxs()
+    hidemessageActionMenu()
+  })
 
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
@@ -520,7 +539,12 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       {
         msgImg?.img && window.location.pathname === `/chats/chat/${selectedChat?._id}/view/${msgImg.senderId}/image`
         &&
-        <MessageImageViewBox msgImg={msgImg} setMsgImg={setMsgImg} imageActionBtns={imageActionBtns} handleImgActionCLick={handleImgActionCLick} />
+        <MessageImageViewBox
+          msgImg={msgImg}
+          setMsgImg={setMsgImg}
+          imageActionBtns={imageActionBtns}
+          handleImgActionCLick={handleImgActionCLick}
+        />
       }
 
       {
@@ -602,6 +626,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                           <Box
                             key={i}
                             className='flex messageStrip'
+                            id={`messageStrip${m._id}`}
                             width={"100%"}
                             justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}
                           >
@@ -614,9 +639,15 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                               maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
 
                               {
-                                (((!m?.deleted?.value) || (m?.deleted.value && m?.deleted.for === 'myself')) && m.sender._id !== user._id)
+                                ((!m?.deleted?.value) || ((m?.deleted.value && m?.deleted.for === 'myself') && m.sender._id !== user._id))
                                 &&
-                                <MessageActions message={m} user={user} />
+                                <MessageActions
+                                  message={m}
+                                  user={user}
+                                  key={m._id}
+                                  hidemessageActionMenu={hidemessageActionMenu}
+                                  hideEmojiBoxs={hideEmojiBoxs}
+                                />
                               }
 
 
@@ -650,7 +681,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                 key={i} pos="relative"
                                 width={"fit-content"}
                                 color={m.sender._id === user?._id ? "black" : "black"}
-                                minWidth={"3.3rem"}
                                 fontWeight={'400'}
                                 boxShadow={m.sender._id === user?._id ? "0px 0px 2px rgba(0,0,0,.3)" : "1px 2px 0px rgba(0,0,0,.15)"}
                                 borderTopLeftRadius={(m.sender._id === user?._id || (window.innerWidth > 770 && (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i)))) && ".5rem"}
@@ -658,7 +688,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                 borderBottomLeftRadius={".5rem"}
                                 position="relative"
                                 borderBottomRightRadius={(m.sender._id !== user?._id || (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))) && ".5rem"}
-                                minW={m.sender._id !== user?._id ? "80px" : "80px"}
+                                // minW={'80px'}
+                                minW={'140px'}
 
                                 marginLeft=
                                 {window.innerWidth > 770
@@ -676,8 +707,15 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                   (m.sender._id === user?._id)
                                   && "2.5rem"}
                                 paddingBottom="1rem"
+                                marginBottom={'.5rem'}
                                 paddingLeft={m.content?.message?.length === 1 && ".9rem"}
                               >
+                                {
+                                  <Box cursor={'pointer'} pos={'absolute'} _hover={{ boxShadow: '0 0 0 .5px rgba(0,0,0,.6), inset 0 0 2px rgba(0,0,0,.2)' }} bottom={'-.5rem'} left={'.2rem'} bg={'white'} padding={'0rem .1rem'} borderRadius={'2rem'}
+                                    boxShadow={'0 0 2px rgba(0,0,0,.2)'}>
+                                    <Text fontSize={'.75rem'} fontWeight={'normal'}>❤️‍🔥😂<span style={{ marginRight: '.2rem' }}>+2</span></Text>
+                                  </Box>
+                                }
                                 {
                                   !m.content.img
                                   &&

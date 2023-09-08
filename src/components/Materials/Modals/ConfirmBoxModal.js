@@ -51,7 +51,7 @@ function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, l
           </ModalBody>
           <ModalFooter>
 
-            <FormControl width="100%" display={"flex"} justifyContent="end" gap={'.5rem'} flexDir={modalDetail.btn2Copy && 'column'}>
+            <FormControl width="100%" display={"flex"} justifyContent="end" gap={'.5rem'}>
               {showCloseBtn && <Button height={'1.9rem'}
                 borderRadius={'3rem'} fontSize={'.9rem'} onClick={onClose} disabled={!isClosable}>Close</Button>}
               {

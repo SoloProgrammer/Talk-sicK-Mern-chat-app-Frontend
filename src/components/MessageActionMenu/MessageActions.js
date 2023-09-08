@@ -8,7 +8,7 @@ import { server } from "../../configs/serverURl";
 import { HandleLogout } from "../../configs/userConfigs";
 import EmojiMenu from "./EmojiPicker/EmojiPicker";
 
-const MessageActions = ({ message, user, isVisible, setIsVisible }) => {
+const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs }) => {
   const {
     selectedChat,
     setIsClosable,
@@ -101,7 +101,24 @@ const MessageActions = ({ message, user, isVisible, setIsVisible }) => {
   };
 
   const handleEmojiIconClick = (e) => {
-    console.log(e.clientX);
+    e.stopPropagation()
+    let EmojiBox = document?.querySelector(`#EmojiBox${message._id}`);
+    let messageStrip = document?.querySelector(`#messageStrip${message._id}`);
+
+    // If window size is less than 770px then go inside the if!
+    if (window.innerWidth <= 770) {
+      if (e.clientX < 100) {
+        EmojiBox.style.translate = '-20% 0%' 
+      }
+      else if (e.clientX > 350) {
+        EmojiBox.style.translate = '-90% 0%' 
+      }
+    }
+
+    hideEmojiBoxs()
+    hidemessageActionMenu()
+    messageStrip.classList.add('active')
+    EmojiBox?.classList.add('active')
   }
 
   return (
@@ -152,7 +169,7 @@ const MessageActions = ({ message, user, isVisible, setIsVisible }) => {
         itemImgSrc={"https://cdn-icons-png.flaticon.com/512/1023/1023656.png"}
       >
 
-        <EmojiMenu message={message}/>
+        <EmojiMenu message={message} key={message._id} hideEmojiBoxs={hideEmojiBoxs} />
       </ActionItem>
     </Box>
   );

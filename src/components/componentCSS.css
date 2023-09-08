@@ -231,6 +231,10 @@
 {
     transform: scale(1)
 }
+.messageStrip.active .messageActionBox .msgActionItem, .messageStrip.active .messageActionBox{
+    opacity: 1;
+    transform: scale(1)
+}
 .transformPaddingPlus {
     transform: translate(.4rem, -.5rem);
     padding: 0 .3rem;
