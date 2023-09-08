@@ -498,7 +498,7 @@ const ChatProvider = ({ children }) => {
     }, [socket, user])
 
     const [isMessagesUpdated, setIsMessagesUpdated] = useState(false)
-    // socket for updating messages and cached messages and latestmessage of chat when sender deletes its message in the chat! 
+    // socket for updating messages and cached messages and latestmessage of chat when sender deletes or reacts its own or sender message in the chat! 
     useEffect(() => {
         if (socket && user && chats?.length && chatMessagesCompare?.length && MessagesCompare?.length) {
 
@@ -506,7 +506,7 @@ const ChatProvider = ({ children }) => {
                 socketActiveCount += 1
                 if (deletedMsg?.sender?._id !== user?._id && socketActiveCount === 1) {
                     setIsMessagesUpdated(true)
-                    console.log("deleted", MessagesCompare, chatMessagesCompare, chats, deletedMsg);
+                    // console.log("deleted", MessagesCompare, chatMessagesCompare, chats, deletedMsg);
                     let updatedmessages;
                     if (MessagesCompare.length > 0 && MessagesCompare[0].chat._id === deletedMsg.chat._id) {
                         updatedmessages = MessagesCompare?.map(m => {
@@ -536,7 +536,39 @@ const ChatProvider = ({ children }) => {
                     }
                     setTimeout(() => {
                         socketActiveCount = 0
-                    }, 1000);
+                    }, 10);
+                }
+            })
+            socket.on("react message", (reactedMsg, reacted_user) => {
+                // console.log(reacted_user,user?._id, socketActiveCount);
+                if (reacted_user !== user?._id && socketActiveCount < 1) {
+                    socketActiveCount += 1
+                    setIsMessagesUpdated(true)
+                    // console.log("reacted!", MessagesCompare, chatMessagesCompare, chats, reactedMsg);
+                    let updatedmessages;
+                    if (MessagesCompare.length > 0 && MessagesCompare[0].chat._id === reactedMsg.chat._id) {
+                        updatedmessages = MessagesCompare?.map(m => {
+                            m = m._id === reactedMsg._id ? reactedMsg : m
+                            return m
+                        })
+                        setMessages(updatedmessages)
+                    }
+
+                    if (chatMessagesCompare.length && chatMessagesCompare.map(chm => chm.chatId).includes(reactedMsg.chat._id)) {
+
+                        updatedmessages = chatMessagesCompare.filter(chm => chm.chatId === reactedMsg.chat._id)[0].messages.map(m => {
+                            m = m._id === reactedMsg?._id ? reactedMsg : m
+                            return m
+                        })
+                        setChatMessages(chatMessagesCompare.map(chm => {
+                            chm.messages = chm.chatId === reactedMsg.chat._id ? updatedmessages : chm.messages
+                            return chm
+                        }))
+                    }
+
+                    setTimeout(() => {
+                        socketActiveCount = 0
+                    }, 10);
                 }
             })
         }

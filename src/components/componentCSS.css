@@ -231,6 +231,9 @@
 {
     transform: scale(1)
 }
+.messageStrip.active{
+    background: #aeaeae26;
+}
 .messageStrip.active .messageActionBox .msgActionItem, .messageStrip.active .messageActionBox{
     opacity: 1;
     transform: scale(1)

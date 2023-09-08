@@ -30,8 +30,7 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const EVERYONE = "everyone",
-    MYSELF = "myself";
+  const EVERYONE = "everyone", MYSELF = "myself";
 
   const deleteMessage = async (e) => {
     setLoading({
@@ -101,17 +100,23 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
   };
 
   const handleEmojiIconClick = (e) => {
+
     e.stopPropagation()
     let EmojiBox = document?.querySelector(`#EmojiBox${message._id}`);
     let messageStrip = document?.querySelector(`#messageStrip${message._id}`);
 
     // If window size is less than 770px then go inside the if!
     if (window.innerWidth <= 770) {
+      // This condition for when senders message width is reaching at the end then we will translate the Emojis box to -20% from the right 
       if (e.clientX < 100) {
-        EmojiBox.style.translate = '-20% 0%' 
+        EmojiBox.style.transformOrigin = 'left bottom'
+        EmojiBox.style.translate = '-20% 0%'
+
       }
+      // This condition for when senders message width is reaching at the end then we will translate the Emojis box to -90% from the right
       else if (e.clientX > 350) {
-        EmojiBox.style.translate = '-90% 0%' 
+        EmojiBox.style.transformOrigin = 'right bottom'
+        EmojiBox.style.translate = '-90% 0%'
       }
     }
 
@@ -169,7 +174,7 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
         itemImgSrc={"https://cdn-icons-png.flaticon.com/512/1023/1023656.png"}
       >
 
-        <EmojiMenu message={message} key={message._id} hideEmojiBoxs={hideEmojiBoxs} />
+        <EmojiMenu message={message} key={message._id} hideEmojiBoxs={hideEmojiBoxs} user={user}/>
       </ActionItem>
     </Box>
   );

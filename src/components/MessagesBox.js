@@ -14,6 +14,7 @@ import MessageImageViewBox from './MessageImageViewBox'
 import Linkify from 'react-linkify'
 import MessageActions from './MessageActionMenu/MessageActions'
 import MessageDeletedText from './Materials/MessageDeletedText'
+import MessageReactions from './Materials/MessageReactions'
 
 var selectedChatCompare, isFetchMoreMessages, chatMessagesCompare, skipFromCompare, isObservred, messageBoxPrevScrollHeight, TopMsgDateElm, TopMessageObserver, seenCount = 0;
 
@@ -566,7 +567,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
           :
           <Box pos={"relative"} id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".3rem .4rem"} paddingTop=".6rem">
 
-
             {
               loading
               &&
@@ -628,6 +628,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                             className='flex messageStrip'
                             id={`messageStrip${m._id}`}
                             width={"100%"}
+                            // bg={'#d4d4d466'}
                             justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}
                           >
                             <Box
@@ -649,7 +650,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                   hideEmojiBoxs={hideEmojiBoxs}
                                 />
                               }
-
 
                               {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
                                 (window.innerWidth < 770
@@ -688,8 +688,14 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                 borderBottomLeftRadius={".5rem"}
                                 position="relative"
                                 borderBottomRightRadius={(m.sender._id !== user?._id || (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))) && ".5rem"}
-                                // minW={'80px'}
-                                minW={'140px'}
+                                transition={'.3s min-width cubic-bezier(0.475, 0.885, 0.32, 1.375), .2s margin-bottom'}
+                                minW={m?.reactions?.length
+                                  ?
+                                  ((m?.reactions?.length === 1 && '110px')
+                                    ||
+                                    (m?.reactions?.length === 2 && '120px')
+                                    ||
+                                    (m?.reactions?.length >= 3 && '140px')) : '80px'}
 
                                 marginLeft=
                                 {window.innerWidth > 770
@@ -707,14 +713,19 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                   (m.sender._id === user?._id)
                                   && "2.5rem"}
                                 paddingBottom="1rem"
-                                marginBottom={'.5rem'}
+                                marginBottom={m?.reactions?.length > 0 && '.4rem'}
                                 paddingLeft={m.content?.message?.length === 1 && ".9rem"}
                               >
                                 {
-                                  <Box cursor={'pointer'} pos={'absolute'} _hover={{ boxShadow: '0 0 0 .5px rgba(0,0,0,.6), inset 0 0 2px rgba(0,0,0,.2)' }} bottom={'-.5rem'} left={'.2rem'} bg={'white'} padding={'0rem .1rem'} borderRadius={'2rem'}
-                                    boxShadow={'0 0 2px rgba(0,0,0,.2)'}>
-                                    <Text fontSize={'.75rem'} fontWeight={'normal'}>❤️‍🔥😂<span style={{ marginRight: '.2rem' }}>+2</span></Text>
-                                  </Box>
+                                  m?.reactions?.length > 0
+                                  &&
+                                  (
+                                    !m.deleted.value
+                                    ||
+                                    (m.deleted.value && (m.deleted.for === 'myself' && m.sender._id !== user?._id))
+                                  )
+                                  &&
+                                  <MessageReactions m={m} />
                                 }
                                 {
                                   !m.content.img
