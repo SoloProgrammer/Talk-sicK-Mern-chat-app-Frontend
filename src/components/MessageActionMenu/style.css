@@ -2,15 +2,15 @@
     background: tomato;
 }
 
-.reactMsgIcon:hover {
-    background: deepskyblue;
-
-}
 
 .delMsgIcon:hover img {
     filter: invert(1);
 }
 
+.reactMsgIcon:hover {
+    background: deepskyblue;
+
+}
 .reactMsgIcon:hover img {
     filter: invert(1);
 }
@@ -24,14 +24,18 @@
     transition: .3s all cubic-bezier(0.475, 0.885, 0.32, 1.375) !important;
 }
 
-/* .reactMsgIcon:hover .EmojiPickerBx {
-    transition-delay: .1s;
-    visibility: visible;
-    transform: translateX(-50%) scale(1);
-} */
 .EmojiPickerBx.active {
     transition-delay: .1s;
     visibility: visible;
     translate: -50% 0%;
     scale: 1;
+}
+
+@media screen and (max-width:770px) {
+    .reactMsgIcon:hover {
+        background: white;
+    }
+    .reactMsgIcon:hover img {
+        filter: invert(0);
+    }
 }

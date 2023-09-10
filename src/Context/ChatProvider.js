@@ -472,6 +472,72 @@ const ChatProvider = ({ children }) => {
         }
     }
 
+    const updateMsgReactionInServer = async (message, emoji) => {
+        try {
+            const config = {
+                method: 'PUT',
+                headers: {
+                    token: localStorage.getItem('token')
+                },
+            }
+
+            let res = await fetch(`${server.URL.local}/api/message/${message?._id}/react?reaction=${emoji}`, config);
+
+            if (res.status === 401) return HandleLogout()
+
+            let json = await res.json();
+
+            if (!json.status) return showToast("Error", json.message, "error", 3000);
+
+            socket.emit('react message', json.msg, user?._id)
+
+        } catch (error) {
+            showToast("Error", error.message, "error", 3000);
+        }
+    }
+
+    function reactToMessage(message, emoji) {
+        // Updating reactions on message on Client side---
+        let messagesClone = structuredClone(messages)
+        let updatedMessages = messagesClone?.map(m => {
+            if (m._id === message._id) {
+                let newReaction = { user, reaction: emoji }
+
+                if (m.reactions && m.reactions.length > 0) {
+                    if (m?.reactions?.map(r => r.user._id === user?._id)) {
+
+                        if (m?.reactions.filter(r => r.user._id === user?._id)[0]?.reaction === emoji) {
+                            m.reactions = m?.reactions.filter(r => r.user._id !== user?._id)
+                        }
+                        else {
+                            m.reactions = m?.reactions.filter(r => r.user._id !== user?._id)
+                            m?.reactions?.unshift(newReaction)
+                        }
+                    }
+                    else m.reactions.unshift(newReaction)
+                }
+                else {
+                    m.reactions = [newReaction]
+                }
+            }
+            return m;
+        })
+
+        setIsMessagesUpdated(true)
+        setTimeout(() => {
+            setMessages(updatedMessages)
+            setChatMessages(chatMessages.map(ch => {
+                if (ch.chatId === message.chat._id) {
+                    ch.messages = updatedMessages
+                }
+                return ch
+            }))
+        }, 200);
+
+
+        // Updating reactions on message on Server side---
+        updateMsgReactionInServer(message, emoji)
+    }
 
     useEffect(() => {
         chatMessagesCompare = chatMessages
@@ -575,7 +641,7 @@ const ChatProvider = ({ children }) => {
     }, [socket, user, chats, chatMessages, messages])
 
     return (
-        <ChatContext.Provider value={{ isMessagesUpdated, setIsMessagesUpdated, getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg }}>
+        <ChatContext.Provider value={{ isMessagesUpdated, setIsMessagesUpdated, getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg, reactToMessage }}>
             {children}
         </ChatContext.Provider>
     )

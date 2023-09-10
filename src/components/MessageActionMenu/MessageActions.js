@@ -114,7 +114,7 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
 
       }
       // This condition for when senders message width is reaching at the end then we will translate the Emojis box to -90% from the right
-      else if (e.clientX > 350) {
+      else if (e.clientX > 290) {
         EmojiBox.style.transformOrigin = 'right bottom'
         EmojiBox.style.translate = '-90% 0%'
       }
@@ -174,7 +174,7 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
         itemImgSrc={"https://cdn-icons-png.flaticon.com/512/1023/1023656.png"}
       >
 
-        <EmojiMenu message={message} key={message._id} hideEmojiBoxs={hideEmojiBoxs} user={user}/>
+        <EmojiMenu message={message} key={message._id} hideEmojiBoxs={hideEmojiBoxs} user={user} />
       </ActionItem>
     </Box>
   );

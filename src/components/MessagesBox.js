@@ -529,6 +529,11 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     EmojiBoxs?.forEach(box => box.classList.remove('active'))
   }
 
+  function hideEmojiDetailBoxs() {
+    let EmojiDetailBoxs = document.querySelectorAll(`.EmojiDetailBox`)
+    EmojiDetailBoxs.forEach(box => box.classList.remove('active'))
+  }
+
   messagesContainer?.addEventListener('click', () => {
     hideEmojiBoxs()
     hidemessageActionMenu()
@@ -628,7 +633,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                             className='flex messageStrip'
                             id={`messageStrip${m._id}`}
                             width={"100%"}
-                            // bg={'#d4d4d466'}
+                            transition={'.2s margin-bottom'}
+                            marginBottom={m?.reactions?.length > 0 && (i === messages.length - 1 ? '1.2rem' : '.7rem')}
                             justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}
                           >
                             <Box
@@ -676,7 +682,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                               }
                               <Box
                                 padding={m.content.img ? ".3rem" : ".5rem"}
-                                fontSize={".95rem"}
+                                fontSize={"1rem"}
                                 backgroundColor={m.sender._id !== user?._id ? "#effbff" : "#ffffdd"}
                                 key={i} pos="relative"
                                 width={"fit-content"}
@@ -688,7 +694,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                 borderBottomLeftRadius={".5rem"}
                                 position="relative"
                                 borderBottomRightRadius={(m.sender._id !== user?._id || (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))) && ".5rem"}
-                                transition={'.3s min-width cubic-bezier(0.475, 0.885, 0.32, 1.375), .2s margin-bottom'}
+                                transition={'.3s min-width cubic-bezier(0.475, 0.885, 0.32, 1.375)'}
                                 minW={m?.reactions?.length
                                   ?
                                   ((m?.reactions?.length === 1 && '110px')
@@ -713,7 +719,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                   (m.sender._id === user?._id)
                                   && "2.5rem"}
                                 paddingBottom="1rem"
-                                marginBottom={m?.reactions?.length > 0 && '.4rem'}
                                 paddingLeft={m.content?.message?.length === 1 && ".9rem"}
                               >
                                 {
@@ -725,7 +730,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                     (m.deleted.value && (m.deleted.for === 'myself' && m.sender._id !== user?._id))
                                   )
                                   &&
-                                  <MessageReactions m={m} />
+                                  <MessageReactions m={m} hideEmojiDetailBoxs={hideEmojiDetailBoxs} />
                                 }
                                 {
                                   !m.content.img

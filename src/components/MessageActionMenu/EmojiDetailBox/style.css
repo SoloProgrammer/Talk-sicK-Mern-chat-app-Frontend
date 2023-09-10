@@ -1,0 +1,28 @@
+.EmojiDetailBox{
+    visibility: hidden;
+    scale: 0;
+    transform-origin: bottom left;
+    transition: .3s scale cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.EmojiDetailBox.active{
+    visibility: visible;
+    scale: 1;
+    transform-origin: bottom left;
+}
+
+.emojisTabs .emojiTab{
+    position: relative;
+}
+.emojiTab:active{
+    scale: .85;
+}
+.underLine{
+    position: absolute;
+    bottom: 0;
+    transition: .25s all ease-out;
+    width: 52px;
+    height: 2px;
+    border-radius: 1rem;
+    background: rgb(1, 182, 157);
+    left: 0px;
+}
