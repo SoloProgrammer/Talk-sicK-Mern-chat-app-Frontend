@@ -15,6 +15,11 @@
     padding: .5rem;
     animation: float 3s ease-in-out infinite;
 }
+.flex-center{
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
 .mb_0{
     margin-bottom: 0 !important;
 }

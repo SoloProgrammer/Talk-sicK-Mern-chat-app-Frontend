@@ -35,12 +35,15 @@ const EmojiMenu = ({ message, hideEmojiBoxs, user }) => {
         {
           Emojis.map((emoji, i) => <Text
             key={i}
+            width={'35px'}
+            height={'35px'}
             onClick={(e) => handleEmojiClick(e, emoji)}
             padding={'.3rem .35rem'}
             bg={message?.reactions.filter(r => (r.user._id === user?._id && r.reaction === emoji)).length > 0 && EmojiHexShade}
             borderRadius={'50%'}
             cursor={'pointer'}
             _hover={{ 'bg': EmojiHexShade }}
+            className='flex-center'
           >{emoji}
           </Text>
           )

@@ -291,11 +291,20 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   useEffect(() => {
     if (selectedChatCompare || selectedChat) {
-      setSelectedChat(chats?.filter(ch => ch._id === selectedChatCompare?._id)[0])
-      selectedChatCompare = chats?.filter(ch => ch._id === selectedChatCompare?._id)[0]
+
+      let chatId = selectedChatCompare._id;
+
+      if (archivedChats?.map(c => c._id).includes(chatId)) {
+        setSelectedChat(archivedChats?.filter(chat => chat._id === chatId)[0])
+      }
+      else {
+        setSelectedChat(chats?.filter(chat => chat._id === chatId)[0])
+      }
+
     }
     // eslint-disable-next-line
   }, [chats])
+
 
   useEffect(() => {
     chatMessagesCompare = chatMessages
@@ -616,7 +625,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                       {
                         isFirstMsgOfTheDay(m.createdAt, messages, i)
                         &&
-                        <Box margin={i === 0 ? ".5rem 0" : "1rem 0"} marginBottom="1.5rem" pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "1px" : "1px"} solid #27aea4`} width={"100%"}>
+                        <Box transition={'.2s margin-bottom'} margin={i === 0 ? ".5rem 0" : "1rem 0"} marginBottom="1.5rem" pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "1px" : "1px"} solid #27aea4`} width={"100%"}>
                           <Text
                             userSelect={"none"}
                             pos={"absolute"}
@@ -796,7 +805,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                           :
                           m.msgType === 'info'
                           &&
-                          <Box display={"flex"} justifyContent={"center"}>
+                          <Box display={"flex"} justifyContent={"center"} transition={'.2s margin-bottom'}>
                             <Text
                               textAlign={"center"}
                               bg={"rgba(0,0,0,.1)"}

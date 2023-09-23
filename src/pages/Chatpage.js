@@ -9,7 +9,7 @@ import { HandleLogout } from '../configs/userConfigs';
 
 
 function Chatpage() {
-  const { getPinnedChats, getUnPinnedChats, getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat, setSendPic } = ChatState();
+  const { getPinnedChats, getUnPinnedChats, getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat, selectedChat, setSendPic } = ChatState();
 
   const navigate = useNavigate();
   const locaObj = useLocation();
@@ -17,7 +17,7 @@ function Chatpage() {
   let params = useParams();
   let { chatId } = params
   if (Object.keys(params).length < 1) params = null;
-  
+
   const fetchallchats = async () => {
     if (user) {
       setChatsLoading(true)
@@ -46,7 +46,12 @@ function Chatpage() {
         if (chatsFromServer) {
           let UnseenMsgnotifications = []
           chatsFromServer.forEach(chat => {
-            if (user && chat.latestMessage && !chat.archivedBy.includes(user._id) && !chat.mutedNotificationBy.includes(user?._id) && !(chat.latestMessage?.seenBy.includes(user?._id))) {
+            if (user
+              && chat.latestMessage
+              && !chat.archivedBy.includes(user._id)
+              && !chat.mutedNotificationBy.includes(user?._id)
+              && !(chat.latestMessage?.seenBy.includes(user?._id))
+              && chat.latestMessage.msgType !== 'reaction') {
               UnseenMsgnotifications.push(chat.latestMessage)
             }
           })
@@ -128,7 +133,7 @@ function Chatpage() {
   useEffect(() => {
     let token = localStorage.getItem('token');
     if (!token) navigate('/')
-    else if(!user){
+    else if (!user) {
       GetuserInfo()
     }
 

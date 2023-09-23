@@ -606,30 +606,33 @@ const ChatProvider = ({ children }) => {
                 }
             })
             socket.on("react message", (reactedMsg, reacted_user) => {
-                // console.log(reacted_user,user?._id, socketActiveCount);
-                if (reacted_user !== user?._id && socketActiveCount < 1) {
+                if (socketActiveCount < 1) {
                     socketActiveCount += 1
-                    setIsMessagesUpdated(true)
-                    // console.log("reacted!", MessagesCompare, chatMessagesCompare, chats, reactedMsg);
-                    let updatedmessages;
-                    if (MessagesCompare.length > 0 && MessagesCompare[0].chat._id === reactedMsg.chat._id) {
-                        updatedmessages = MessagesCompare?.map(m => {
-                            m = m._id === reactedMsg._id ? reactedMsg : m
-                            return m
-                        })
-                        setMessages(updatedmessages)
-                    }
+                    refreshChats()
 
-                    if (chatMessagesCompare.length && chatMessagesCompare.map(chm => chm.chatId).includes(reactedMsg.chat._id)) {
+                    if (reacted_user !== user?._id) {
+                        setIsMessagesUpdated(true)
+                        // console.log("reacted!", MessagesCompare, chatMessagesCompare, chats, reactedMsg);
+                        let updatedmessages;
+                        if (MessagesCompare.length > 0 && MessagesCompare[0].chat._id === reactedMsg.chat._id) {
+                            updatedmessages = MessagesCompare?.map(m => {
+                                m = m._id === reactedMsg._id ? reactedMsg : m
+                                return m
+                            })
+                            setMessages(updatedmessages)
+                        }
 
-                        updatedmessages = chatMessagesCompare.filter(chm => chm.chatId === reactedMsg.chat._id)[0].messages.map(m => {
-                            m = m._id === reactedMsg?._id ? reactedMsg : m
-                            return m
-                        })
-                        setChatMessages(chatMessagesCompare.map(chm => {
-                            chm.messages = chm.chatId === reactedMsg.chat._id ? updatedmessages : chm.messages
-                            return chm
-                        }))
+                        if (chatMessagesCompare.length && chatMessagesCompare.map(chm => chm.chatId).includes(reactedMsg.chat._id)) {
+
+                            updatedmessages = chatMessagesCompare.filter(chm => chm.chatId === reactedMsg.chat._id)[0].messages.map(m => {
+                                m = m._id === reactedMsg?._id ? reactedMsg : m
+                                return m
+                            })
+                            setChatMessages(chatMessagesCompare.map(chm => {
+                                chm.messages = chm.chatId === reactedMsg.chat._id ? updatedmessages : chm.messages
+                                return chm
+                            }))
+                        }
                     }
 
                     setTimeout(() => {
@@ -638,6 +641,7 @@ const ChatProvider = ({ children }) => {
                 }
             })
         }
+        // eslint-disable-next-line
     }, [socket, user, chats, chatMessages, messages])
 
     return (

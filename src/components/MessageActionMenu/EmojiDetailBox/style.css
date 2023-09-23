@@ -14,7 +14,7 @@
     position: relative;
 }
 .emojiTab:active{
-    scale: .85;
+    /* scale: .85; */
 }
 .underLine{
     position: absolute;

@@ -190,7 +190,13 @@ function ChatsBox() {
                                   fontWeight="normal"
                                   id={`DateTime${chat._id}`}
                                   padding={".0 .3rem"}
-                                  className={`transformPaddingPlu flex ${(!(chat.latestMessage?.seenBy.includes(user?._id)) && selectedChat?._id !== chat._id) && "unSeen"}`}>
+                                  className={`
+                                  transformPaddingPlu 
+                                  flex 
+                                  ${(!(chat.latestMessage?.seenBy.includes(user?._id))
+                                      && selectedChat?._id !== chat._id)
+                                    && chat.latestMessage.msgType !== 'reaction'
+                                    && "unSeen"}`}>
                                   <>{getDateTime(chat.latestMessage.createdAt)}</>
                                 </Text>
                                 {chat.unseenMsgsCountBy && ((chat.unseenMsgsCountBy[user?._id] > 0) && selectedChat?._id !== chat._id)
@@ -236,6 +242,8 @@ function ChatsBox() {
                                 chat?.latestMessage && !chat.latestMessage?.deleted?.value
                                 &&
                                 (chat.latestMessage.sender._id === user?._id)
+                                &&
+                                chat.latestMessage.msgType !== 'reaction'
                                 &&
                                 <Tooltip label={`${chat?.latestMessage.seenBy.length === chat.users.length ? 'seen' : 'dilivered'}`} fontSize={".7rem"} placement="top">
                                   <Image filter={`${chat?.latestMessage.seenBy.length === chat.users.length && 'hue-rotate(75deg)'}`} src={chat?.latestMessage.seenBy.length !== chat.users.length ? unSeenCheckMark : seenCheckMark} opacity={chat?.latestMessage.seenBy.length !== chat.users.length && ".5"} width=".95rem" display="inline-block" />

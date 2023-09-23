@@ -38,6 +38,8 @@ const EmojiDetailBox = ({ m }) => {
         // eslint-disable-next-line
     }, [messages])
 
+    let emojiTabs = document.querySelectorAll('.emojiTab')
+
     const handleRemoveReaction = (emoji, User) => {
         if (User._id !== user?._id) return
         removeReactionFromMsg(m, emoji)
@@ -79,10 +81,10 @@ const EmojiDetailBox = ({ m }) => {
                 <div id={`underline${m._id}`} className="underLine"></div>
                 {
                     Emojis.map((emoji, i) =>
-                        <>
+                        < >
                             <Text
                                 key={i}
-                                transition={'.2s all'}
+                                // transition={'.2s all'}
                                 onClick={(e) => clickEmoji(e, emoji)}
                                 padding=".5rem .3rem"
                                 fontSize={'1.2rem'}
