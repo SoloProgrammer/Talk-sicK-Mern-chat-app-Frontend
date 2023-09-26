@@ -16,6 +16,7 @@ import SendImageModal from './Materials/Modals/SendImageModal'
 import { emojiIcon, sendBtn, sendBtnActive } from '../configs/ImageConfigs'
 import Linkify from 'react-linkify'
 import { flushSync } from 'react-dom';
+import { REGULAR } from '../configs/messageConfigs'
 
 
 var selectedChatCompare;
@@ -199,7 +200,7 @@ function MessageBox() {
           "Content-Type": "application/json",
           token: localStorage.getItem('token')
         },
-        body: JSON.stringify({ chatId: selectedChat?._id, content, receiverIds: selectedChat.users.filter(u => u._id !== user?._id).map(u => u._id), msgType: "regular" })
+        body: JSON.stringify({ chatId: selectedChat?._id, content, receiverIds: selectedChat.users.filter(u => u._id !== user?._id).map(u => u._id), msgType: REGULAR })
       }
 
       setMessageText("");

@@ -2,7 +2,7 @@ import { Avatar, Box, Image, Spinner, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { downloadImage, imageActionBtns, seenCheckMark, unSeenCheckMark, zoomInImage, zoomOutImage } from '../configs/ImageConfigs'
-import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay, isFirstUnseenMessage, islastMsgOfSender, islastRegularMsgOfSender } from '../configs/messageConfigs'
+import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay, isFirstUnseenMessage, islastMsgOfSender, islastRegularMsgOfSender, REACTION, REGULAR } from '../configs/messageConfigs'
 import { scrollBottom, scrollIntoView, scrollTop } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
 import { HandleLogout } from '../configs/userConfigs'
@@ -579,8 +579,18 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
             </Tooltip>
           </Box>
           :
-          <Box pos={"relative"} id='messagesDisplay' zIndex={1} display={"flex"} flexDir="column" gap=".6rem" overflowY={"auto"} width="100%" padding={".3rem .4rem"} paddingTop=".6rem">
-
+          <Box
+            pos={"relative"}
+            id='messagesDisplay'
+            zIndex={1}
+            display={"flex"}
+            flexDir="column"
+            gap=".6rem"
+            overflowY={"auto"}
+            width="100%"
+            padding={".3rem .4rem"}
+            paddingTop=".6rem"
+            >
             {
               loading
               &&
@@ -612,7 +622,9 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                   return (
                     <Box key={i} className='singleMessageBar'>
                       {
-                        isFirstLoadOfMsgs && isFirstUnseenMessage(m, messages, i, user) && m.sender._id !== user?._id
+                        isFirstLoadOfMsgs
+                        &&
+                        isFirstUnseenMessage(m, messages, i, user) && m.sender._id !== user?._id
                         &&
                         <Box pos={"relative"} borderBottom={"2px solid red"} margin="1.5rem 0">
                           <Text userSelect={"none"} boxShadow={"0 0 2px rgba(0,0,0,.2)"} pos={"absolute"} borderRadius=".9rem" color={"red.500"} background="white" top="-.8rem" left="-.2rem" fontWeight={"medium"} fontSize=".87rem" padding={".1rem 1rem"} >
@@ -625,6 +637,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                       {
                         isFirstMsgOfTheDay(m.createdAt, messages, i)
                         &&
+                        m.msgType !== REACTION
+                        &&
                         <Box transition={'.2s margin-bottom'} margin={i === 0 ? ".5rem 0" : "1rem 0"} marginBottom="1.5rem" pos={"relative"} borderBottom={`${window.innerWidth > 770 ? "1px" : "1px"} solid #27aea4`} width={"100%"}>
                           <Text
                             userSelect={"none"}
@@ -635,7 +649,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                         </Box>
                       }
                       {
-                        !m.msgType || m.msgType === 'regular'
+                        !m.msgType || m.msgType === REGULAR
                           ?
                           <Box
                             key={i}

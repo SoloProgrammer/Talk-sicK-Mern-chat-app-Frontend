@@ -651,7 +651,7 @@ const ChatProvider = ({ children }) => {
     )
 }
 
-// This is the setup for using the global data/ context data in every componet of out application only by importing this function!
+// This is the setup for using the global data/ context data in every component of out application only by importing this function!
 export const ChatState = () => {
     return useContext(ChatContext);
 };

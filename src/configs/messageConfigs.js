@@ -1,5 +1,9 @@
 import { getFormmatedDate, getFormmatedTime, Fullmonth, weekDays } from '../configs/dateConfigs'
 
+// MESSAGE TYPES------------------
+export const INFO = 'info'
+export const REGULAR = 'regular'
+export const REACTION = 'reaction'
 
 export const getMsgTime = (timestamps) => {
 
@@ -34,7 +38,6 @@ export const isFirstMsgOfTheDay = (msgTimestamp, messages, i) => {
 
     let msgDay = (new Date(msgTimestamp)).getDate()
     let msgMonth = (new Date(msgTimestamp)).getMonth()
-
 
     if (messages[i - 1]) {
 
@@ -73,11 +76,13 @@ export const isLastMsgOfTheDay = (msgTimestamp, messages, i) => {
 }
 
 export const islastRegularMsgOfSender = (messages, i, senderId) => {
-    return (messages[i + 1] === undefined || (messages[i + 1].sender._id === senderId && messages[i + 1].msgType === 'info'))
+    return (messages[i + 1] === undefined || (messages[i + 1].sender._id === senderId && messages[i + 1].msgType === INFO))
 }
 
 export const isFirstUnseenMessage = (m, messages, i, user) => {
     if (messages.length) {
+
+        if(m.msgType && m.msgType === REACTION) return false
 
         if (!m.seenBy.includes(user._id)) {
             if (messages[i - 1]) {
@@ -85,15 +90,10 @@ export const isFirstUnseenMessage = (m, messages, i, user) => {
             }
 
             else if (messages.length === 1) return true
-
-            // else if (!messages[i + 1].seenBy.includes(user?._id)) return true
-
         }
     }
 }
 
 export const islastMsgOfSender = (messages, i, senderId) => {
-
-    return (messages[i + 1] === undefined || messages[i + 1].sender._id !== senderId)
-
+    return (messages[i + 1] === undefined || messages[i + 1].msgType === REACTION || messages[i + 1].sender._id !== senderId)
 }
