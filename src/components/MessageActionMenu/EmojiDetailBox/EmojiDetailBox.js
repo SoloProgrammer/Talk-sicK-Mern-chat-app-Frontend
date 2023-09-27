@@ -38,7 +38,7 @@ const EmojiDetailBox = ({ m }) => {
         // eslint-disable-next-line
     }, [messages])
 
-    let emojiTabs = document.querySelectorAll('.emojiTab')
+    // let emojiTabs = document.querySelectorAll('.emojiTab')
 
     const handleRemoveReaction = (emoji, User) => {
         if (User._id !== user?._id) return
@@ -81,7 +81,6 @@ const EmojiDetailBox = ({ m }) => {
                 <div id={`underline${m._id}`} className="underLine"></div>
                 {
                     Emojis.map((emoji, i) =>
-                        < >
                             <Text
                                 key={i}
                                 // transition={'.2s all'}
@@ -108,7 +107,7 @@ const EmojiDetailBox = ({ m }) => {
                                     {m.reactions.filter(r => r.reaction === emoji).length}
                                 </Text>
                             </Text>
-                        </>)
+                    )
                 }
             </Box>
             <Box display={'flex'} flexDir={'column'} gap={'0'} className='emojUsers' marginTop={'.2rem'}>

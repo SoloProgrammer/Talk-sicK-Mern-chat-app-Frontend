@@ -7,10 +7,14 @@ const MessageReactions = ({ m }) => {
     const hideEmojiDetailBoxs = () => {
         let EmojiDetailBoxs = document.querySelectorAll(`.EmojiDetailBox`)
         EmojiDetailBoxs.forEach(box => box.classList.remove('active'))
+
+        // removing event listner from window
+        window.removeEventListener('click', hideEmojiDetailBoxs)
     }
     window.addEventListener('click', hideEmojiDetailBoxs)
 
     const handleReactionsClick = (e) => {
+
         e.stopPropagation()
         let EmojiDetailBox = document.querySelector(`#EmojiDetailBox${m._id}`)
         if (EmojiDetailBox.classList.contains('active')) return

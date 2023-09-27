@@ -126,6 +126,8 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
     EmojiBox?.classList.add('active')
   }
 
+  window.addEventListener('click', hideEmojiBoxs)
+
   return (
     <Box
       opacity={0}

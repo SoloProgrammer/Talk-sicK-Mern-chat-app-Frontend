@@ -52,10 +52,12 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }, 0);
   }, [profile])
 
+  const removeReactionMessages = (msgs) => msgs?.filter(m => m.msgType !== REACTION)
+
   const getSelectedChatDownloadedMsgs = (chatId = selectedChatCompare?._id) => {
     // console.log(chatMessagesCompare, "---");
     // it will return all the already downloaded messages from the server which is cached in the chatMessagesCompare
-    return chatMessagesCompare?.filter(ch => ch.chatId === chatId)[0]?.messages
+    return removeReactionMessages(chatMessagesCompare?.filter(ch => ch.chatId === chatId)[0]?.messages)
   }
 
   const getMessagesContainer = () => document.querySelector('#messagesDisplay')
@@ -181,7 +183,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
         setMessages(chatMsg.messages);
         setIsFirstLoadOfMsgs(false)
         isChatMsg = true
-        setSkipFrom(selectedChatCompare?.totalMessages - (chatMsg.messages.length))
+        setSkipFrom(selectedChatCompare?.totalMessages - (removeReactionMessages(chatMsg.messages).length))
       }
     });
 
@@ -210,6 +212,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       let json = await res.json();
 
       if (!json.status) return showToast("Error", json.message, "error", 3000);
+
+      json.allMessages = removeReactionMessages(json.allMessages)
 
       if (selectedChatCompare?._id === json.allMessages[0].chat._id) setMessages(json.allMessages);
       else setMessagesLoading(false)
@@ -245,7 +249,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }
 
   }
-  // console.log(chatMessages,chatMessagesCompare);
   useEffect(() => {
     // console.log(messages);
 
@@ -270,6 +273,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }, 0);
 
     TopMsgDateElm = document.querySelector('.messagesDay')
+    if(messagesContainer) messagesContainer.style.overflowY = messagesContainer.scrollHeight < 800 ? "visible" : "auto"
     // eslint-disable-next-line
   }, [messages])
 
@@ -536,6 +540,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   function hideEmojiBoxs() {
     let EmojiBoxs = document.querySelectorAll('.EmojiPickerBx')
     EmojiBoxs?.forEach(box => box.classList.remove('active'))
+
+    // window.removeEventListener('click', hideEmojiBoxs)
   }
 
   function hideEmojiDetailBoxs() {
@@ -590,7 +596,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
             width="100%"
             padding={".3rem .4rem"}
             paddingTop=".6rem"
-            >
+          >
             {
               loading
               &&
