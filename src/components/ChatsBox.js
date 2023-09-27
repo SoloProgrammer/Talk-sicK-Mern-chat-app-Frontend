@@ -11,6 +11,7 @@ import ChatFooter from './ChatFooter'
 import { ChatsSkeleton } from './Materials/Loading'
 import { defaultPic, seenCheckMark, unSeenCheckMark } from '../configs/ImageConfigs'
 import MessageDeletedText from './Materials/MessageDeletedText'
+import { REACTION } from '../configs/messageConfigs'
 
 
 function ChatsBox() {
@@ -195,7 +196,7 @@ function ChatsBox() {
                                   flex 
                                   ${(!(chat.latestMessage?.seenBy.includes(user?._id))
                                       && selectedChat?._id !== chat._id)
-                                    && chat.latestMessage.msgType !== 'reaction'
+                                    && chat.latestMessage.msgType !== REACTION
                                     && "unSeen"}`}>
                                   <>{getDateTime(chat.latestMessage.createdAt)}</>
                                 </Text>
@@ -228,9 +229,11 @@ function ChatsBox() {
                             <Box marginTop=".18rem" fontSize={".8rem"} fontWeight="black" display="flex" gap=".3rem" alignItems={'center'} justifyContent={'space-between'}>
                               {/* This will render who sended the latestMessage - like this you: OR AnyXYz:  */}
                               {
-                                (!chat.latestMessage?.deleted?.value
-                                  || (chat.latestMessage.deleted.for === 'everyone' && chat.latestMessage.sender?._id !== user?._id)
-                                  || (chat.latestMessage.deleted.for === 'myself')
+                                (
+                                  (!chat.latestMessage?.deleted?.value
+                                    || (chat.latestMessage.deleted.for === 'everyone' && chat.latestMessage.sender?._id !== user?._id)
+                                    || (chat.latestMessage.deleted.for === 'myself')
+                                  )
                                   &&
                                   chat.latestMessage.sender?._id !== user?._id)
                                 &&
@@ -243,7 +246,7 @@ function ChatsBox() {
                                 &&
                                 (chat.latestMessage.sender._id === user?._id)
                                 &&
-                                chat.latestMessage.msgType !== 'reaction'
+                                chat.latestMessage.msgType !== REACTION
                                 &&
                                 <Tooltip label={`${chat?.latestMessage.seenBy.length === chat.users.length ? 'seen' : 'dilivered'}`} fontSize={".7rem"} placement="top">
                                   <Image filter={`${chat?.latestMessage.seenBy.length === chat.users.length && 'hue-rotate(75deg)'}`} src={chat?.latestMessage.seenBy.length !== chat.users.length ? unSeenCheckMark : seenCheckMark} opacity={chat?.latestMessage.seenBy.length !== chat.users.length && ".5"} width=".95rem" display="inline-block" />

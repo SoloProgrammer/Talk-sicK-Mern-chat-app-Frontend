@@ -9,7 +9,6 @@ const MessageReactions = ({ m }) => {
         EmojiDetailBoxs.forEach(box => box.classList.remove('active'))
 
         // removing event listner from window
-        window.removeEventListener('click', hideEmojiDetailBoxs)
     }
     window.addEventListener('click', hideEmojiDetailBoxs)
 
