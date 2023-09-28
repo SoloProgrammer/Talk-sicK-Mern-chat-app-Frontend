@@ -12,6 +12,7 @@ import { Effect } from 'react-notification-badge';
 import { useNavigate } from 'react-router-dom';
 import NotificationsMenu from './NotificationsMenu';
 import { LogoutIcon } from '../../configs/ImageConfigs';
+import { isMobile } from '../../pages/Chatpage';
 
 function ChatsTopBar() {
 
@@ -58,20 +59,20 @@ function ChatsTopBar() {
                                 transition=".5s" borderRadius='full'
                                 onClick={onOpen}
                                 padding={".6rem"}>
-                                <SearchIcon fontSize={window.innerWidth > 770 ? "1.3rem" : "2lg"} m={1} />
+                                <SearchIcon fontSize={!isMobile() ? "1.3rem" : "2lg"} m={1} />
                             </Box>
                         </Tooltip>
                         <SideDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
                     </Box>
                     <Menu>
-                        <Tooltip isDisabled={window.innerWidth < 770} label="Notifications" placement='bottom-end' borderRadius={".2rem"}>
+                        <Tooltip isDisabled={isMobile()} label="Notifications" placement='bottom-end' borderRadius={".2rem"}>
                             <MenuButton p={1}
                                 _active={{ boxShadow: "inset 0 0 0 18px #a2f1ec54" }}
                                 _hover={{ boxShadow: "inset 0 0 0 18px #a2f1ec54" }}
                                 transition=".5s" borderRadius='full'
                                 padding={".3rem"}>
                                 {notifications.length > 0 && <NotificationBadge className="notification_badge" pos="absolute" count={notifications.length} effect={Effect.SCALE} />}
-                                <BellIcon fontSize={window.innerWidth > 770 ? "2rem" : "1.8rem"} m={1} />
+                                <BellIcon fontSize={!isMobile() ? "2rem" : "1.8rem"} m={1} />
                             </MenuButton>
                         </Tooltip>
                         <MenuList boxShadow={"0 0 3px rgba(0,0,0,.4)"} position={"left"} zIndex="10" >

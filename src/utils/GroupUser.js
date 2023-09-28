@@ -6,6 +6,7 @@ import { defaultPic } from '../configs/ImageConfigs'
 import { server } from '../configs/serverURl'
 import { useNavigate } from 'react-router-dom'
 import ConfirmBoxModal from '../components/Materials/Modals/ConfirmBoxModal'
+import { isMobile } from '../pages/Chatpage'
 
 
 function GroupUser({ u }) {
@@ -113,7 +114,7 @@ function GroupUser({ u }) {
         // if user click on his own avatar then display his profile other then else start a chat with that user avatar click!
         if (!(selectedChat?.isGroupchat) || U._id === user?._id) {
             setProfile(U)
-            if (window.innerWidth < 770 && U._id === user._id) setSelectedChat(null)
+            if (isMobile() && U._id === user._id) setSelectedChat(null)
         }
         else {
             setSelectedChat(null)
@@ -141,7 +142,7 @@ function GroupUser({ u }) {
                         if (i === (chats.length - 1) && !isChat) {
 
                             // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
-                            if (window.innerWidth < 770) setSelectedChat(null)
+                            if (isMobile()) setSelectedChat(null)
                             CreateChat(U._id, U.name)
                         }
                     }

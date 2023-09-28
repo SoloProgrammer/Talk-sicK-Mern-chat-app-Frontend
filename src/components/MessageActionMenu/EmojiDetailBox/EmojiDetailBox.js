@@ -13,9 +13,11 @@ const EmojiDetailBox = ({ m }) => {
     const { user, messages, reactToMessage: removeReactionFromMsg } = ChatState()
 
     // removing duplicate emojis in the original array itself i.e inplace 
-    Emojis.forEach((emoji, i) => {
-        if (Emojis.slice(i + 1).includes(emoji)) Emojis.splice(i, 1)
-    })
+    let i = 0
+    while (i !== Emojis.length) {
+        if (Emojis.slice(i + 1).includes(Emojis[i])) Emojis.splice(i, 1)
+        else i++
+    }
 
     let underline = document.querySelector(`#underline${m._id}`)
     const clickEmoji = (e, emoji) => {
@@ -81,32 +83,32 @@ const EmojiDetailBox = ({ m }) => {
                 <div id={`underline${m._id}`} className="underLine"></div>
                 {
                     Emojis.map((emoji, i) =>
+                        <Text
+                            key={i}
+                            // transition={'.2s all'}
+                            onClick={(e) => clickEmoji(e, emoji)}
+                            padding=".5rem .3rem"
+                            fontSize={'1.2rem'}
+                            cursor={'pointer'}
+                            className='emojiTab'
+                            display="inline-flex"
+                            alignItems={'center'}
+                        >
+                            {emoji}
                             <Text
-                                key={i}
-                                // transition={'.2s all'}
-                                onClick={(e) => clickEmoji(e, emoji)}
-                                padding=".5rem .3rem"
-                                fontSize={'1.2rem'}
-                                cursor={'pointer'}
-                                className='emojiTab'
-                                display="inline-flex"
+                                fontSize={'.7rem'}
+                                padding={'.1rem'}
+                                pointerEvents={'none'}
+                                width={'15px'}
+                                height={'15px'}
+                                display={'flex'}
+                                justifyContent={'center'}
                                 alignItems={'center'}
-                            >
-                                {emoji}
-                                <Text
-                                    fontSize={'.7rem'}
-                                    padding={'.1rem'}
-                                    pointerEvents={'none'}
-                                    width={'15px'}
-                                    height={'15px'}
-                                    display={'flex'}
-                                    justifyContent={'center'}
-                                    alignItems={'center'}
-                                    fontWeight={'medium'}
-                                    borderRadius={'50%'}>
-                                    {m.reactions.filter(r => r.reaction === emoji).length}
-                                </Text>
+                                fontWeight={'medium'}
+                                borderRadius={'50%'}>
+                                {m.reactions.filter(r => r.reaction === emoji).length}
                             </Text>
+                        </Text>
                     )
                 }
             </Box>

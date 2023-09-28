@@ -42,6 +42,8 @@ export const bellIcon = "https://cdn-icons-png.flaticon.com/512/3239/3239952.png
 
 export const stopIcon = "https://cdn-icons-png.flaticon.com/512/2576/2576762.png"
 
+export const cameraIcon = "https://cdn-icons-png.flaticon.com/512/2099/2099154.png"
+
 export let zoomCount = 0.5
 
 window.addEventListener('click', () => {

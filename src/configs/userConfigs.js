@@ -1,10 +1,11 @@
 import { Avatar, AvatarBadge, AvatarGroup, Box, Image, Text, Tooltip } from '@chakra-ui/react'
 import { ChatState } from '../Context/ChatProvider'
 import { defaultPic } from './ImageConfigs'
+import { isMobile } from '../pages/Chatpage'
 
 export const getSender = (chat, user) => {
     if (chat?.isGroupchat) return { name: chat.chatName, avatar: chat.groupAvatar, isGrpProfile: true }
-    let sender = chat?.users.filter(u => u._id !== user?._id)[0]
+    let sender = chat?.users?.filter(u => u._id !== user?._id)[0]
     return sender
 }
 
@@ -55,11 +56,11 @@ export const GroupMemberNames = (members, me) => {
         result = names.slice(0, 98)
         if (names.length > 98) result = result.concat('...')
     }
-    else if (window.innerWidth > 770 && window.innerWidth < 970) {
+    else if (!isMobile() && window.innerWidth < 970) {
         result = names.slice(0, 54)
         if (names.length > 54) result = result.concat('...')
     }
-    else if (window.innerWidth < 770) {
+    else if (isMobile()) {
         result = names.slice(0, 40)
         if (names.length > 40) result = result.concat('...')
     }

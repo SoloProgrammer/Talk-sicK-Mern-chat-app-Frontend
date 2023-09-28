@@ -2,6 +2,7 @@ import { Box, Image, Spinner, Stack, Text } from '@chakra-ui/react'
 import React from 'react'
 import { Skeleton, SkeletonCircle } from '@chakra-ui/react'
 import { ChatState } from '../../Context/ChatProvider'
+import { isMobile } from '../../pages/Chatpage'
 
 export const Loading = ({ size, src }) => {
     return (
@@ -39,7 +40,7 @@ export const ChatsSkeleton = () => {
                         return (
                             <Box key={i} display={"flex"} gap={".8rem !important"} width={"100%"} alignItems="center" marginTop={"0px !important"} padding={".4rem .2rem"} background="rgb(241,243,244)">
                                 <SkeletonCircle size={14} />
-                                <Box display={"flex"} flexDir="column" gap={".6rem"} width={`${window.innerWidth < 770 ? "82%" : "90%"}`}>
+                                <Box display={"flex"} flexDir="column" gap={".6rem"} width={`${isMobile() ? "82%" : "90%"}`}>
                                     <Skeleton height='19px' w={"100%"} />
                                     <Skeleton height='15px' w={"100%"} />
                                 </Box>

@@ -2,11 +2,12 @@ import { Box, Image, Text, useDisclosure } from '@chakra-ui/react';
 import React, { useState } from 'react'
 import { ChatState } from '../Context/ChatProvider';
 import ConfirmBoxModal from './Materials/Modals/ConfirmBoxModal';
+import { getSender } from '../configs/userConfigs';
 
 function DeleteChat() {
 
 
-    const { isClosable, handleDeleteChat, selectedChat } = ChatState()
+    const { isClosable, handleDeleteChat, selectedChat, user } = ChatState()
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -14,7 +15,22 @@ function DeleteChat() {
 
     return (
         <>
-            <ConfirmBoxModal isClosable={isClosable} handleFunc={() => handleDeleteChat(selectedChat, onClose, setLoading)} isOpen={isOpen} onClose={onClose} modalDetail={{ chat: selectedChat, subtext: "Are you Sure You want to Delete Chat with", btnCopy: "Delete" }} loading={loading}>
+            <ConfirmBoxModal
+                isClosable={isClosable}
+                handleFunc={() => handleDeleteChat(selectedChat, onClose, setLoading)}
+                isOpen={isOpen}
+                onClose={onClose}
+                // modalDetail={{ chat: selectedChat, subtext: "Are you Sure You want to Delete Chat with", btnCopy: "Delete" }} 
+                modalDetail={
+                    {
+                        chat: selectedChat,
+                        text: "Are you sure you want to delete chat with",
+                        subtext: getSender(selectedChat, user).name,
+                        btn1: { copy: "Delete" }
+                    }
+                }
+                showCloseBtn={true}
+                loading={loading}>
                 <Box
                     _hover={{ bg: "gray.200", boxShadow: "0 0 2px rgba(0,0,0,.2)" }}
                     transition=".4s all"

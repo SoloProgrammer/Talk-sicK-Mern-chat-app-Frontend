@@ -1,9 +1,9 @@
 import { Avatar, Box, Button, Image, Input, Spinner, Text, Tooltip, useDisclosure } from '@chakra-ui/react'
 import React, { useState, useEffect, useContext } from 'react'
 import { handleFileUpload } from '../../configs/handleFileUpload'
-import { defaultPic, defaultGrpPic, LogoutIcon } from '../../configs/ImageConfigs'
+import { defaultPic, defaultGrpPic, LogoutIcon, cameraIcon } from '../../configs/ImageConfigs'
 import { server } from '../../configs/serverURl'
-import { HandleLogout, isAdmin } from '../../configs/userConfigs'
+import { HandleLogout, getSender, isAdmin } from '../../configs/userConfigs'
 import { ChatContext } from '../../Context/ChatProvider'
 // import { ChatState } from '../../Context/ChatProvider' /// commented this line as we need to use diffrent method to call the context and use in this file..!
 import DeleteChat from '../DeleteChat'
@@ -13,8 +13,8 @@ import RemoveAvatarConfirmModal from './Modals/RemoveAvatarConfirmModal'
 
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { getPinnedChats, getUnPinnedChats, handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat, setAlertInfo } = useContext(ChatContext);
-    // The context can be used like the above one also..!
+    const { getPinnedChats, getUnPinnedChats, handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat, setAlertInfo, setProfilePhoto } = useContext(ChatContext);
+    // The context can also be used like the above one!
 
     // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
 
@@ -195,9 +195,9 @@ function ProfileDrawer({ width, align = "right" }) {
     }, [isedit]);
 
     function showAlert() {
-        setAlertInfo({ active: true })
+        setAlertInfo({ active: true, copy: "No profile photo!" })
         setTimeout(() => {
-            setAlertInfo({ active: false })
+            setAlertInfo({ active: false, copy: "" })
         }, 3000);
     }
     const handleSetEdit = () => {
@@ -334,7 +334,19 @@ function ProfileDrawer({ width, align = "right" }) {
                 <Box className='profile_details' width={"full"} padding={{ base: "0rem .8rem", md: "0" }} >
                     <Box className='flex' flexDir={"column"} width="100%">
                         <label htmlFor="profileAvatarOnchange">
-                            <Avatar onMouseEnter={() => setOnHover(true)} onMouseLeave={() => setOnHover(false)} cursor={"pointer"} src={profile?.avatar || defaultPic} width="11rem" height={"11rem"} position="relative" >
+                            <Avatar
+                                onMouseEnter={() => setOnHover(true)}
+                                onMouseLeave={() => setOnHover(false)}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    getSender(selectedChat, user)?.avatar !== defaultPic
+                                        ?
+                                        !isedit && setProfilePhoto(getSender(selectedChat, user)?.avatar)
+                                        :
+                                        !isedit && showAlert()
+                                }}
+                                // onClick={() => !isedit && setProfilePhoto(profile?.avatar !== defaultPic ? profile.avatar : null)}
+                                cursor={"pointer"} src={profile?.avatar || defaultPic} width="11rem" height={"11rem"} position="relative" >
                                 {
                                     (
                                         (profile._id === user?._id || (profile?.isGrpProfile && isAdmin(selectedChat, user)))
@@ -358,9 +370,24 @@ function ProfileDrawer({ width, align = "right" }) {
                                     (profile?._id === user?._id || selectedChat?.isGroupchat) && saved
                                     &&
                                     <>
-                                        {onHover && !avatarLoading && <Input onChange={handleProfileAvatarChange} type="file" name="avatar"
-                                            id={`${(!profile?.isGrpProfile || (profile?.isGrpProfile && isAdmin(selectedChat, user))) && 'profileAvatarOnchange'}`} display="none" />}
-                                        <Box display={onHover || isedit ? "flex" : "none"} background={"blackAlpha.500"} borderRadius={"50%"} width={"100%"} height="100%" pos={'absolute'} top="0" left={"0"} className="flex"
+                                        {onHover
+                                            &&
+                                            !avatarLoading
+                                            &&
+                                            isedit
+                                            &&
+                                            <Input onChange={handleProfileAvatarChange} type="file" name="avatar"
+                                                id={`${(!profile?.isGrpProfile || (profile?.isGrpProfile && isAdmin(selectedChat, user))) && 'profileAvatarOnchange'}`} display="none" />}
+                                        <Box
+                                            display={isedit ? "flex" : "none"}
+                                            background={"blackAlpha.500"}
+                                            borderRadius={"50%"}
+                                            width={"100%"}
+                                            height="100%"
+                                            pos={'absolute'}
+                                            top="0"
+                                            left={"0"}
+                                            className="flex"
                                             onClick={() => {
                                                 if (profile?.isGrpProfile && !isAdmin(selectedChat, user)) {
                                                     showAlert()
@@ -372,7 +399,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                                     ?
                                                     <Spinner size={'lg'} color="white" />
                                                     :
-                                                    <Image cursor={"pointer"} filter={"invert(100%)"} width={"2rem"} src="https://cdn-icons-png.flaticon.com/512/2099/2099154.png" />
+                                                    <Image cursor={"pointer"} filter={"invert(100%)"} width={"2rem"} src={cameraIcon} />
                                             }
                                         </Box>
                                     </>
@@ -605,7 +632,7 @@ function ProfileDrawer({ width, align = "right" }) {
                 }
 
             </Box>
-        </Box>
+        </Box >
     )
 }
 

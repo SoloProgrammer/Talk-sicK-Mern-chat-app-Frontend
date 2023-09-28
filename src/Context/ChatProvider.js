@@ -78,6 +78,8 @@ const ChatProvider = ({ children }) => {
 
     const [profile, setProfile] = useState(null)
 
+    const [profilePhoto, setProfilePhoto] = useState(null)
+
     const [chatsLoading, setChatsLoading] = useState(false)
 
     const [isChatCreating, setIsChatCreating] = useState(null);
@@ -645,7 +647,7 @@ const ChatProvider = ({ children }) => {
     }, [socket, user, chats, chatMessages, messages])
 
     return (
-        <ChatContext.Provider value={{ isMessagesUpdated, setIsMessagesUpdated, getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg, reactToMessage }}>
+        <ChatContext.Provider value={{ isMessagesUpdated, setIsMessagesUpdated, getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, profilePhoto, setProfilePhoto, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg, reactToMessage }}>
             {children}
         </ChatContext.Provider>
     )

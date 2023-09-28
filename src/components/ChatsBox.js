@@ -1,6 +1,7 @@
 import { Avatar, AvatarBadge, Box, Image, Text, Tooltip } from '@chakra-ui/react'
 import { getFormmatedDate, getFormmatedTime, weekDays } from '../configs/dateConfigs'
 import React, { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { getSender, isUserOnline } from '../configs/userConfigs'
 import ChatsTopBar from './Materials/ChatsTopBar'
 import ProfileDrawer from './Materials/ProfileDrawer'
@@ -12,13 +13,15 @@ import { ChatsSkeleton } from './Materials/Loading'
 import { defaultPic, seenCheckMark, unSeenCheckMark } from '../configs/ImageConfigs'
 import MessageDeletedText from './Materials/MessageDeletedText'
 import { REACTION } from '../configs/messageConfigs'
+import { isMobile } from '../pages/Chatpage'
 
 
 function ChatsBox() {
 
-  const { chats, archivedChats, viewArchivedChats, setChats, chatsLoading, user, selectedChat, setProfile, profile, notifications, setNotifications, isTyping, typingInfo } = ChatState()
+  const { chats, archivedChats, viewArchivedChats, setProfilePhoto, setChats, chatsLoading, user, selectedChat, setProfile, profile, notifications, setNotifications, isTyping, typingInfo, setAlertInfo } = ChatState()
 
   const navigate = useNavigate();
+  const location = useLocation()
 
   const getDateTime = (timeStamps) => {
     let date = new Date(timeStamps)
@@ -46,8 +49,11 @@ function ChatsBox() {
   }
 
   const handleChatClick = (chat) => {
-    navigate(`/chats/chat/${chat._id}`);
-    setProfile(null);
+    const chatPath = `/chats/chat/${chat._id}`
+    if (location.pathname !== chatPath) {
+      navigate(chatPath);
+      setProfile(null);
+    }
   }
 
   useEffect(() => {
@@ -87,6 +93,13 @@ function ChatsBox() {
         "you"
         :
         seperatedMsg[seperatedMsg.length - 1]))
+  }
+
+  function showAlert() {
+    setAlertInfo({ active: true, copy: "No profile photo!" })
+    setTimeout(() => {
+      setAlertInfo({ active: false, copy: "" })
+    }, 3000);
   }
 
   // console.log(chats);
@@ -147,11 +160,21 @@ function ChatsBox() {
                       _hover={{ base: { bg: "transperent" }, md: { bg: "#2da89f4a" } }}
                     >
                       <Box maxWidth={"67px"} >
-                        <Avatar boxShadow={"0 0 0 3px #27aea4"} src={getSender(chat, user)?.avatar || defaultPic} >
+                        <Avatar
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            getSender(chat, user)?.avatar !== defaultPic
+                            ?
+                            setProfilePhoto(getSender(chat, user)?.avatar)
+                            :
+                            showAlert()
+                          }}
+                          boxShadow={"0 0 0 2px #27aea4"}
+                          src={getSender(chat, user)?.avatar || defaultPic} >
                           {
                             !(chat.isGroupchat)
                             &&
-                            <Tooltip fontSize={".75rem"} label={isUserOnline(getSender(chat, user)) ? "online" : "offline"} placement="bottom-start">
+                            <Tooltip fontSize={".7rem"} label={isUserOnline(getSender(chat, user)) ? "online" : "offline"} placement="bottom-start">
                               <AvatarBadge
                                 borderWidth="2px"
                                 borderColor='#ffffff'
@@ -169,7 +192,7 @@ function ChatsBox() {
                             <Box className='flex' justifyContent={"flex-start"} gap={".7rem"} maxW={"calc(100% - 7rem)"}>
                               <Text className='textEllipsis'>
                                 {
-                                  (window.innerWidth < 770 && getSender(chat, user)?.name.length) > 24
+                                  (isMobile() && getSender(chat, user)?.name.length) > 24
                                     ?
                                     `${getSender(chat, user)?.name.slice(0, 23)}...`
                                     :
@@ -227,26 +250,25 @@ function ChatsBox() {
                             </Text>
                             :
                             <Box marginTop=".18rem" fontSize={".8rem"} fontWeight="black" display="flex" gap=".3rem" alignItems={'center'} justifyContent={'space-between'}>
-                              {/* This will render who sended the latestMessage - like this you: OR AnyXYz:  */}
+                              {/* This will show who sended the latestMessage - like this you: OR AnyXYz:  */}
                               {
                                 (
-                                  (!chat.latestMessage?.deleted?.value
-                                    || (chat.latestMessage.deleted.for === 'everyone' && chat.latestMessage.sender?._id !== user?._id)
-                                    || (chat.latestMessage.deleted.for === 'myself')
-                                  )
-                                  &&
-                                  chat.latestMessage.sender?._id !== user?._id)
+                                  !chat?.latestMessage?.deleted?.value
+                                  ||
+                                  (chat?.latestMessage.deleted.for === 'everyone' && chat.latestMessage.sender?._id !== user?._id)
+                                  ||
+                                  (chat?.latestMessage.deleted.for === 'myself'))
                                 &&
                                 (chat?.latestMessage
                                   &&
-                                  (chat.latestMessage.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": ")
+                                  (chat?.latestMessage?.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": ")
                               }
                               {
                                 chat?.latestMessage && !chat.latestMessage?.deleted?.value
                                 &&
-                                (chat.latestMessage.sender._id === user?._id)
+                                (chat?.latestMessage?.sender._id === user?._id)
                                 &&
-                                chat.latestMessage.msgType !== REACTION
+                                chat?.latestMessage.msgType !== REACTION
                                 &&
                                 <Tooltip label={`${chat?.latestMessage.seenBy.length === chat.users.length ? 'seen' : 'dilivered'}`} fontSize={".7rem"} placement="top">
                                   <Image filter={`${chat?.latestMessage.seenBy.length === chat.users.length && 'hue-rotate(75deg)'}`} src={chat?.latestMessage.seenBy.length !== chat.users.length ? unSeenCheckMark : seenCheckMark} opacity={chat?.latestMessage.seenBy.length !== chat.users.length && ".5"} width=".95rem" display="inline-block" />

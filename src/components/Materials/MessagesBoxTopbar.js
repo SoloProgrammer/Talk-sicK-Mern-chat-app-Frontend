@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { getSender, GroupMemberNames, GroupMembers, isUserOnline } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
 import { defaultPic } from '../../configs/ImageConfigs';
+import { isMobile } from '../../pages/Chatpage';
 
 function MessagesBoxTopbar() {
 
@@ -44,7 +45,7 @@ function MessagesBoxTopbar() {
                         <Box display={"flex"} alignItems={"center"} gap={".7rem"}>
                             <Text fontSize={{ base: "1.3rem", md: "1.4rem" }} fontWeight="normal" onClick={() => setProfile(sender)} cursor={"pointer"}>
                                 {
-                                    (window.innerWidth < 770 && sender?.name.length > 16) ? sender?.name.slice(0, 15) + "..." : sender?.name
+                                    (isMobile() && sender?.name.length > 16) ? sender?.name.slice(0, 15) + "..." : sender?.name
                                 }
                             </Text>
                             {selectedChat?.pinnedBy.includes(user?._id)
@@ -82,11 +83,11 @@ function MessagesBoxTopbar() {
                 </Box>
                 <Box className='msgrightTop'>
                     {
-                        window.innerWidth > 770 && selectedChat?.isGroupchat &&
+                        !isMobile() && selectedChat?.isGroupchat &&
                         <GroupMembers selectedChat={selectedChat} />
                     }
                     {
-                        window.innerWidth < 770 && !(selectedChat?.isGroupchat) &&
+                        isMobile() && !(selectedChat?.isGroupchat) &&
                         <Tooltip label="Back" isOpen placement='bottom'>
                             <Box onClick={handleBack} padding={".3rem"} borderRadius=".3rem" background={"white"}>
                                 <Image maxWidth="1.5rem" src="https://cdn-icons-png.flaticon.com/512/7792/7792362.png"></Image>
@@ -96,7 +97,7 @@ function MessagesBoxTopbar() {
                 </Box>
             </Box>
             {
-                window.innerWidth < 770 && selectedChat?.isGroupchat &&
+                isMobile() && selectedChat?.isGroupchat &&
                 <Box
                     zIndex={1}
                     pos={"relative"}

@@ -6,10 +6,14 @@ import ChatsBox from '../components/ChatsBox';
 import MessageBox from '../components/MessageBox';
 import { server } from '../configs/serverURl';
 import { HandleLogout } from '../configs/userConfigs';
+import ProfilePhotoView from '../components/ProfilePhotoView/ProfilePhotoView';
 
+export const isMobile = () => {
+  return window.innerWidth < 770
+}
 
 function Chatpage() {
-  const { getPinnedChats, getUnPinnedChats, getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, user, setNotifications, setSelectedChat, selectedChat, setSendPic } = ChatState();
+  const { getPinnedChats, getUnPinnedChats, getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, profilePhoto, user, setNotifications, setSelectedChat, setSendPic } = ChatState();
 
   const navigate = useNavigate();
   const locaObj = useLocation();
@@ -167,6 +171,10 @@ function Chatpage() {
       <Box width={"95%"} height={{ base: "98vh", md: "97vh" }} background={"white"} display="flex" overflow={"hidden"}>
         <ChatsBox />
         <MessageBox />
+
+        {/* Position absolute */}
+        {profilePhoto && <ProfilePhotoView />}
+        {/* {<ProfilePhotoView />} */}
       </Box>
     </Box>
   )

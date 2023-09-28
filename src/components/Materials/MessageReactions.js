@@ -1,6 +1,7 @@
 import { Box, Text } from '@chakra-ui/react'
 import React from 'react'
 import EmojiDetailBox from '../MessageActionMenu/EmojiDetailBox/EmojiDetailBox'
+import { isMobile } from '../../pages/Chatpage'
 
 const MessageReactions = ({ m }) => {
 
@@ -19,7 +20,7 @@ const MessageReactions = ({ m }) => {
         if (EmojiDetailBox.classList.contains('active')) return
         hideEmojiDetailBoxs()
         // console.log(e.clientX);
-        if (e.clientX > 800 || (window.innerWidth < 770 && e.clientX > 140)) {
+        if (e.clientX > 800 || (isMobile() && e.clientX > 140)) {
             EmojiDetailBox.style.left = '-125px'
             EmojiDetailBox.style.transformOrigin = 'bottom'
         }

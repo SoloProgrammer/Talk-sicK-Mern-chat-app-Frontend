@@ -1,0 +1,11 @@
+.profileViewBox{
+    transition: .2s opacity ease;
+}
+
+.opa-0{
+    opacity: 0;
+}
+
+.opa-1{
+    opacity: 1;
+}

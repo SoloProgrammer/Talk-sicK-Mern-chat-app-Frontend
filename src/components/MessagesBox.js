@@ -15,6 +15,7 @@ import Linkify from 'react-linkify'
 import MessageActions from './MessageActionMenu/MessageActions'
 import MessageDeletedText from './Materials/MessageDeletedText'
 import MessageReactions from './Materials/MessageReactions'
+import { isMobile } from '../pages/Chatpage'
 
 var selectedChatCompare, isFetchMoreMessages, chatMessagesCompare, skipFromCompare, isObservred, messageBoxPrevScrollHeight, TopMsgDateElm, TopMessageObserver, seenCount = 0;
 
@@ -273,7 +274,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }, 0);
 
     TopMsgDateElm = document.querySelector('.messagesDay')
-    if(messagesContainer) messagesContainer.style.overflowY = messagesContainer.scrollHeight < 800 ? "visible" : "auto"
+    if (messagesContainer) messagesContainer.style.overflowY = messagesContainer.scrollHeight < 800 ? "visible" : "auto"
     // eslint-disable-next-line
   }, [messages])
 
@@ -348,7 +349,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
           if (i === (chats.length - 1) && !isChat) {
 
             // this condition is for showing chatsloading to the user when he tries to start a new chat with a group user!
-            if (window.innerWidth < 770) setSelectedChat(null)
+            isMobile() && setSelectedChat(null)
             CreateChat(avatarUser._id, avatarUser.name)
           }
         }
@@ -363,7 +364,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     // if user click on his own avatar and if the chat is not a group chat then display his or that user avatar click profile other then else start a chat with that user avatar click!
     if (!(selectedChat?.isGroupchat) || avatarUser._id === user?._id) {
       setProfile(avatarUser)
-      if (window.innerWidth < 770 && avatarUser._id === user._id) setSelectedChat(null)
+      if (isMobile() && avatarUser._id === user._id) setSelectedChat(null)
     }
     else {
       let avatarBox = document.getElementById(`avatarBox${i}`)
@@ -520,16 +521,22 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   // console.log(chatMessagesCompare);
   const getProperInfoMsg = (message) => {
+    function getRightSideUsersOfMsg(usersArr) {
+      usersArr = usersArr.map(u => {
+        if (u.split(',')[0] === `${user?.name.split(' ')[0]}`) u = 'You'
+        else u = u.split(',')[0]
+        return u
+      })
+      return usersArr.join(', ')
+    }
     const seperatedMsg = message.split(' ')
     return (seperatedMsg[0] === user?.name?.split(' ')[0]
       ?
       'you ' : seperatedMsg[0] + " ")
       +
-      seperatedMsg.slice(1, seperatedMsg.length - 1).join(' ') + " "
+      seperatedMsg.slice(1, 2).join(' ') + " "
       +
-      (seperatedMsg[seperatedMsg.length - 1] === user?.name.split(" ")[0]
-        ?
-        'you ' : seperatedMsg[seperatedMsg.length - 1])
+      getRightSideUsersOfMsg(seperatedMsg.slice(2))
   }
 
   function hidemessageActionMenu() {
@@ -555,7 +562,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   })
 
   return (
-    <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && window.innerWidth < 770 ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
+    <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && isMobile() ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
 
       {
         msgImg?.img && window.location.pathname === `/chats/chat/${selectedChat?._id}/view/${msgImg.senderId}/image`
@@ -672,7 +679,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                               key={i}
                               display={"flex"}
                               gap=".5rem"
-                              maxW={m.sender._id !== user?._id && window.innerWidth < 770 ? "85%" : "75%"}>
+                              maxW={m.sender._id !== user?._id && isMobile() ? "85%" : "75%"}>
 
                               {
                                 ((!m?.deleted?.value) || ((m?.deleted.value && m?.deleted.for === 'myself') && m.sender._id !== user._id))
@@ -686,8 +693,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                 />
                               }
 
-                              {(window.innerWidth > 770 ? m.sender : m.sender._id !== user?._id) &&
-                                (window.innerWidth < 770
+                              {(!isMobile() ? m.sender : m.sender._id !== user?._id) &&
+                                (isMobile()
                                   || (islastMsgOfSender(messages, i, m.sender._id)
                                     || isLastMsgOfTheDay(m.createdAt, messages, i)
                                     || islastRegularMsgOfSender(messages, i, m.sender._id))) &&
