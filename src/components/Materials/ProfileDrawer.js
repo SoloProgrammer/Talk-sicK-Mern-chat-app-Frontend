@@ -339,11 +339,20 @@ function ProfileDrawer({ width, align = "right" }) {
                                 onMouseLeave={() => setOnHover(false)}
                                 onClick={(e) => {
                                     e.stopPropagation()
-                                    getSender(selectedChat, user)?.avatar !== defaultPic
+                                    // console.log(getSender(selectedChat, user)?.avatar);
+                                    !profile.isGrpProfile && profile._id === user._id
                                         ?
-                                        !isedit && setProfilePhoto(getSender(selectedChat, user)?.avatar)
+                                        profile.avatar !== defaultPic
+                                            ?
+                                            !isedit && setProfilePhoto(profile.avatar)
+                                            :
+                                            !isedit && showAlert()
                                         :
-                                        !isedit && showAlert()
+                                        getSender(selectedChat, user)?.avatar !== defaultPic
+                                            ?
+                                            !isedit && setProfilePhoto(getSender(selectedChat, user)?.avatar)
+                                            :
+                                            !isedit && showAlert()
                                 }}
                                 // onClick={() => !isedit && setProfilePhoto(profile?.avatar !== defaultPic ? profile.avatar : null)}
                                 cursor={"pointer"} src={profile?.avatar || defaultPic} width="11rem" height={"11rem"} position="relative" >

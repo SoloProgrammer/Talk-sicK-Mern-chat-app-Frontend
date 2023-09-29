@@ -19,8 +19,7 @@ const MessageReactions = ({ m }) => {
         let EmojiDetailBox = document.querySelector(`#EmojiDetailBox${m._id}`)
         if (EmojiDetailBox.classList.contains('active')) return
         hideEmojiDetailBoxs()
-        // console.log(e.clientX);
-        if (e.clientX > 800 || (isMobile() && e.clientX > 140)) {
+        if (e.clientX > 800 || (isMobile() && e.clientX > 150)) {
             EmojiDetailBox.style.left = '-125px'
             EmojiDetailBox.style.transformOrigin = 'bottom'
         }
@@ -39,6 +38,7 @@ const MessageReactions = ({ m }) => {
         }, 10);
 
     }
+
     return (
         <Box cursor={'pointer'}
             pos={'absolute'}

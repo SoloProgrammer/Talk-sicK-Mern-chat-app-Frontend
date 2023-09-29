@@ -12,7 +12,7 @@ import ChatFooter from './ChatFooter'
 import { ChatsSkeleton } from './Materials/Loading'
 import { defaultPic, seenCheckMark, unSeenCheckMark } from '../configs/ImageConfigs'
 import MessageDeletedText from './Materials/MessageDeletedText'
-import { REACTION } from '../configs/messageConfigs'
+import { REACTION, INFO } from '../configs/messageConfigs'
 import { isMobile } from '../pages/Chatpage'
 
 
@@ -269,6 +269,8 @@ function ChatsBox() {
                                 (chat?.latestMessage?.sender._id === user?._id)
                                 &&
                                 chat?.latestMessage.msgType !== REACTION
+                                &&
+                                chat?.latestMessage.msgType !== INFO
                                 &&
                                 <Tooltip label={`${chat?.latestMessage.seenBy.length === chat.users.length ? 'seen' : 'dilivered'}`} fontSize={".7rem"} placement="top">
                                   <Image filter={`${chat?.latestMessage.seenBy.length === chat.users.length && 'hue-rotate(75deg)'}`} src={chat?.latestMessage.seenBy.length !== chat.users.length ? unSeenCheckMark : seenCheckMark} opacity={chat?.latestMessage.seenBy.length !== chat.users.length && ".5"} width=".95rem" display="inline-block" />

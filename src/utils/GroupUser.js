@@ -200,7 +200,7 @@ function GroupUser({ u }) {
                             }
                             showCloseBtn={true}
                             loading={{ btn1: removeUserLoading }}>
-                            <Tooltip label={"Remove from group"} placement="top">
+                            <Tooltip label={"Remove from group"} fontSize={'.7rem'} placement="top">
                                 <Image onClick={onOpen} cursor={"pointer"} width="1.35rem" height={"1.35rem"} src="https://cdn-icons-png.flaticon.com/512/9404/9404050.png" />
                             </Tooltip>
                         </ConfirmBoxModal>
@@ -216,7 +216,7 @@ function GroupUser({ u }) {
                     {
                         (selectedChat?.groupAdmin.map(u => u._id).includes(user?._id)) &&
                         (!removeAdminLoading ?
-                            <Tooltip label="Remove as Admin" placement='top'>
+                            <Tooltip fontSize={'.7rem'} label="Remove as Admin" placement='top'>
                                 <Image
                                     cursor={"pointer"}
                                     onClick={() => handleFunc(u._id, "removegroupAdmin")}
@@ -238,7 +238,7 @@ function GroupUser({ u }) {
                     {
                         (selectedChat?.groupAdmin.map(u => u._id).includes(user?._id)) &&
                         (!addAdminLoading ?
-                            <Tooltip label="Make as Admin" placement='top'>
+                            <Tooltip fontSize={'.7rem'} label="make admin" placement='top'>
                                 <Image
                                     cursor={"pointer"}
                                     onClick={() => handleFunc(u._id, "addgroupAdmin")}

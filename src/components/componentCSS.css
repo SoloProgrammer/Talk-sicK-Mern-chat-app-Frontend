@@ -227,6 +227,13 @@
 .MessagesBox::-webkit-scrollbar {
     display: none;
 }
+.EmojiDetailBox::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar::-webkit-scrollbar{
+    display: none !important;
+}
 
 .messageStrip:hover .messageActionBox
 {

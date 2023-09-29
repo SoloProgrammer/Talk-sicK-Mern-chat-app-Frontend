@@ -530,13 +530,18 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       return usersArr.join(', ')
     }
     const seperatedMsg = message.split(' ')
+
+    // If the latetmessage is of created group message then we slice the users from 6th index of the spliited message array message
+    const sliceInd = seperatedMsg[1] === 'created' ? 6 : 2
+
     return (seperatedMsg[0] === user?.name?.split(' ')[0]
-      ?
-      'you ' : seperatedMsg[0] + " ")
-      +
-      seperatedMsg.slice(1, 2).join(' ') + " "
-      +
-      getRightSideUsersOfMsg(seperatedMsg.slice(2))
+    ?
+    'you ' : seperatedMsg[0] + " ")
+    +
+    seperatedMsg.slice(1, sliceInd).join(' ') + " "
+    +
+    getRightSideUsersOfMsg(seperatedMsg.slice(sliceInd))
+
   }
 
   function hidemessageActionMenu() {

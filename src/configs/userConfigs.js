@@ -68,6 +68,9 @@ export const GroupMemberNames = (members, me) => {
     return result;
 }
 
+export const getJoinUserNames = (users) => {
+    return users.map(u => u.name.split(' ')[0]).join(', ')
+}
 export const UserChip = ({ user, handleFunc }) => {
 
     return (

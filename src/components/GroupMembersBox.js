@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react'
 import GroupUser from '../utils/GroupUser'
 import { ChatState } from '../Context/ChatProvider'
 import PopupModal from './Materials/Modals/PopupModal'
-import { HandleLogout, isAdmin } from '../configs/userConfigs'
+import { HandleLogout, getJoinUserNames, isAdmin } from '../configs/userConfigs'
 import { server } from '../configs/serverURl'
+import { INFO } from '../configs/messageConfigs'
 
 
 function GroupMembersBox() {
@@ -38,7 +39,7 @@ function GroupMembersBox() {
     const hanldeAddmember = async (users) => {
 
         // making array of user Ids...!
-        let userNames = users.map(u => u.name.split(' ')[0]).join(', ')
+        let userNames = getJoinUserNames(users) // joining usernames by comma ,
         users = users.map(u => u._id)
 
         setLoading(true)
@@ -62,14 +63,15 @@ function GroupMembersBox() {
             setIsClosable(true)
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-            
+
             showToast("Great!", json.message, "success", 3000)
             setSelectedChat(json.chat)
-            
+
             setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
             setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)));
-            
-            sendInfoMsg("info", { message: `${user?.name.split(' ')[0]} added ${userNames}` })
+
+            const content = { message: `${user?.name.split(' ')[0]} added ${userNames}` }
+            sendInfoMsg(INFO, content) // passing msgType and content
             onClose()
         } catch (error) {
             showToast("Error", error.message, "error", 3000)
@@ -83,7 +85,7 @@ function GroupMembersBox() {
             <Box className='flex' justifyContent={"space-between"} marginBottom=".5rem">
                 <Text fontSize={{ base: "1.2rem", md: "1.4rem" }} fontWeight="hairline" color="slategrey">Group members</Text>
                 {
-                    isAdmin(selectedChat,user)
+                    isAdmin(selectedChat, user)
                     &&
                     <PopupModal isOpen={isOpen} onClose={onClose} addMember={true} handleFunc={hanldeAddmember} addmemberLoading={loading}>
                         <Box

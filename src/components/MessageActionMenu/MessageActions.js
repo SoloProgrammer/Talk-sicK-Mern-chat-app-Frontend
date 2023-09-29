@@ -87,8 +87,6 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
             return c;
           })
         );
-
-      console.log(msg);
       setLoading(initailLoading);
       setIsClosable(true);
       onClose();
@@ -108,13 +106,13 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
     // If window size is less than 770px then go inside the if!
     if (window.innerWidth <= 770) {
       // This condition for when senders message width is reaching at the end then we will translate the Emojis box to -20% from the right 
-      if (e.clientX < 100) {
+      if (e.clientX < 130) {
         EmojiBox.style.transformOrigin = 'left bottom'
         EmojiBox.style.translate = '-20% 0%'
 
       }
       // This condition for when senders message width is reaching at the end then we will translate the Emojis box to -90% from the right
-      else if (e.clientX > 290) {
+      else if (e.clientX > 240) {
         EmojiBox.style.transformOrigin = 'right bottom'
         EmojiBox.style.translate = '-90% 0%'
       }

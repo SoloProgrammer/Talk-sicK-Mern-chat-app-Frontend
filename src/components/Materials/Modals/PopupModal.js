@@ -18,7 +18,7 @@ import { Loading } from '../Loading'
 import { ChatState } from '../../../Context/ChatProvider'
 import UserListItem from '../../../utils/UserListItem'
 import EmptySearch from '../../EmptySearch'
-import { HandleLogout, UserChip } from '../../../configs/userConfigs'
+import { HandleLogout, UserChip, getJoinUserNames } from '../../../configs/userConfigs'
 import { defaultPic } from '../../../configs/ImageConfigs'
 import { server } from '../../../configs/serverURl'
 import { useNavigate } from 'react-router-dom'
@@ -37,18 +37,18 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate()
-    
-    const searchQuery = useDebounce(keyword,300)
+
+    const searchQuery = useDebounce(keyword, 300)
 
     const HandleSearch = (e) => {
         setKeyword(e.target.value);
         setLoading(true);
     }
 
-    useEffect(() =>{
+    useEffect(() => {
         isOpen && onClose()
-         // eslint-disable-next-line
-    },[navigate])
+        // eslint-disable-next-line
+    }, [navigate])
 
     const inptRef = useRef()
     const SearchUsers = async () => {
@@ -64,7 +64,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
                 // let result = result1.filter(o1 => !result2.some(o2 => o1.id === o2.id));
 
-                if(inptRef.current.value.length){
+                if (inptRef.current.value.length) {
                     if (addMember) {
                         setSearchResults(json?.searchResults?.filter(u => !selectedChat?.users.some(U => U._id === u._id)).slice(0, 4))
                     }
@@ -112,6 +112,8 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
     const handleCreateGroup = async () => {
 
         let users = selectedUsers.map(u => u._id)
+        let userNames = getJoinUserNames(selectedUsers) // joining usernames by comma ,
+
         if (groupName === "") return showToast("Required*", "Please Provide a groupName!", "error", 3000)
 
         try {
@@ -123,7 +125,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                     "Content-Type": "application/json",
                     token: localStorage.getItem('token')
                 },
-                body: JSON.stringify({ users, groupName, groupAvatar: pic })
+                body: JSON.stringify({ users, groupName, groupAvatar: pic, userNames })
             }
             let res = await fetch(`${server.URL.local}/api/chat/creategroup`, config)
 
@@ -143,8 +145,8 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
             setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
             setSelectedChat(json.Fullgroup)
-            navigate(`/chats/chat/${json.Fullgroup._id}`)
 
+            navigate(`/chats/chat/${json.Fullgroup._id}`)
             onClose()
 
         } catch (error) {
@@ -179,16 +181,16 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
                     </ModalHeader>
                     <ModalCloseButton disabled={!isClosable} />
                     <ModalBody>
-                        {!addMember && <Box display={"flex"} gap=".3rem" alignItems={{ base: "normal", md: "center" }} flexDir={{ base: "column", md: "row" }}>
-                            <Box>
+                        {!addMember && <Box display={"flex"} gap=".3rem" alignItems={{ base: "normal", md: "center" }} flexDir='column' >
+                            <Box width={'100%'}>
                                 <Box className='flex' gap={"1rem"} justifyContent="start">
                                     <Image width={"2rem"} src='https://cdn-icons-png.flaticon.com/512/1828/1828469.png' />
                                     <Text fontWeight={'medium'} fontSize="lg">Group Name</Text>
                                 </Box>
                                 <Input value={groupName} onChange={(e) => setGroupName(e.target.value)} variant='flushed' placeholder='Group name' />
                             </Box>
-                            <Box>
-                                <Box justifyContent={"space-between"} margin={{ base: ".5rem 0", md: "none" }} display={"flex"} flexDir={{ base: "row", md: "column" }} alignItems={"center"} gap=".5rem">
+                            <Box width={'100%'}>
+                                <Box justifyContent={"space-between"} margin={{ base: ".5rem 0", md: "none" }} display={"flex"} flexDir='row' alignItems={"center"} gap=".5rem">
                                     <Box className='flex' gap={"1rem"} justifyContent="start">
                                         <input onChange={HandleUpload} accept="image/*" style={{ display: "none" }} id="icon-button-file" type="file" />
                                         <label style={{ cursor: "pointer" }} htmlFor="icon-button-file"><img width={30} src="https://cdn-icons-png.flaticon.com/512/1177/1177911.png" alt="Upload pic" /></label>
