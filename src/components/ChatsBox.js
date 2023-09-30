@@ -14,7 +14,17 @@ import { defaultPic, seenCheckMark, unSeenCheckMark } from '../configs/ImageConf
 import MessageDeletedText from './Materials/MessageDeletedText'
 import { REACTION, INFO } from '../configs/messageConfigs'
 import { isMobile } from '../pages/Chatpage'
+import { getProperInfoMsg } from './MessagesBox'
 
+export function isMessageSeenByAll(msg) {
+  let users = msg.chat.users
+  let seenUsers = msg.seenBy
+  let isSeen = true;
+  users.forEach(u => {
+    if (!seenUsers.includes(u) && isSeen) isSeen = false
+  })
+  return isSeen
+}
 
 function ChatsBox() {
 
@@ -82,27 +92,14 @@ function ChatsBox() {
     // eslint-disable-next-line
   }, [selectedChat?._id]);
 
-  const getFormmatedInfoMsg = (latestMessage) => {
-
-    const seperatedMsg = latestMessage?.content.message.split(' ')
-
-    return (seperatedMsg.slice(1, seperatedMsg.length - 1).join(' ')
-      +
-      " " + (seperatedMsg[seperatedMsg.length - 1] === user?.name.split(' ')[0]
-        ?
-        "you"
-        :
-        seperatedMsg[seperatedMsg.length - 1]))
-  }
-
-  function showAlert() {
-    setAlertInfo({ active: true, copy: "No profile photo!" })
+  function showAlert(msg) {
+    setAlertInfo({ active: true, copy: msg })
     setTimeout(() => {
       setAlertInfo({ active: false, copy: "" })
     }, 3000);
   }
 
-  // console.log(chats);
+  console.log();
 
   return (
     <Box pos={"relative"} display={{ base: selectedChat ? "none" : "block", md: selectedChat ? "none" : "block", lg: "block" }} className='chatsBox' height={"100%"} width={{ base: "100%", md: "100%", lg: "36%" }} boxShadow="0 0 0 2px rgba(0,0,0,.3)">
@@ -164,10 +161,10 @@ function ChatsBox() {
                           onClick={(e) => {
                             e.stopPropagation()
                             getSender(chat, user)?.avatar !== defaultPic
-                            ?
-                            setProfilePhoto(getSender(chat, user)?.avatar)
-                            :
-                            showAlert()
+                              ?
+                              setProfilePhoto(getSender(chat, user)?.avatar)
+                              :
+                              showAlert("No profile photo!")
                           }}
                           boxShadow={"0 0 0 2px #27aea4"}
                           src={getSender(chat, user)?.avatar || defaultPic} >
@@ -273,7 +270,7 @@ function ChatsBox() {
                                 chat?.latestMessage.msgType !== INFO
                                 &&
                                 <Tooltip label={`${chat?.latestMessage.seenBy.length === chat.users.length ? 'seen' : 'dilivered'}`} fontSize={".7rem"} placement="top">
-                                  <Image filter={`${chat?.latestMessage.seenBy.length === chat.users.length && 'hue-rotate(75deg)'}`} src={chat?.latestMessage.seenBy.length !== chat.users.length ? unSeenCheckMark : seenCheckMark} opacity={chat?.latestMessage.seenBy.length !== chat.users.length && ".5"} width=".95rem" display="inline-block" />
+                                  <Image filter={`${isMessageSeenByAll(chat?.latestMessage) && 'hue-rotate(75deg)'}`} src={!isMessageSeenByAll(chat?.latestMessage) ? unSeenCheckMark : seenCheckMark} opacity={!isMessageSeenByAll(chat?.latestMessage) && ".5"} width=".95rem" display="inline-block" />
                                 </Tooltip>
                               }
 
@@ -287,7 +284,8 @@ function ChatsBox() {
                                     :
                                     chat.latestMessage.msgType && chat.latestMessage.msgType === 'info'
                                       ?
-                                      <>{getFormmatedInfoMsg(chat?.latestMessage)}</>
+                                      // here we have to split the formmated message and slice and then join the sliced message from second index because in 1st index it has the sender name but we are showing the sender's name already to the left of the message like this - Pratham: created group "test" E.T.C  
+                                      <>{getProperInfoMsg(chat?.latestMessage?.content.message, user).split(' ').slice(1).join(' ')}</>
                                       :
                                       <>{
                                         (chat.latestMessage.content.img ? <><i className="fa-regular fa-image" />&nbsp;{chat.latestMessage.content.img.substring(chat.latestMessage.content.img.lastIndexOf('.') + 1) === "gif" ? "gif" : "image"}</> : chat.latestMessage?.content.message)

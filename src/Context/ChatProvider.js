@@ -636,6 +636,16 @@ const ChatProvider = ({ children }) => {
                     }, 10);
                 }
             })
+            socket.on('group created', _ => {
+                console.log("uyfut");
+                if (socketActiveCount < 1) {
+                    socketActiveCount += 1
+                    refreshChats()
+                    setTimeout(() => {
+                        socketActiveCount = 0
+                    }, 10);
+                }
+            })
         }
         // eslint-disable-next-line
     }, [socket, user, chats, chatMessages, messages])

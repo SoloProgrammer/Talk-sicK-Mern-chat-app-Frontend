@@ -27,7 +27,7 @@ import { useDebounce } from '../../../CustomHooks/useDebounce'
 
 function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmemberLoading }) {
 
-    const { getPinnedChats, getUnPinnedChats, showToast, selectedChat, setChats, setSelectedChat, isClosable, setIsClosable, user } = ChatState()
+    const { getPinnedChats, getUnPinnedChats, showToast, selectedChat, setChats, setSelectedChat, isClosable, setIsClosable, user, socket } = ChatState()
 
     const [selectedUsers, setSelectedUsers] = useState([])
     const [searchResults, setSearchResults] = useState(null)
@@ -146,7 +146,10 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
             setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
             setSelectedChat(json.Fullgroup)
 
+            socket?.emit('group created', user, json.Fullgroup);
+
             navigate(`/chats/chat/${json.Fullgroup._id}`)
+
             onClose()
 
         } catch (error) {

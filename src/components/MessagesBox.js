@@ -16,8 +16,33 @@ import MessageActions from './MessageActionMenu/MessageActions'
 import MessageDeletedText from './Materials/MessageDeletedText'
 import MessageReactions from './Materials/MessageReactions'
 import { isMobile } from '../pages/Chatpage'
+import { isMessageSeenByAll } from './ChatsBox'
 
 var selectedChatCompare, isFetchMoreMessages, chatMessagesCompare, skipFromCompare, isObservred, messageBoxPrevScrollHeight, TopMsgDateElm, TopMessageObserver, seenCount = 0;
+
+export const getProperInfoMsg = (message, user) => {
+  function getRightSideUsersOfMsg(usersArr) {
+    usersArr = usersArr.map(u => {
+      if (u.split(',')[0] === `${user?.name.split(' ')[0]}`) u = 'You'
+      else u = u.split(',')[0]
+      return u
+    })
+    return usersArr.join(', ')
+  }
+  const seperatedMsg = message.split(' ')
+
+  // If the latetmessage is of created group message then we slice the users from 6th index of the spliited message array message
+  const sliceInd = seperatedMsg[1] === 'created' ? 6 : 2
+
+  return (seperatedMsg[0] === user?.name?.split(' ')[0]
+    ?
+    'you ' : seperatedMsg[0] + " ")
+    +
+    seperatedMsg.slice(1, sliceInd).join(' ') + " "
+    +
+    getRightSideUsersOfMsg(seperatedMsg.slice(sliceInd))
+
+}
 
 function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
@@ -520,29 +545,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   // console.log(skipFromCompare, selectedChatCompare?.totalMessages);
 
   // console.log(chatMessagesCompare);
-  const getProperInfoMsg = (message) => {
-    function getRightSideUsersOfMsg(usersArr) {
-      usersArr = usersArr.map(u => {
-        if (u.split(',')[0] === `${user?.name.split(' ')[0]}`) u = 'You'
-        else u = u.split(',')[0]
-        return u
-      })
-      return usersArr.join(', ')
-    }
-    const seperatedMsg = message.split(' ')
-
-    // If the latetmessage is of created group message then we slice the users from 6th index of the spliited message array message
-    const sliceInd = seperatedMsg[1] === 'created' ? 6 : 2
-
-    return (seperatedMsg[0] === user?.name?.split(' ')[0]
-    ?
-    'you ' : seperatedMsg[0] + " ")
-    +
-    seperatedMsg.slice(1, sliceInd).join(' ') + " "
-    +
-    getRightSideUsersOfMsg(seperatedMsg.slice(sliceInd))
-
-  }
 
   function hidemessageActionMenu() {
     let messageStrips = document.querySelectorAll('.messageStrip')
@@ -827,7 +829,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                   {
                                     m.sender._id === user?._id && !m?.deleted?.value
                                     &&
-                                    <Image filter={`${m?.seenBy.length === selectedChat?.users?.length && 'hue-rotate(90deg)'}`} src={m.seenBy.length !== selectedChat.users.length ? unSeenCheckMark : seenCheckMark} opacity={m.seenBy.length !== selectedChat.users.length && ".5"} width=".95rem" display="inline-block" />
+                                    <Image filter={`${isMessageSeenByAll(m) && 'hue-rotate(90deg)'}`} src={!isMessageSeenByAll(m) ? unSeenCheckMark : seenCheckMark} 
+                                    opacity={!isMessageSeenByAll(m) && ".5"} width=".95rem" display="inline-block" />
                                   }
                                 </Text>
 
@@ -849,7 +852,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                               margin={"0rem 0 .5rem 0"}
                             >
                               {
-                                getProperInfoMsg(m.content.message)
+                                getProperInfoMsg(m.content.message, user)
                               }
                             </Text>
                           </Box>

@@ -194,15 +194,15 @@ function ProfileDrawer({ width, align = "right" }) {
         // eslint-disable-next-line
     }, [isedit]);
 
-    function showAlert() {
-        setAlertInfo({ active: true, copy: "No profile photo!" })
+    function showAlert(msg) {
+        setAlertInfo({ active: true, copy: msg })
         setTimeout(() => {
             setAlertInfo({ active: false, copy: "" })
         }, 3000);
     }
     const handleSetEdit = () => {
         if (profile?.isGrpProfile && !isAdmin(selectedChat, user)) {
-            showAlert()
+            showAlert("Only admins can edit the group info!")
             return
         }
         setIsEdit(true)
