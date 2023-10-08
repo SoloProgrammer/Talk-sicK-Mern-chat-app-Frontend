@@ -72,6 +72,8 @@ const ChatProvider = ({ children }) => {
 
     const [chatMessages, setChatMessages] = useState([])
 
+    const [isFetchMessagesAgain, setIsFetchMessagesAgain] = useState(false)
+
     const [selectedChat, setSelectedChat] = useState(null);
 
     const [isfetchChats, setIsfetchChats] = useState(null);
@@ -275,7 +277,6 @@ const ChatProvider = ({ children }) => {
             if (selectedChat) {
                 setSelectedChat([...getPinnedChats(json.chats, u), ...getUnPinnedChats(json.chats, u)].filter(c => c._id === selectedChat._id)[0])
             }
-
         } catch (error) {
             return showToast("Error", error.message, "error", 3000)
         }
@@ -427,18 +428,22 @@ const ChatProvider = ({ children }) => {
         }
     }
 
-    function setChatsandMessages(json) {
-
-        setMessages(json.allMessages);
+    function updateMessagesAndChatMessages(updatedMessages) {
+        setMessages(updatedMessages);
 
         chatMessages.forEach(chatMsg => {
             if (chatMsg.chatId === selectedChat?._id) {
 
-                chatMsg = { chatId: selectedChat._id, messages: [...json.allMessages] }
+                chatMsg = { chatId: selectedChat._id, messages: [...updatedMessages] }
 
                 setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat._id)), chatMsg]) // cm := ChatMessage
             }
         })
+    }
+
+    function setChatsandMessages(json) {
+
+        updateMessagesAndChatMessages(json.allMessages)
 
         setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
         setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
@@ -572,6 +577,7 @@ const ChatProvider = ({ children }) => {
                 if (socketActiveCount < 1) {
                     socketActiveCount += 1
                     if (deletedMsg?.sender?._id !== user?._id) {
+                        refreshChats()
                         setIsMessagesUpdated(true)
                         // console.log("deleted", MessagesCompare, chatMessagesCompare, chats, deletedMsg);
                         let updatedmessages;
@@ -594,7 +600,6 @@ const ChatProvider = ({ children }) => {
                                 return chm
                             }))
                         }
-                        refreshChats()
                         setTimeout(() => {
                             socketActiveCount = 0
                         }, 10);
@@ -611,6 +616,7 @@ const ChatProvider = ({ children }) => {
                         // console.log("reacted!", MessagesCompare, chatMessagesCompare, chats, reactedMsg);
                         let updatedmessages;
                         if (MessagesCompare.length > 0 && MessagesCompare[0].chat._id === reactedMsg.chat._id) {
+                            reactedMsg.seenBy = reactedMsg.seenBy.filter(u => u !== user?._id)
                             updatedmessages = MessagesCompare?.map(m => {
                                 m = m._id === reactedMsg._id ? reactedMsg : m
                                 return m
@@ -637,7 +643,6 @@ const ChatProvider = ({ children }) => {
                 }
             })
             socket.on('group created', _ => {
-                console.log("uyfut");
                 if (socketActiveCount < 1) {
                     socketActiveCount += 1
                     refreshChats()
@@ -651,7 +656,7 @@ const ChatProvider = ({ children }) => {
     }, [socket, user, chats, chatMessages, messages])
 
     return (
-        <ChatContext.Provider value={{ isMessagesUpdated, setIsMessagesUpdated, getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, profilePhoto, setProfilePhoto, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg, reactToMessage }}>
+        <ChatContext.Provider value={{ isMessagesUpdated, setIsMessagesUpdated, getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, profilePhoto, setProfilePhoto, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, isFetchMessagesAgain, setIsFetchMessagesAgain, updateMessagesAndChatMessages, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg, reactToMessage }}>
             {children}
         </ChatContext.Provider>
     )

@@ -13,7 +13,7 @@ export const isMobile = () => {
 }
 
 function Chatpage() {
-  const { getPinnedChats, getUnPinnedChats, getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, profilePhoto, user, setNotifications, setSelectedChat, setSendPic } = ChatState();
+  const { getPinnedChats, getUnPinnedChats, getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, profilePhoto, user, setNotifications, Notifications, setSelectedChat, setSendPic } = ChatState();
 
   const navigate = useNavigate();
   const locaObj = useLocation();
@@ -45,22 +45,6 @@ function Chatpage() {
         setArchivedChats(chatsFromServer.filter(c => c.archivedBy.includes(user?._id)))
         setChatsLoading(false);
         isfetchChats && setIsfetchChats(false)
-
-        // Filled notificatons array with all the new messges from chats on first load of chatspage 
-        if (chatsFromServer) {
-          let UnseenMsgnotifications = []
-          chatsFromServer.forEach(chat => {
-            if (user
-              && chat.latestMessage
-              && !chat.archivedBy.includes(user._id)
-              && !chat.mutedNotificationBy.includes(user?._id)
-              && !(chat.latestMessage?.seenBy.includes(user?._id))
-              && chat.latestMessage.msgType !== 'reaction') {
-              UnseenMsgnotifications.push(chat.latestMessage)
-            }
-          })
-          setNotifications(UnseenMsgnotifications)
-        }
 
         setTimeout(() => document.querySelector('.allchats')?.classList.remove('hidetop'), 10)
 
@@ -158,6 +142,26 @@ function Chatpage() {
     }
     // eslint-disable-next-line
   }, [isfetchChats, user]);
+
+  useEffect(() => {
+    // Filled notificatons array with all the new messges from chats on first load of chatspage 
+    if (chats?.length) {
+      let UnseenMsgnotifications = []
+      chats?.forEach(chat => {
+        if (user
+          && chat.latestMessage
+          && !chat.archivedBy.includes(user._id)
+          && !chat.mutedNotificationBy.includes(user?._id)
+          && chat.unseenMsgsCountBy[user?._id] !== 0
+          && chat.latestMessage.msgType !== 'reaction') {
+          UnseenMsgnotifications.push(chat.latestMessage)
+        }
+      })
+      !Notifications?.length ? setNotifications(UnseenMsgnotifications) : Notifications.length < UnseenMsgnotifications && setNotifications(UnseenMsgnotifications)
+    }
+
+    // eslint-disable-next-line
+  }, [chats, Notifications])
 
   let elms = document.querySelectorAll('.chat_menu');
   document.addEventListener('click', () => {

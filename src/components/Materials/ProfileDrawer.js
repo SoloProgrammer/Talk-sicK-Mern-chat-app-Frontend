@@ -200,6 +200,7 @@ function ProfileDrawer({ width, align = "right" }) {
             setAlertInfo({ active: false, copy: "" })
         }, 3000);
     }
+
     const handleSetEdit = () => {
         if (profile?.isGrpProfile && !isAdmin(selectedChat, user)) {
             showAlert("Only admins can edit the group info!")
@@ -277,6 +278,7 @@ function ProfileDrawer({ width, align = "right" }) {
             setConfirm(true);
         }
     }
+    
     window.addEventListener('click', () => {
         confirm && setConfirm(false)
     })

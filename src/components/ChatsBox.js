@@ -2,7 +2,7 @@ import { Avatar, AvatarBadge, Box, Image, Text, Tooltip } from '@chakra-ui/react
 import { getFormmatedDate, getFormmatedTime, weekDays } from '../configs/dateConfigs'
 import React, { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { getSender, isUserOnline } from '../configs/userConfigs'
+import { getSender, isUserOnline, isUserRemovedFromChat, removedFromChatUserLatestMesssage } from '../configs/userConfigs'
 import ChatsTopBar from './Materials/ChatsTopBar'
 import ProfileDrawer from './Materials/ProfileDrawer'
 import { ChatState } from '../Context/ChatProvider'
@@ -14,7 +14,7 @@ import { defaultPic, seenCheckMark, unSeenCheckMark } from '../configs/ImageConf
 import MessageDeletedText from './Materials/MessageDeletedText'
 import { REACTION, INFO } from '../configs/messageConfigs'
 import { isMobile } from '../pages/Chatpage'
-import { getProperInfoMsg } from './MessagesBox'
+import { getProperInfoMsg, isMsgDeletedBySender } from './MessagesBox'
 
 export function isMessageSeenByAll(msg) {
   let users = msg.chat.users
@@ -64,6 +64,11 @@ function ChatsBox() {
       navigate(chatPath);
       setProfile(null);
     }
+  }
+
+  function isReactedToMsgDeleted(reactedMsg) {
+    const reactedToMsg = reactedMsg?.content?.reactedToMsg
+    return isMsgDeletedBySender(reactedToMsg, user)
   }
 
   useEffect(() => {
@@ -140,6 +145,8 @@ function ChatsBox() {
               {
                 // if we have something in the archivedChats and viewArchivedChats is sets to true then display ArchivedChats else unArchivedchats/chats
                 (archivedChats.length && viewArchivedChats ? archivedChats : chats)?.map((chat, i) => {
+                  let { latestMessage } = chat
+                  latestMessage = (isUserRemovedFromChat(chat, user) && removedFromChatUserLatestMesssage(chat, user)) || (latestMessage?.msgType === "reaction" && isReactedToMsgDeleted(latestMessage) ? latestMessage.content.lastregularMsg : latestMessage)
                   return (
                     <Box
                       key={i}
@@ -203,7 +210,7 @@ function ChatsBox() {
                                 </Tooltip>
                               }
                             </Box>
-                            {chat.latestMessage &&
+                            {latestMessage &&
                               <Box className='flex' gap={".3rem"} translateX={"5px"}>
                                 <Text
                                   whiteSpace={"nowrap"}
@@ -214,11 +221,11 @@ function ChatsBox() {
                                   className={`
                                   transformPaddingPlu 
                                   flex 
-                                  ${(!(chat.latestMessage?.seenBy.includes(user?._id))
+                                  ${(!(latestMessage?.seenBy.includes(user?._id))
                                       && selectedChat?._id !== chat._id)
-                                    && chat.latestMessage.msgType !== REACTION
+                                    && latestMessage.msgType !== REACTION
                                     && "unSeen"}`}>
-                                  <>{getDateTime(chat.latestMessage.createdAt)}</>
+                                  <>{getDateTime(latestMessage.createdAt)}</>
                                 </Text>
                                 {chat.unseenMsgsCountBy && ((chat.unseenMsgsCountBy[user?._id] > 0) && selectedChat?._id !== chat._id)
                                   &&
@@ -250,45 +257,46 @@ function ChatsBox() {
                               {/* This will show who sended the latestMessage - like this you: OR AnyXYz:  */}
                               {
                                 (
-                                  !chat?.latestMessage?.deleted?.value
+                                  !latestMessage?.deleted?.value
                                   ||
-                                  (chat?.latestMessage.deleted.for === 'everyone' && chat.latestMessage.sender?._id !== user?._id)
+                                  (latestMessage.deleted.for === 'everyone' && latestMessage.sender?._id !== user?._id)
                                   ||
-                                  (chat?.latestMessage.deleted.for === 'myself'))
+                                  (latestMessage.deleted.for === 'myself'))
                                 &&
-                                (chat?.latestMessage
+                                (latestMessage
                                   &&
-                                  (chat?.latestMessage?.sender._id === user?._id ? "You" : chat.latestMessage.sender.name.split(" ")[0]) + ": ")
+                                  (latestMessage?.sender._id === user?._id ? "You" : latestMessage.sender.name.split(" ")[0]) + ": ")
                               }
+                              {/* The below logic is for showing the checkMark that represents message is seen/delivered */}
                               {
-                                chat?.latestMessage && !chat.latestMessage?.deleted?.value
+                                latestMessage && !latestMessage?.deleted?.value
                                 &&
-                                (chat?.latestMessage?.sender._id === user?._id)
+                                (latestMessage?.sender._id === user?._id)
                                 &&
-                                chat?.latestMessage.msgType !== REACTION
+                                latestMessage.msgType !== REACTION
                                 &&
-                                chat?.latestMessage.msgType !== INFO
+                                latestMessage.msgType !== INFO
                                 &&
-                                <Tooltip label={`${chat?.latestMessage.seenBy.length === chat.users.length ? 'seen' : 'dilivered'}`} fontSize={".7rem"} placement="top">
-                                  <Image filter={`${isMessageSeenByAll(chat?.latestMessage) && 'hue-rotate(75deg)'}`} src={!isMessageSeenByAll(chat?.latestMessage) ? unSeenCheckMark : seenCheckMark} opacity={!isMessageSeenByAll(chat?.latestMessage) && ".5"} width=".95rem" display="inline-block" />
+                                <Tooltip label={`${latestMessage.seenBy.length === chat.users.length ? 'seen' : 'dilivered'}`} fontSize={".7rem"} placement="top">
+                                  <Image filter={`${isMessageSeenByAll(latestMessage) && 'hue-rotate(75deg)'}`} src={!isMessageSeenByAll(latestMessage) ? unSeenCheckMark : seenCheckMark} opacity={!isMessageSeenByAll(latestMessage) && ".5"} width=".95rem" display="inline-block" />
                                 </Tooltip>
                               }
 
                               <Text width={{ base: "calc(100% - 12%)", md: "calc(100% - 8%)" }} display={"inline-block"} fontWeight="normal" fontSize={".87rem"} whiteSpace={"nowrap"} textOverflow={'ellipsis'} overflowX={"hidden"} paddingRight={".4rem"}>
-                                {chat.latestMessage
+                                {latestMessage
                                   ?
-                                  chat.latestMessage.deleted.value &&
-                                    (chat.latestMessage.deleted.for === 'everyone' || (chat.latestMessage.deleted.for === 'myself' && chat.latestMessage.sender._id === user?._id))
+                                  latestMessage.deleted.value &&
+                                    (latestMessage.deleted.for === 'everyone' || (latestMessage.deleted.for === 'myself' && latestMessage.sender._id === user?._id))
                                     ?
-                                    <MessageDeletedText iconSize={4} message={chat?.latestMessage} />
+                                    <MessageDeletedText iconSize={4} message={latestMessage} />
                                     :
-                                    chat.latestMessage.msgType && chat.latestMessage.msgType === 'info'
+                                    latestMessage.msgType && latestMessage.msgType === 'info'
                                       ?
                                       // here we have to split the formmated message and slice and then join the sliced message from second index because in 1st index it has the sender name but we are showing the sender's name already to the left of the message like this - Pratham: created group "test" E.T.C  
-                                      <>{getProperInfoMsg(chat?.latestMessage?.content.message, user).split(' ').slice(1).join(' ')}</>
+                                      <>{getProperInfoMsg(latestMessage?.content.message, user).split(' ').slice(1).join(' ')}</>
                                       :
                                       <>{
-                                        (chat.latestMessage.content.img ? <><i className="fa-regular fa-image" />&nbsp;{chat.latestMessage.content.img.substring(chat.latestMessage.content.img.lastIndexOf('.') + 1) === "gif" ? "gif" : "image"}</> : chat.latestMessage?.content.message)
+                                        (latestMessage.content.img ? <><i className="fa-regular fa-image" />&nbsp;{latestMessage.content.img.substring(latestMessage.content.img.lastIndexOf('.') + 1) === "gif" ? "gif" : "image"}</> : latestMessage?.content.message)
                                       }</>
                                   :
                                   "No message yet!"}

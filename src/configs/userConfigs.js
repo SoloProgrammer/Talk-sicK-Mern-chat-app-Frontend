@@ -18,14 +18,20 @@ export const isAdmin = (chat, user) => {
     return chat?.groupAdmin.map(u => u._id).includes(user._id)
 }
 
+export const getChatUsers = (chat) => {
+    return chat?.users.filter(u => !isUserRemovedFromChat(chat, u))
+}
+
 export const GroupMembers = ({ selectedChat }) => {
     const { profile, user } = ChatState()
 
+    const groupUsers = getChatUsers(selectedChat)
+
     return (
-        <Tooltip isOpen label={`${selectedChat?.users.length} Members`} fontSize={".7rem"} placement={profile ? "left" : 'bottom-end'} pointerEvents={"none"}>
+        <Tooltip isOpen label={`${groupUsers.length} Members`} fontSize={".7rem"} placement={profile ? "left" : 'bottom-end'} pointerEvents={"none"}>
             <AvatarGroup size='sm' max={3} cursor={"pointer"}>
                 {
-                    selectedChat?.users?.map((u, i) => {
+                    groupUsers?.map((u, i) => {
                         return (
                             <Avatar key={i} src={(u._id === user?._id ? user?.avatar : u.avatar) || defaultPic} >
                                 {isUserOnline(u) && <AvatarBadge
@@ -42,10 +48,11 @@ export const GroupMembers = ({ selectedChat }) => {
     )
 }
 
-export const GroupMemberNames = (members, me) => {
-    let membersArray = members.filter(m => m._id !== me?._id).map(m => m.name.split(' ')[0]);
+export const GroupMemberNames = (groupChat, me) => {
+    const members = groupChat.users
+    let membersArray = members.filter(m => (m._id !== me?._id && !isUserRemovedFromChat(groupChat, m))).map(m => m.name.split(' ')[0]);
     let names, result;
-    membersArray.push('You')
+    !isUserRemovedFromChat(groupChat, me) && membersArray.push('You')
     names = membersArray.join(', ')
 
     if (window.innerWidth > 1270) {
@@ -107,4 +114,12 @@ export const UserChip = ({ user, handleFunc }) => {
 export const HandleLogout = () => {
     localStorage.removeItem('token');
     window.location.reload(0);
+}
+
+export const isUserRemovedFromChat = (chat, user) => {
+    return chat.leftFromGroup.map(leftUserObj => leftUserObj.user._id).includes(user._id)
+}
+
+export const removedFromChatUserLatestMesssage = (chat, user) => {
+    return chat.leftFromGroup.filter(leftUserObj => leftUserObj.user._id === user._id)[0].latestMessage
 }

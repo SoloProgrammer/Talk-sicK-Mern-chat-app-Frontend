@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import GroupUser from '../utils/GroupUser'
 import { ChatState } from '../Context/ChatProvider'
 import PopupModal from './Materials/Modals/PopupModal'
-import { HandleLogout, getJoinUserNames, isAdmin } from '../configs/userConfigs'
+import { HandleLogout, getChatUsers, getJoinUserNames, isAdmin } from '../configs/userConfigs'
 import { server } from '../configs/serverURl'
 import { INFO } from '../configs/messageConfigs'
 
@@ -15,10 +15,11 @@ function GroupMembersBox() {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const [lastInd, setLastInd] = useState(5)
-    const [groupUsers, setGroupUsers] = useState(selectedChat?.users.slice(0, lastInd))
+
+    const [groupUsers, setGroupUsers] = useState(getChatUsers(selectedChat).slice(0, lastInd))
 
     const hanldeShowMore = () => {
-        setGroupUsers(groupUsers.concat(selectedChat?.users.slice(lastInd, lastInd + 5)))
+        setGroupUsers(groupUsers.concat(getChatUsers(selectedChat).slice(lastInd, lastInd + 5)))
         setLastInd(lastInd + 5)
     }
     const hanldeShowLess = () => {
@@ -27,7 +28,7 @@ function GroupMembersBox() {
     }
 
     useEffect(() => {
-        setGroupUsers(selectedChat?.users.slice(0, 5));
+        setGroupUsers(getChatUsers(selectedChat).slice(0, 5));
         setLastInd(5);
 
         // in this useEffect we gave selectedChat as the dependency because we are setting lastIndex and the groupusers whenever selected chat updated...!
@@ -117,8 +118,8 @@ function GroupMembersBox() {
                     })
                 }
                 {
-                    selectedChat?.users.length > 5 && (
-                        (groupUsers.length !== selectedChat?.users.length || groupUsers.length === 5) ? <Text width={"fit-content"} onClick={hanldeShowMore} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show more +</Text>
+                    getChatUsers(selectedChat).length > 5 && (
+                        (groupUsers.length !== getChatUsers(selectedChat).length || groupUsers.length === 5) ? <Text width={"fit-content"} onClick={hanldeShowMore} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show more +</Text>
                             :
                             <Text onClick={hanldeShowLess} width={"fit-content"} cursor={"pointer"} color={"blue.400"} fontSize=".8rem" fontWeight={"medium"}>Show less -</Text>
                     )

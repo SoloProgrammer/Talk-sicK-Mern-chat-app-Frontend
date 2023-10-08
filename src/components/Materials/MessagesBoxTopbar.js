@@ -76,7 +76,7 @@ function MessagesBoxTopbar() {
                                     ?
                                     isUserOnline(sender) && "online"
                                     :
-                                    GroupMemberNames(selectedChat.users, user)
+                                    GroupMemberNames(selectedChat, user)
                             }
                         </Text>
                     </Box>

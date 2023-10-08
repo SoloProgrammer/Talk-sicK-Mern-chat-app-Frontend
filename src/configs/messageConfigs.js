@@ -38,20 +38,21 @@ export const isFirstMsgOfTheDay = (msgTimestamp, messages, i) => {
 
     let msgDay = (new Date(msgTimestamp)).getDate()
     let msgMonth = (new Date(msgTimestamp)).getMonth()
+    let msgYear = (new Date(msgTimestamp)).getFullYear()
 
     if (messages[i - 1]) {
 
         let preMsgDay = (new Date(messages[i - 1].createdAt)).getDate()
         let preMsgMonth = (new Date(messages[i - 1].createdAt)).getMonth()
+        let preMsgYear = (new Date(messages[i - 1].createdAt)).getFullYear()
 
         if (messages[i + 1]) {
 
             let nextMsgDay = (new Date(messages[i + 1].createdAt)).getDate()
 
-            if (preMsgMonth === msgMonth && msgDay !== preMsgDay && msgDay === nextMsgDay) {
-
-                return true
-            }
+            if (preMsgMonth === msgMonth && msgDay !== preMsgDay && msgDay === nextMsgDay) return true
+            else if (preMsgYear !== msgYear) return true
+            else if (preMsgMonth !== msgMonth) return true
             else if (preMsgMonth !== msgMonth && msgDay === preMsgDay && msgDay === nextMsgDay) return true
             else if (msgDay !== preMsgDay && msgDay !== nextMsgDay) return true
 
@@ -82,11 +83,14 @@ export const islastRegularMsgOfSender = (messages, i, senderId) => {
 export const isFirstUnseenMessage = (m, messages, i, user) => {
     if (messages.length) {
 
-        if(m.msgType && m.msgType === REACTION) return false
+        if (m.msgType && m.msgType === REACTION) return false
 
         if (!m.seenBy.includes(user._id)) {
             if (messages[i - 1]) {
-                if (messages[i - 1].seenBy.includes(user?._id)) return true
+                if(messages[i + 1]){
+                    if (messages[i - 1].seenBy.includes(user?._id) && !messages[i + 1].seenBy.includes(user?._id)) return true
+                }
+                else if(messages[i - 1].seenBy.includes(user?._id)) return true
             }
 
             else if (messages.length === 1) return true

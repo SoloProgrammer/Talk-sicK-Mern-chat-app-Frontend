@@ -7,6 +7,7 @@ import { ChatState } from "../../Context/ChatProvider";
 import { server } from "../../configs/serverURl";
 import { HandleLogout } from "../../configs/userConfigs";
 import EmojiMenu from "./EmojiPicker/EmojiPicker";
+import { REACTION } from "../../configs/messageConfigs";
 
 const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs }) => {
   const {
@@ -75,18 +76,26 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
         })
       );
 
-      chats?.map((chat) => chat?.latestMessage?._id).includes(msg._id) &&
-        setChats(
-          chats.map((c) => {
-            c.latestMessage =
-              (c?.latestMessage &&
-                c?._id === msg.chat._id &&
-                c?.latestMessage?._id) === msg._id
-                ? msg
-                : c.latestMessage;
-            return c;
-          })
-        );
+      function getLastRegularMsg(){
+        let regularMsgs = messages.filter(m => m.msgType !== REACTION)
+        return regularMsgs[regularMsgs.length - 1]
+      }
+      chats?.forEach((chat) => {
+        if ((chat?.latestMessage?._id === msg?._id ) || (chat?.latestMessage?.msgType === REACTION && chat?.latestMessage?.content?.reactedToMsg?._id === msg?._id)) {
+          setChats(
+            chats.map((c) => {
+              c.latestMessage =
+                (c?.latestMessage &&
+                  c?._id === msg.chat._id &&
+                  c?.latestMessage?._id === msg._id)
+                  ? msg
+                  : (c?.latestMessage?.msgType === REACTION && c?.latestMessage?.content?.reactedToMsg?._id === msg._id) ? getLastRegularMsg() : c.latestMessage
+              return c;
+            })
+          );
+        }
+      })
+
       setLoading(initailLoading);
       setIsClosable(true);
       onClose();

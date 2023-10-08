@@ -18,7 +18,7 @@ import { Loading } from '../Loading'
 import { ChatState } from '../../../Context/ChatProvider'
 import UserListItem from '../../../utils/UserListItem'
 import EmptySearch from '../../EmptySearch'
-import { HandleLogout, UserChip, getJoinUserNames } from '../../../configs/userConfigs'
+import { HandleLogout, UserChip, getChatUsers, getJoinUserNames } from '../../../configs/userConfigs'
 import { defaultPic } from '../../../configs/ImageConfigs'
 import { server } from '../../../configs/serverURl'
 import { useNavigate } from 'react-router-dom'
@@ -66,7 +66,7 @@ function PopupModal({ children, isOpen, onClose, addMember, handleFunc, addmembe
 
                 if (inptRef.current.value.length) {
                     if (addMember) {
-                        setSearchResults(json?.searchResults?.filter(u => !selectedChat?.users.some(U => U._id === u._id)).slice(0, 4))
+                        setSearchResults(json?.searchResults?.filter(u => !getChatUsers(selectedChat).some(U => U._id === u._id)).slice(0, 4))
                     }
                     else {
                         setSearchResults(json?.searchResults.slice(0, 4))

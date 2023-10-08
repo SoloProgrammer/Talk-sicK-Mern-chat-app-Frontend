@@ -36,7 +36,7 @@ export const getProperInfoMsg = (message, user) => {
 
   return (seperatedMsg[0] === user?.name?.split(' ')[0]
     ?
-    'you ' : seperatedMsg[0] + " ")
+    'You ' : seperatedMsg[0] + " ")
     +
     seperatedMsg.slice(1, sliceInd).join(' ') + " "
     +
@@ -44,10 +44,14 @@ export const getProperInfoMsg = (message, user) => {
 
 }
 
+export const isMsgDeletedBySender = (message, user) => {
+  return message?.deleted?.value && ((message?.deleted?.for === 'myself' && message.sender._id === user?._id) || (message?.deleted?.for === 'everyone'))
+}
+
 function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   const
-    { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages, messages, setMessages, setChats, isMessagesUpdated, setIsMessagesUpdated } = ChatState();
+    { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages, messages, setMessages, setChats, isMessagesUpdated, setIsMessagesUpdated, isFetchMessagesAgain } = ChatState();
 
   const navigate = useNavigate();
 
@@ -59,6 +63,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
         token: localStorage.getItem('token')
       }
     }
+    console.log("api/message/fetchmessages");
     let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${chatId}?skip=${skip}&limit=${limit}`, config)
 
     messagesLimit = 15
@@ -71,19 +76,29 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
     return json.allMessages
   }
+  const getTotalMessagesOfSelectedChat = (selectedChat) => {
+    console.log(selectedChat);
+    if (selectedChat?.leftFromGroup.filter(item => item.user._id === user?._id)[0]) {
+      return selectedChat?.leftFromGroup.filter(item => item.user._id === user?._id)[0].totalMsgCount
+    }
+    else {
+      return selectedChat?.totalMessages
+    }
+  }
 
+  console.log(selectedChatCompare, selectedChat);
   useEffect(() => {
     setTimeout(() => {
       document.querySelector('.profileDrawer')?.classList.remove('translateXFull')
     }, 0);
   }, [profile])
 
-  const removeReactionMessages = (msgs) => msgs?.filter(m => m.msgType !== REACTION)
+  // const removeReactionMessages = (msgs) => msgs?.filter(m => m.msgType !== REACTION)
 
   const getSelectedChatDownloadedMsgs = (chatId = selectedChatCompare?._id) => {
     // console.log(chatMessagesCompare, "---");
     // it will return all the already downloaded messages from the server which is cached in the chatMessagesCompare
-    return removeReactionMessages(chatMessagesCompare?.filter(ch => ch.chatId === chatId)[0]?.messages)
+    return chatMessagesCompare?.filter(ch => ch.chatId === chatId)[0]?.messages
   }
 
   const getMessagesContainer = () => document.querySelector('#messagesDisplay')
@@ -141,7 +156,9 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
       let chatMsgs = getSelectedChatDownloadedMsgs()
 
-      if (skipFromCompare === (selectedChatCompare?.totalMessages - chatMsgs.length)) {
+      let totalMessages = getTotalMessagesOfSelectedChat(selectedChatCompare)
+
+      if (skipFromCompare === (totalMessages - chatMsgs.length)) {
         if (skipFromCompare < messagesLimit) {
           skipFromCompare = 0
           setSkipFrom(0)
@@ -152,12 +169,11 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
         }
       }
 
-      let remainingMessages = selectedChatCompare?.totalMessages - chatMsgs.length
+      let remainingMessages = totalMessages - chatMsgs.length
 
       if (remainingMessages < messagesLimit) messagesLimit = remainingMessages
 
       setLoading(true)
-
       const messages = await loadMessages(selectedChatCompare?._id, skipFromCompare, messagesLimit)
 
       // This line fixes the unexpected bug/error which says:- loadMessages is not a function()--which is really wired bcz by adding this line of code that error vanishes!
@@ -209,7 +225,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
         setMessages(chatMsg.messages);
         setIsFirstLoadOfMsgs(false)
         isChatMsg = true
-        setSkipFrom(selectedChatCompare?.totalMessages - (removeReactionMessages(chatMsg.messages).length))
+        setSkipFrom(selectedChatCompare?.totalMessages - (chatMsg.messages.length))
       }
     });
 
@@ -229,7 +245,13 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       // let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChat._id}`, config)
 
       // here we are not directly subtracting messageslimit from totolmessages as if totalmessages is less than messagesLimit like 8 < 15 then skipFrom value will be in negative which will throw error, so instead we checking that if totalmessages is greater or equal to messages limit than subtract the messageslimit or else subtract the totalmessages itself so skipfrom value will be 0 so all the messages will be fetch  
-      let skipFrom = selectedChat?.totalMessages - (selectedChat.totalMessages >= messagesLimit ? messagesLimit : selectedChat?.totalMessages)
+      let totalMessages = getTotalMessagesOfSelectedChat(selectedChatCompare || selectedChat);
+
+      console.log(totalMessages);
+
+      messagesLimit = totalMessages < messagesLimit ? totalMessages : messagesLimit
+      let skipFrom = totalMessages - (selectedChat.totalMessages >= messagesLimit ? messagesLimit : totalMessages)
+      console.log("fetch messages called");
 
       let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChat._id}?skip=${skipFrom}&limit=${messagesLimit}`, config)
 
@@ -239,12 +261,10 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
       if (!json.status) return showToast("Error", json.message, "error", 3000);
 
-      json.allMessages = removeReactionMessages(json.allMessages)
-
       if (selectedChatCompare?._id === json.allMessages[0].chat._id) setMessages(json.allMessages);
       else setMessagesLoading(false)
 
-      selectedChat.totalMessages > messagesLimit && setSkipFrom(selectedChat?.totalMessages - json.allMessages.length)
+      totalMessages > messagesLimit && setSkipFrom(totalMessages - json.allMessages.length)
 
       setMessagesLoading(false);
 
@@ -299,13 +319,12 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }, 0);
 
     TopMsgDateElm = document.querySelector('.messagesDay')
-    if (messagesContainer) messagesContainer.style.overflowY = messagesContainer.scrollHeight < 800 ? "visible" : "auto"
+    if (messagesContainer) messagesContainer.style.overflowY = messagesContainer.scrollHeight < 500 ? "visible" : "auto"
     // eslint-disable-next-line
   }, [messages])
 
   useEffect(() => {
     isFetchMoreMessages = false
-    selectedChatCompare = selectedChat
 
     if (getSelectedChatDownloadedMsgs()?.length === selectedChat?.totalMessages) isObservred = true
 
@@ -317,7 +336,11 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }, 30);
 
     // eslint-disable-next-line
-  }, [selectedChat?._id])
+  }, [selectedChat._id])
+
+  useEffect(() => {
+    selectedChatCompare = selectedChat
+  }, [selectedChat._id, selectedChat])
 
   useEffect(() => {
     if (selectedChatCompare || selectedChat) {
@@ -335,6 +358,9 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     // eslint-disable-next-line
   }, [chats])
 
+  useEffect(() => {
+    isFetchMessagesAgain && fetchMessages()
+  }, [isFetchMessagesAgain])
 
   useEffect(() => {
     chatMessagesCompare = chatMessages
@@ -481,15 +507,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     if (user && user._id) {
       socket?.on('seen messages', async (room, totalMessages, updatedChat) => {
 
-        if (seenCount < 1) {
-
+        if (seenCount < 1 && updatedChat?.latestMessage?.sender?._id === user?._id) {
           !seenCount && seenCount++
-
-          // console.log(updatedChat, 'updatedChat');
-          // console.log(updatedChat, chats.map(ch => {
-          //   if (ch._id === updatedChat._id) ch = updatedChat
-          //   return ch
-          // })); 
 
           setChats(chats.map(chat => {
             if (chat._id === updatedChat._id) chat = updatedChat
@@ -501,7 +520,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
           // console.log('=============================', limit, totalMessages);
 
           let skip = totalMessages - limit
-
+          console.log("Inside seen messages!");
           const messages = await loadMessages(room, skip, limit + 1)
           messages && console.log()
 
@@ -677,7 +696,11 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                             id={`messageStrip${m._id}`}
                             width={"100%"}
                             transition={'.2s margin-bottom'}
-                            marginBottom={m?.reactions?.length > 0 && (i === messages.length - 1 ? '1.2rem' : '.7rem')}
+                            marginBottom={!isMsgDeletedBySender(m, user)
+                              &&
+                              m?.reactions?.length > 0
+                              &&
+                              (i === messages.length - 1 ? '1.2rem' : '.7rem')}
                             justifyContent={m.sender._id === user?._id ? "flex-end" : "flex-start"}
                           >
                             <Box
@@ -829,8 +852,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                   {
                                     m.sender._id === user?._id && !m?.deleted?.value
                                     &&
-                                    <Image filter={`${isMessageSeenByAll(m) && 'hue-rotate(90deg)'}`} src={!isMessageSeenByAll(m) ? unSeenCheckMark : seenCheckMark} 
-                                    opacity={!isMessageSeenByAll(m) && ".5"} width=".95rem" display="inline-block" />
+                                    <Image filter={`${isMessageSeenByAll(m) && 'hue-rotate(90deg)'}`} src={!isMessageSeenByAll(m) ? unSeenCheckMark : seenCheckMark}
+                                      opacity={!isMessageSeenByAll(m) && ".5"} width=".95rem" display="inline-block" />
                                   }
                                 </Text>
 

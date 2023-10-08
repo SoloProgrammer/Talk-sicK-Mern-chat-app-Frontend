@@ -11,7 +11,7 @@ import { isMobile } from '../pages/Chatpage'
 
 function GroupUser({ u }) {
 
-    const { getPinnedChats, getUnPinnedChats, user, selectedChat, setIsClosable, showToast, setSelectedChat, archivedChats, setArchivedChats, setViewArchivedChats, setChats, setProfile, chats, CreateChat, sendInfoMsg } = ChatState()
+    const { getPinnedChats, getUnPinnedChats, user, selectedChat, setIsClosable, showToast, setSelectedChat, archivedChats, setArchivedChats, setViewArchivedChats, setChats, setProfile, chats, CreateChat, updateMessagesAndChatMessages, chatMessages } = ChatState()
 
     const [addAdminLoading, setAddAdminLoading] = useState(false)
     const [removeAdminLoading, setRemoveAdminLoading] = useState(false)
@@ -70,6 +70,7 @@ function GroupUser({ u }) {
 
         setRemoveUserLoading(true)
         setIsClosable(false)
+        let message = `${user?.name.split(' ')[0]} removed ${selectedChat?.users.filter(u => u._id === userId)[0].name.split(' ')[0]}`
 
         try {
             let config = {
@@ -78,7 +79,7 @@ function GroupUser({ u }) {
                     "Content-Type": 'application/json',
                     token: localStorage.getItem('token')
                 },
-                body: JSON.stringify({ chatId: selectedChat?._id, userId })
+                body: JSON.stringify({ chatId: selectedChat?._id, userId, message })
             }
 
             let res = await fetch(`${server.URL.local}/api/chat/groupremove`, config);
@@ -92,7 +93,9 @@ function GroupUser({ u }) {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-            sendInfoMsg("info", { message: `${user?.name.split(' ')[0]} removed ${selectedChat?.users.filter(u => u._id === userId)[0].name.split(' ')[0]}` })
+            updateMessagesAndChatMessages([...chatMessages.filter(chm => chm.chatId === json.grpRemovedMsg.chat._id)[0].messages, json.grpRemovedMsg])
+
+            // sendInfoMsg("info", { message: `${user?.name.split(' ')[0]} removed ${selectedChat?.users.filter(u => u._id === userId)[0].name.split(' ')[0]}` })
 
             setSelectedChat(json.chat);
 
@@ -216,7 +219,7 @@ function GroupUser({ u }) {
                     {
                         (selectedChat?.groupAdmin.map(u => u._id).includes(user?._id)) &&
                         (!removeAdminLoading ?
-                            <Tooltip fontSize={'.7rem'} label="Remove as Admin" placement='top'>
+                            <Tooltip fontSize={'.7rem'} label="Dismiss as Admin" placement='top'>
                                 <Image
                                     cursor={"pointer"}
                                     onClick={() => handleFunc(u._id, "removegroupAdmin")}
