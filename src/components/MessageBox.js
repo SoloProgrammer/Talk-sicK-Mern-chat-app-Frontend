@@ -6,7 +6,7 @@ import MessagesBoxTopbar from './Materials/MessagesBoxTopbar'
 import MessagesBox from './MessagesBox'
 import EmojiPicker from 'emoji-picker-react';
 import { server } from '../configs/serverURl'
-import { HandleLogout } from '../configs/userConfigs'
+import { HandleLogout, isUserRemovedFromChat } from '../configs/userConfigs'
 import { scrollBottom } from '../configs/scrollConfigs'
 import sentAudio from '../../src/mp3/MessageSent.mp3'
 import notifyAudio from '../../src/mp3/Notification.mp3'
@@ -84,9 +84,6 @@ function MessageBox() {
     chatsCompare = chats
   }, [chats])
 
-
-  // const [] = useState([]);
-
   useEffect(() => {
     if (messages.length > 0) messageEmitterCount = 0
     // eslint-disable-next-line
@@ -128,16 +125,15 @@ function MessageBox() {
     if (chatsCompare) {
       updatedChats = chatsCompare?.map(c => {
         if (c._id === newMessageRecieved.chat._id) {
-          console.log("iyfuy");
           c.leftFromGroup = c.leftFromGroup.filter(LfgObj => LfgObj.user._id !== user?._id)
-          selectedChatCompare._id === c._id && setSelectedChat(c)
+          selectedChatCompare && selectedChatCompare._id === c._id && setSelectedChat(c)
         }
         return c
       })
       setChats(updatedChats)
     }
   }
-  // reciveing real time/live message from users with the help of socket servers!....................................................
+  // receiving real time/live message from users with the help of socket servers!....................................................
   useEffect(() => {
     const messageReceivedEventListener = async (newMessageRecieved, User) => {
       if (!user) return
@@ -354,7 +350,7 @@ function MessageBox() {
               width={"100%"}
               minHeight="57px !important"
               boxShadow="0 -4px 4px -4px rgba(0,0,0,.3)">
-              <Box pos={"relative"} height={"100%"} padding=".3rem">
+              <Box pos={"relative"} height={"100%"} padding=".3rem" className={`messageInputBox ${isUserRemovedFromChat(selectedChat, user) && 'disabled'}`}>
                 {
                   isEmojiPick &&
                   <Box width={{ base: "315px", md: "360px" }} pos={"absolute"} bottom="6.5rem" onClick={(e) => e.stopPropagation()} >

@@ -19,10 +19,10 @@ function ConfirmBoxModal({ handleFunc, children, isOpen, onClose, modalDetail, l
 
   const { isClosable } = ChatState();
 
-  const handleFocus = () => {
-    let elm = document.querySelector('.actionBtn')
-    elm.style.boxShadow = "0 0 0 2px #ff6a6a"
-  }
+  // const handleFocus = () => {
+  //   let elm = document.querySelector('.actionBtn')
+  //   elm.style.boxShadow = "0 0 0 2px #ff6a6a"
+  // }
 
   const initialRef = useRef(null)
 

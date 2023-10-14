@@ -6,7 +6,7 @@ const EmojiMenu = ({ message, hideEmojiBoxs, user }) => {
 
   const { reactToMessage } = ChatState()
 
-  let Emojis = ['😂', '👍', '❤️‍🔥', '🥳', '🥲', '🙏']
+  let Emojis = ['😂', '👍', '❤️‍🔥', '🥳', '😠', '🙏']
 
   function handleEmojiClick(e, emoji) {
     e.stopPropagation()

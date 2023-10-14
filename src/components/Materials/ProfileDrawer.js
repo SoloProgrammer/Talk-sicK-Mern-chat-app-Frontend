@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { handleFileUpload } from '../../configs/handleFileUpload'
 import { defaultPic, defaultGrpPic, LogoutIcon, cameraIcon } from '../../configs/ImageConfigs'
 import { server } from '../../configs/serverURl'
-import { HandleLogout, getSender, isAdmin } from '../../configs/userConfigs'
+import { HandleLogout, getSender, isAdmin, isUserRemovedFromChat } from '../../configs/userConfigs'
 import { ChatContext } from '../../Context/ChatProvider'
 // import { ChatState } from '../../Context/ChatProvider' /// commented this line as we need to use diffrent method to call the context and use in this file..!
 import DeleteChat from '../DeleteChat'
@@ -278,7 +278,7 @@ function ProfileDrawer({ width, align = "right" }) {
             setConfirm(true);
         }
     }
-    
+
     window.addEventListener('click', () => {
         confirm && setConfirm(false)
     })
@@ -583,6 +583,8 @@ function ProfileDrawer({ width, align = "right" }) {
 
                 {
                     (profile?._id !== user?._id && profile.isGrpProfile)
+                    &&
+                    !isUserRemovedFromChat(selectedChat, user)
                     &&
                     <ConfirmBoxModal
                         handleFunc={() => handleLeaveGrp(selectedChat, onClose, setLoading)}

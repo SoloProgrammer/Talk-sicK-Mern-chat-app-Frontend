@@ -341,13 +341,14 @@ const ChatProvider = ({ children }) => {
         try {
             setLoading({ btn1: true })
             setIsClosable(false)
+            let message = `${user?.name.split(' ')[0]} left ${selectedChat.chatName}`
             let config = {
                 method: 'POST',
                 headers: {
                     "Content-Type": 'application/json',
                     token: localStorage.getItem('token')
                 },
-                body: JSON.stringify({ chatId: chat?._id, userId: user?._id })
+                body: JSON.stringify({ chatId: chat?._id, userId: user?._id, message })
             }
 
             let res = await fetch(`${server.URL.local}/api/chat/groupremove`, config);
@@ -362,16 +363,14 @@ const ChatProvider = ({ children }) => {
             onClose();
             if (!json.status) return showToast("Error", json.message, "error", 3000);
 
-            setArchivedChats(archivedChats.filter(c => c._id !== chat._id))
-            setChats(chats.filter(c => c._id !== chat._id));
+            setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
+            setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)))
+            socket.emit('new message', json.grpRemovedMsg)
 
-            // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat parallelly..!!
+            // if user try to delete the chat before reading the new message from that chat than deleting the notification of that chat right away..!!
             setNotifications(notifications.filter(noti => noti.chat._id !== chat._id))
 
             showToast("Success", `You left ${chat.chatName}`, "success", 3000)
-
-            if (!(archivedChats.map(c => c._id).includes(chat._id)) || archivedChats.filter(c => c._id !== chat._id).length < 1) navigate('/chats');
-            else navigate('/chats/archived')
 
             document.body.click();
 
@@ -428,13 +427,13 @@ const ChatProvider = ({ children }) => {
         }
     }
 
-    function updateMessagesAndChatMessages(updatedMessages) {
-        setMessages(updatedMessages);
+    function updateMessagesAndChatMessages(updatedMessage) {
+        setMessages([...MessagesCompare, updatedMessage]);
 
         chatMessages.forEach(chatMsg => {
             if (chatMsg.chatId === selectedChat?._id) {
 
-                chatMsg = { chatId: selectedChat._id, messages: [...updatedMessages] }
+                chatMsg = { chatId: selectedChat._id, messages: [...MessagesCompare, updatedMessage] }
 
                 setChatMessages([...(chatMessages.filter(cm => cm.chatId !== selectedChat._id)), chatMsg]) // cm := ChatMessage
             }
@@ -443,7 +442,7 @@ const ChatProvider = ({ children }) => {
 
     function setChatsandMessages(json) {
 
-        updateMessagesAndChatMessages(json.allMessages)
+        updateMessagesAndChatMessages(json.fullmessage)
 
         setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
         setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);

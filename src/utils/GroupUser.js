@@ -11,7 +11,7 @@ import { isMobile } from '../pages/Chatpage'
 
 function GroupUser({ u }) {
 
-    const { getPinnedChats, getUnPinnedChats, user, selectedChat, setIsClosable, showToast, setSelectedChat, archivedChats, setArchivedChats, setViewArchivedChats, setChats, setProfile, chats, CreateChat, updateMessagesAndChatMessages, chatMessages } = ChatState()
+    const { getPinnedChats, getUnPinnedChats, user, selectedChat, setIsClosable, showToast, setSelectedChat, archivedChats, setArchivedChats, setViewArchivedChats, setChats, setProfile, chats, CreateChat, updateMessagesAndChatMessages, socket } = ChatState()
 
     const [addAdminLoading, setAddAdminLoading] = useState(false)
     const [removeAdminLoading, setRemoveAdminLoading] = useState(false)
@@ -93,15 +93,16 @@ function GroupUser({ u }) {
 
             if (!json.status) return showToast("Error", json.message, "error", 3000)
 
-            updateMessagesAndChatMessages([...chatMessages.filter(chm => chm.chatId === json.grpRemovedMsg.chat._id)[0].messages, json.grpRemovedMsg])
+            updateMessagesAndChatMessages(json.grpRemovedMsg)
 
-            // sendInfoMsg("info", { message: `${user?.name.split(' ')[0]} removed ${selectedChat?.users.filter(u => u._id === userId)[0].name.split(' ')[0]}` })
+            socket.emit('new message', json.grpRemovedMsg)
 
             setSelectedChat(json.chat);
 
             setChats([...getPinnedChats(json.chats, user), ...getUnPinnedChats(json.chats, user)]);
             setArchivedChats(archivedChats.filter(c => c.archivedBy.includes(user?._id)))
             showToast("Success", json.message, "success", 3000)
+            setProfile(null)
             onClose()
 
         } catch (error) {

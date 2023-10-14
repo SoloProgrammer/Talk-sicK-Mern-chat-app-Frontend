@@ -90,7 +90,7 @@ function Chatpage() {
 
     if (params && !(chats?.map(chat => chat._id).includes(chatId)) && !archivedChats?.map(c => c._id).includes(chatId)) {
       // If params are there and the chatId aslo there in the params so we will first fetch the user and after fetching the user we will be fetching the chats and then after fetching the chats we will select/open the chat based on the chatId provided in the paramaters!
-      GetuserInfo()
+      // GetuserInfo()
     }
     else {
 

@@ -1,7 +1,7 @@
 import { Avatar, Box, Image, Text, Tooltip } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { getSender, GroupMemberNames, GroupMembers, isUserOnline } from '../../configs/userConfigs';
+import { getSender, GroupMemberNames, GroupMembers, isUserOnline, isUserRemovedFromChat } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
 import { defaultPic } from '../../configs/ImageConfigs';
 import { isMobile } from '../../pages/Chatpage';
@@ -58,7 +58,7 @@ function MessagesBoxTopbar() {
                         </Box>
 
                         <Text bottom=".3rem" fontSize={".77rem"} color="#ffffffe0" letterSpacing=".01rem" left={"5rem"} fontWeight={"400"}>
-                            {isTyping
+                            {(isTyping && !isUserRemovedFromChat(selectedChat, user))
                                 &&
                                 typingInfo.length > 0
                                 &&

@@ -3,6 +3,9 @@ import './style.css'
 import { Box, Image, Text } from '@chakra-ui/react'
 import { ChatState } from '../../../Context/ChatProvider'
 import { getClickEventOptions } from '../../../configs/eventConfig'
+import { useRipple } from 'react-use-ripple';
+import { useRef } from 'react';
+import { isUserRemovedFromChat } from '../../../configs/userConfigs'
 
 var emojiUsers;
 
@@ -10,7 +13,7 @@ const EmojiDetailBox = ({ m }) => {
     let LightGrayHexShade = '#fafafa'
     let Emojis = m.reactions.map(r => r.reaction)
 
-    const { user, messages, reactToMessage: removeReactionFromMsg } = ChatState()
+    const { user, messages, reactToMessage: removeReactionFromMsg, selectedChat } = ChatState()
 
     // removing duplicate emojis in the original array itself i.e inplace 
     let i = 0
@@ -39,8 +42,6 @@ const EmojiDetailBox = ({ m }) => {
 
         // eslint-disable-next-line
     }, [messages])
-
-    // let emojiTabs = document.querySelectorAll('.emojiTab')
 
     const handleRemoveReaction = (emoji, User) => {
         if (User._id !== user?._id) return
@@ -83,32 +84,7 @@ const EmojiDetailBox = ({ m }) => {
                 <div id={`underline${m._id}`} className="underLine"></div>
                 {
                     Emojis.map((emoji, i) =>
-                        <Text
-                            key={i}
-                            // transition={'.2s all'}
-                            onClick={(e) => clickEmoji(e, emoji)}
-                            padding=".5rem .3rem"
-                            fontSize={'1.2rem'}
-                            cursor={'pointer'}
-                            className='emojiTab'
-                            display="inline-flex"
-                            alignItems={'center'}
-                        >
-                            {emoji}
-                            <Text
-                                fontSize={'.7rem'}
-                                padding={'.1rem'}
-                                pointerEvents={'none'}
-                                width={'15px'}
-                                height={'15px'}
-                                display={'flex'}
-                                justifyContent={'center'}
-                                alignItems={'center'}
-                                fontWeight={'medium'}
-                                borderRadius={'50%'}>
-                                {m.reactions.filter(r => r.reaction === emoji).length}
-                            </Text>
-                        </Text>
+                        <EmojiBtn m={m} emoji={emoji} i={i} handleFunc={clickEmoji} />
                     )
                 }
             </Box>
@@ -123,6 +99,7 @@ const EmojiDetailBox = ({ m }) => {
                                 display={'flex'}
                                 gap={'.9rem'}
                                 cursor={u.user._id === user?._id ? 'pointer' : 'auto'}
+                                pointerEvents={u.user._id === user?._id && isUserRemovedFromChat(selectedChat, user) ? 'none' : 'all'}
                                 onClick={() => handleRemoveReaction(u.reaction, u.user)}
                             >
                                 <Box display={'flex'} gap={'.9rem'} alignItems={'center'}>
@@ -136,6 +113,8 @@ const EmojiDetailBox = ({ m }) => {
                                         <Text>
                                             {
                                                 u.user._id === user?._id
+                                                &&
+                                                !isUserRemovedFromChat(selectedChat, user)
                                                 &&
                                                 <Text fontSize={'.65rem'}>{window.innerWidth <= 900 ? 'Tap' : 'Click'} to remove</Text>
                                             }
@@ -151,3 +130,36 @@ const EmojiDetailBox = ({ m }) => {
 }
 
 export default EmojiDetailBox
+
+function EmojiBtn({ m, emoji, i, handleFunc }) {
+    const ref = useRef()
+    useRipple(ref)
+    return (
+        <Text
+            key={i}
+            onClick={(e) => handleFunc(e, emoji)}
+            padding=".5rem .3rem"
+            fontSize={'1.2rem'}
+            cursor={'pointer'}
+            className='emojiTab'
+            display="inline-flex"
+            alignItems={'center'}
+            ref={ref}
+        >
+            {emoji}
+            <Text
+                fontSize={'.7rem'}
+                padding={'.1rem'}
+                pointerEvents={'none'}
+                width={'15px'}
+                height={'15px'}
+                display={'flex'}
+                justifyContent={'center'}
+                alignItems={'center'}
+                fontWeight={'medium'}
+                borderRadius={'50%'}>
+                {m.reactions.filter(r => r.reaction === emoji).length}
+            </Text>
+        </Text>
+    )
+}

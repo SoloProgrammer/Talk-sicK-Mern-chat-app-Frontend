@@ -1,7 +1,7 @@
 import { Box, Image, useDisclosure } from '@chakra-ui/react'
 import React, { useState, useEffect } from 'react'
 import { server } from '../../configs/serverURl';
-import { HandleLogout, getSender } from '../../configs/userConfigs';
+import { HandleLogout, getSender, isUserRemovedFromChat } from '../../configs/userConfigs';
 import { ChatState } from '../../Context/ChatProvider'
 import ConfirmBoxModal from './Modals/ConfirmBoxModal';
 import { archiveImg, downArrowCyan, unArchiveImg, leaveGrpImg, trashCanIcon, pinFilledIcon, pinOutlineIcon, bellIcon, bellDividedIcon } from '../../configs/ImageConfigs';
@@ -104,28 +104,31 @@ function ChatMenuBox({ chat, i }) {
                         className={`chat_menu flex`}
 
                         flexDir={"column"} width={"10.8rem"}>
-
-                        <ConfirmBoxModal
-                            handleFunc={() => chat.isGroupchat ? handleLeaveGrp(chat, onClose, setLoading) : handleDeleteChat(chat, onClose, setLoading)}
-                            isOpen={isOpen}
-                            onClose={onClose}
-                            modalDetail={
-                                {
-                                    chat: chat,
-                                    text: !chat.isGroupchat ? "Are you Sure You want to Delete Chat with" : "Are you Sure You want to Leave",
-                                    subtext: chat.isGroupchat ? chat.chatName : getSender(chat, user)?.name,
-                                    btn1: { copy: !chat.isGroupchat ? "Delete" : "Leave" }
+                        {
+                            !isUserRemovedFromChat(chat, user)
+                            &&
+                            <ConfirmBoxModal
+                                handleFunc={() => chat.isGroupchat ? handleLeaveGrp(chat, onClose, setLoading) : handleDeleteChat(chat, onClose, setLoading)}
+                                isOpen={isOpen}
+                                onClose={onClose}
+                                modalDetail={
+                                    {
+                                        chat: chat,
+                                        text: !chat.isGroupchat ? "Are you Sure You want to Delete Chat with" : "Are you Sure You want to Leave",
+                                        subtext: chat.isGroupchat ? chat.chatName : getSender(chat, user)?.name,
+                                        btn1: { copy: !chat.isGroupchat ? "Delete" : "Leave" }
+                                    }
                                 }
-                            }
-                            showCloseBtn={true}
-                            loading={loading}>
-                            <span
-                                onClick={onOpen}
-                                className='flex shadow-left'>
-                                {!chat.isGroupchat ? "Delete Chat" : "Leave group"}
-                                <Image width="1.1rem" src={`${chat.isGroupchat ? leaveGrpImg : trashCanIcon}`} />
-                            </span>
-                        </ConfirmBoxModal>
+                                showCloseBtn={true}
+                                loading={loading}>
+                                <span
+                                    onClick={onOpen}
+                                    className='flex shadow-left'>
+                                    {!chat.isGroupchat ? "Delete Chat" : "Leave group"}
+                                    <Image width="1.1rem" src={`${chat.isGroupchat ? leaveGrpImg : trashCanIcon}`} />
+                                </span>
+                            </ConfirmBoxModal>
+                        }
 
                         {!(archivedChats?.map(c => c._id).includes(chat._id)) && <span className='flex shadow-left' onClick={(e) => {
                             handlePinOrUnpinChat(chat);
@@ -149,6 +152,8 @@ function ChatMenuBox({ chat, i }) {
                         </span>
 
                         {!archivedChats?.map(c => c._id).includes(chat._id)
+                            &&
+                            !isUserRemovedFromChat(chat, user)
                             &&
                             <span onClick={(e) => handleNotificationAction(e, chat)} className='flex shadow-left'>
                                 {chat.mutedNotificationBy?.includes(user?._id) ? 'Unmute notification' : "Mute notification"}

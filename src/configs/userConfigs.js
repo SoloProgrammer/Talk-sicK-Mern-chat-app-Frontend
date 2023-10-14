@@ -117,7 +117,8 @@ export const HandleLogout = () => {
 }
 
 export const isUserRemovedFromChat = (chat, user) => {
-    return chat.leftFromGroup.map(leftUserObj => leftUserObj.user._id).includes(user._id)
+    if (!chat.isGroupchat) return false
+    return chat?.leftFromGroup?.map(leftUserObj => leftUserObj.user._id)?.includes(user._id)
 }
 
 export const removedFromChatUserLatestMesssage = (chat, user) => {

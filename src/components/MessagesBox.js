@@ -5,7 +5,7 @@ import { downloadImage, imageActionBtns, seenCheckMark, unSeenCheckMark, zoomInI
 import { getMessageDay, getMsgTime, isFirstMsgOfTheDay, isLastMsgOfTheDay, isFirstUnseenMessage, islastMsgOfSender, islastRegularMsgOfSender, REACTION, REGULAR } from '../configs/messageConfigs'
 import { scrollBottom, scrollIntoView, scrollTop } from '../configs/scrollConfigs'
 import { server } from '../configs/serverURl'
-import { HandleLogout } from '../configs/userConfigs'
+import { HandleLogout, isUserRemovedFromChat } from '../configs/userConfigs'
 import { defaultPic } from '../configs/ImageConfigs'
 import { ChatState } from '../Context/ChatProvider'
 import AvatarBox from './Materials/AvatarBox'
@@ -21,6 +21,7 @@ import { isMessageSeenByAll } from './ChatsBox'
 var selectedChatCompare, isFetchMoreMessages, chatMessagesCompare, skipFromCompare, isObservred, messageBoxPrevScrollHeight, TopMsgDateElm, TopMessageObserver, seenCount = 0;
 
 export const getProperInfoMsg = (message, user) => {
+
   function getRightSideUsersOfMsg(usersArr) {
     usersArr = usersArr.map(u => {
       if (u.split(',')[0] === `${user?.name.split(' ')[0]}`) u = 'You'
@@ -40,7 +41,11 @@ export const getProperInfoMsg = (message, user) => {
     +
     seperatedMsg.slice(1, sliceInd).join(' ') + " "
     +
-    getRightSideUsersOfMsg(seperatedMsg.slice(sliceInd))
+    (seperatedMsg[1] !== "left"
+      ?
+      getRightSideUsersOfMsg(seperatedMsg.slice(sliceInd))
+      :
+      seperatedMsg.slice(sliceInd).join(" "))
 
 }
 
@@ -63,7 +68,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
         token: localStorage.getItem('token')
       }
     }
-    console.log("api/message/fetchmessages");
     let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${chatId}?skip=${skip}&limit=${limit}`, config)
 
     messagesLimit = 15
@@ -77,7 +81,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     return json.allMessages
   }
   const getTotalMessagesOfSelectedChat = (selectedChat) => {
-    console.log(selectedChat);
     if (selectedChat?.leftFromGroup.filter(item => item.user._id === user?._id)[0]) {
       return selectedChat?.leftFromGroup.filter(item => item.user._id === user?._id)[0].totalMsgCount
     }
@@ -86,7 +89,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     }
   }
 
-  console.log(selectedChatCompare, selectedChat);
   useEffect(() => {
     setTimeout(() => {
       document.querySelector('.profileDrawer')?.classList.remove('translateXFull')
@@ -174,6 +176,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       if (remainingMessages < messagesLimit) messagesLimit = remainingMessages
 
       setLoading(true)
+      console.log("here is it");
       const messages = await loadMessages(selectedChatCompare?._id, skipFromCompare, messagesLimit)
 
       // This line fixes the unexpected bug/error which says:- loadMessages is not a function()--which is really wired bcz by adding this line of code that error vanishes!
@@ -225,7 +228,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
         setMessages(chatMsg.messages);
         setIsFirstLoadOfMsgs(false)
         isChatMsg = true
-        setSkipFrom(selectedChatCompare?.totalMessages - (chatMsg.messages.length))
+        setSkipFrom(getTotalMessagesOfSelectedChat(selectedChatCompare) - (chatMsg.messages.length))
       }
     });
 
@@ -247,12 +250,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       // here we are not directly subtracting messageslimit from totolmessages as if totalmessages is less than messagesLimit like 8 < 15 then skipFrom value will be in negative which will throw error, so instead we checking that if totalmessages is greater or equal to messages limit than subtract the messageslimit or else subtract the totalmessages itself so skipfrom value will be 0 so all the messages will be fetch  
       let totalMessages = getTotalMessagesOfSelectedChat(selectedChatCompare || selectedChat);
 
-      console.log(totalMessages);
-
       messagesLimit = totalMessages < messagesLimit ? totalMessages : messagesLimit
       let skipFrom = totalMessages - (selectedChat.totalMessages >= messagesLimit ? messagesLimit : totalMessages)
-      console.log("fetch messages called");
-
       let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${selectedChat._id}?skip=${skipFrom}&limit=${messagesLimit}`, config)
 
       if (res.status === 401) HandleLogout()
@@ -325,6 +324,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   useEffect(() => {
     isFetchMoreMessages = false
+    selectedChatCompare = selectedChat
 
     if (getSelectedChatDownloadedMsgs()?.length === selectedChat?.totalMessages) isObservred = true
 
@@ -340,7 +340,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   useEffect(() => {
     selectedChatCompare = selectedChat
-  }, [selectedChat._id, selectedChat])
+  }, [selectedChat])
 
   useEffect(() => {
     if (selectedChatCompare || selectedChat) {
@@ -360,6 +360,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   useEffect(() => {
     isFetchMessagesAgain && fetchMessages()
+    // eslint-disable-next-line
   }, [isFetchMessagesAgain])
 
   useEffect(() => {
@@ -520,7 +521,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
           // console.log('=============================', limit, totalMessages);
 
           let skip = totalMessages - limit
-          console.log("Inside seen messages!");
           const messages = await loadMessages(room, skip, limit + 1)
           messages && console.log()
 
@@ -663,7 +663,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                       {
                         isFirstLoadOfMsgs
                         &&
-                        isFirstUnseenMessage(m, messages, i, user) && m.sender._id !== user?._id
+                        isFirstUnseenMessage(m, messages, i, user) && m?.sender?._id !== user?._id
                         &&
                         <Box pos={"relative"} borderBottom={"2px solid red"} margin="1.5rem 0">
                           <Text userSelect={"none"} boxShadow={"0 0 2px rgba(0,0,0,.2)"} pos={"absolute"} borderRadius=".9rem" color={"red.500"} background="white" top="-.8rem" left="-.2rem" fontWeight={"medium"} fontSize=".87rem" padding={".1rem 1rem"} >
@@ -713,6 +713,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
                               {
                                 ((!m?.deleted?.value) || ((m?.deleted.value && m?.deleted.for === 'myself') && m.sender._id !== user._id))
+                                &&
+                                !isUserRemovedFromChat(selectedChat, user)
                                 &&
                                 <MessageActions
                                   message={m}

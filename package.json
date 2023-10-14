@@ -15,6 +15,7 @@
     "react-notification-badge": "^1.5.1",
     "react-router-dom": "^6.6.1",
     "react-scripts": "^5.0.1",
+    "react-use-ripple": "^1.5.2",
     "socket.io-client": "^4.5.4"
   },
   "scripts": {

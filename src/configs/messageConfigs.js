@@ -85,15 +85,17 @@ export const isFirstUnseenMessage = (m, messages, i, user) => {
 
         if (m.msgType && m.msgType === REACTION) return false
 
-        if (!m.seenBy.includes(user._id)) {
+        if (!m?.seenBy?.includes(user._id)) {
             if (messages[i - 1]) {
-                if(messages[i + 1]){
+                if (messages[i + 1]) {
                     if (messages[i - 1].seenBy.includes(user?._id) && !messages[i + 1].seenBy.includes(user?._id)) return true
                 }
-                else if(messages[i - 1].seenBy.includes(user?._id)) return true
+                else if (messages[i - 1].seenBy.includes(user?._id)) return true
             }
-
             else if (messages.length === 1) return true
+
+            else if (messages[i + 1] && !messages[i + 1].seenBy.includes(user?._id)) return true
+
         }
     }
 }

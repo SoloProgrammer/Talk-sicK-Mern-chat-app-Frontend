@@ -10,7 +10,7 @@ import { INFO } from '../configs/messageConfigs'
 
 function GroupMembersBox() {
 
-    const { getPinnedChats, getUnPinnedChats, selectedChat, showToast, user, setChats, setSelectedChat, archivedChats, setArchivedChats, setIsClosable, sendInfoMsg } = ChatState()
+    const { getPinnedChats, getUnPinnedChats, selectedChat, showToast, user, setChats, setSelectedChat, archivedChats, setArchivedChats, setIsClosable, sendInfoMsg, setProfile } = ChatState()
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -74,6 +74,7 @@ function GroupMembersBox() {
             const content = { message: `${user?.name.split(' ')[0]} added ${userNames}` }
             sendInfoMsg(INFO, content) // passing msgType and content
             onClose()
+            setProfile(null);
         } catch (error) {
             showToast("Error", error.message, "error", 3000)
             setLoading(false)
