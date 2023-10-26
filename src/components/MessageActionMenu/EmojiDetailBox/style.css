@@ -18,10 +18,10 @@
 }
 .underLine{
     position: absolute;
-    bottom: 0;
-    transition: .25s all ease-out;
+    bottom: 0px;
+    transition: .25s all cubic-bezier(0.785, 0.135, 0.15, 0.86);
     width: 52px;
-    height: 2px;
+    height: 2.5px;
     border-radius: 1rem;
     background: rgb(1, 182, 157);
     left: 0px;

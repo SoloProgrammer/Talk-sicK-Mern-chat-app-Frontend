@@ -145,9 +145,11 @@ function EmojiBtn({ m, emoji, i, handleFunc }) {
             display="inline-flex"
             alignItems={'center'}
             ref={ref}
+            userSelect={'none'}
         >
             {emoji}
             <Text
+                userSelect={'none'}
                 fontSize={'.7rem'}
                 padding={'.1rem'}
                 pointerEvents={'none'}

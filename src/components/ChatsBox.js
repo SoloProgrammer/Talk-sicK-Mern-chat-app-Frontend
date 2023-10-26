@@ -10,11 +10,12 @@ import { useNavigate } from 'react-router-dom'
 import ChatMenuBox from './Materials/ChatMenuBox'
 import ChatFooter from './ChatFooter'
 import { ChatsSkeleton } from './Materials/Loading'
-import { defaultPic, seenCheckMark, unSeenCheckMark } from '../configs/ImageConfigs'
+import { defaultGrpPic, defaultPic, seenCheckMark, unSeenCheckMark } from '../configs/ImageConfigs'
 import MessageDeletedText from './Materials/MessageDeletedText'
 import { REACTION, INFO } from '../configs/messageConfigs'
 import { isMobile } from '../pages/Chatpage'
 import { getProperInfoMsg, isMsgDeletedBySender } from './MessagesBox'
+import { EVERYONE, MYSELF } from './MessageActionMenu/MessageActions'
 // import { useRipple } from 'react-use-ripple'
 
 export function isMessageSeenByAll(msg) {
@@ -149,7 +150,7 @@ function ChatsBox() {
                   let { latestMessage } = chat
                   latestMessage = (isUserRemovedFromChat(chat, user) && removedFromChatUserLatestMesssage(chat, user)) || (latestMessage?.msgType === "reaction" && isReactedToMsgDeleted(latestMessage) ? latestMessage.content.lastregularMsg : latestMessage)
                   return (
-                    <SingleChatBox latestMessage={latestMessage} i={i} chat={chat} selectedChat={selectedChat} user={user} showAlert={showAlert} handleChatClick={handleChatClick} getDateTime={getDateTime} />
+                    <SingleChatBox key={i} latestMessage={latestMessage} i={i} chat={chat} selectedChat={selectedChat} user={user} showAlert={showAlert} handleChatClick={handleChatClick} getDateTime={getDateTime} />
                   )
                 })
               }
@@ -171,12 +172,8 @@ export default ChatsBox
 
 function SingleChatBox({ latestMessage, i, chat, selectedChat, user, showAlert, handleChatClick, getDateTime }) {
   const { setProfilePhoto, isTyping, typingInfo } = ChatState()
-  // const chatRef = useRef()
-  // useRipple(chatRef)
   return (
     <Box
-      // ref={chatRef}
-      key={i}
       onClick={() => { handleChatClick(chat, i) }}
       display={"flex"}
       width="100%"
@@ -195,7 +192,7 @@ function SingleChatBox({ latestMessage, i, chat, selectedChat, user, showAlert, 
         <Avatar
           onClick={(e) => {
             e.stopPropagation()
-            getSender(chat, user)?.avatar !== defaultPic
+            getSender(chat, user)?.avatar !== defaultPic && getSender(chat, user)?.avatar !== defaultGrpPic
               ?
               setProfilePhoto(getSender(chat, user)?.avatar)
               :
@@ -247,11 +244,11 @@ function SingleChatBox({ latestMessage, i, chat, selectedChat, user, showAlert, 
                   id={`DateTime${chat._id}`}
                   padding={".0 .3rem"}
                   className={`
-                                  transformPaddingPlu 
-                                  flex 
-                                  ${(!(latestMessage?.seenBy.includes(user?._id))
+                    transformPaddingPlu 
+                    flex 
+                    ${(!(latestMessage?.seenBy.includes(user?._id))
                       && selectedChat?._id !== chat._id)
-                    && latestMessage.msgType !== REACTION
+                    && (latestMessage.msgType !== REACTION || chat.unseenMsgsCountBy[user?._id] > 0)
                     && "unSeen"}`}>
                   <>{getDateTime(latestMessage.createdAt)}</>
                 </Text>
@@ -287,9 +284,9 @@ function SingleChatBox({ latestMessage, i, chat, selectedChat, user, showAlert, 
                 (
                   !latestMessage?.deleted?.value
                   ||
-                  (latestMessage.deleted.for === 'everyone' && latestMessage.sender?._id !== user?._id)
+                  (latestMessage.deleted.for === EVERYONE && latestMessage.sender?._id !== user?._id)
                   ||
-                  (latestMessage.deleted.for === 'myself'))
+                  (latestMessage.deleted.for === MYSELF))
                 &&
                 (latestMessage
                   &&
@@ -314,7 +311,7 @@ function SingleChatBox({ latestMessage, i, chat, selectedChat, user, showAlert, 
                 {latestMessage
                   ?
                   latestMessage.deleted.value &&
-                    (latestMessage.deleted.for === 'everyone' || (latestMessage.deleted.for === 'myself' && latestMessage.sender._id === user?._id))
+                    (latestMessage.deleted.for === EVERYONE || (latestMessage.deleted.for === MYSELF && latestMessage.sender._id === user?._id))
                     ?
                     <MessageDeletedText iconSize={4} message={latestMessage} />
                     :

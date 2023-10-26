@@ -8,6 +8,7 @@ import { server } from "../../configs/serverURl";
 import { HandleLogout } from "../../configs/userConfigs";
 import EmojiMenu from "./EmojiPicker/EmojiPicker";
 import { REACTION } from "../../configs/messageConfigs";
+export const EVERYONE = "everyone", MYSELF = "myself";
 
 const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs }) => {
   const {
@@ -31,7 +32,6 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const EVERYONE = "everyone", MYSELF = "myself";
 
   const deleteMessage = async (e) => {
     setLoading({
@@ -76,12 +76,12 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
         })
       );
 
-      function getLastRegularMsg(){
-        let regularMsgs = messages.filter(m => m.msgType !== REACTION)
+      function getLastRegularMsg() {
+        let regularMsgs = updatedmessages.filter(m => m.msgType !== REACTION)
         return regularMsgs[regularMsgs.length - 1]
       }
       chats?.forEach((chat) => {
-        if ((chat?.latestMessage?._id === msg?._id ) || (chat?.latestMessage?.msgType === REACTION && chat?.latestMessage?.content?.reactedToMsg?._id === msg?._id)) {
+        if ((chat?.latestMessage?._id === msg?._id) || (chat?.latestMessage?.msgType === REACTION && chat?.latestMessage?.content?.reactedToMsg?._id === msg?._id)) {
           setChats(
             chats.map((c) => {
               c.latestMessage =
@@ -89,7 +89,7 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
                   c?._id === msg.chat._id &&
                   c?.latestMessage?._id === msg._id)
                   ? msg
-                  : (c?.latestMessage?.msgType === REACTION && c?.latestMessage?.content?.reactedToMsg?._id === msg._id) ? getLastRegularMsg() : c.latestMessage
+                  : (c?.latestMessage?.msgType === REACTION && chat?.latestMessage?.content?.reactedToMsg?._id === msg?._id) ? getLastRegularMsg() : c.latestMessage
               return c;
             })
           );

@@ -13,7 +13,7 @@ import RemoveAvatarConfirmModal from './Modals/RemoveAvatarConfirmModal'
 
 
 function ProfileDrawer({ width, align = "right" }) {
-    const { getPinnedChats, getUnPinnedChats, handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat, setAlertInfo, setProfilePhoto } = useContext(ChatContext);
+    const { getPinnedChats, getUnPinnedChats, handleLeaveGrp, setSelectedChat, archivedChats, setArchivedChats, selectedChat, user, profile, setProfile, onlineUsers, showToast, setUser, setChats, handlePinOrUnpinChat, setAlertInfo, setProfilePhoto, socketEmit } = useContext(ChatContext);
     // The context can also be used like the above one!
 
     // let regx = /^[a-zA-Z!@#$&()`.+,/"-]*$/g;
@@ -110,6 +110,13 @@ function ProfileDrawer({ width, align = "right" }) {
 
             setSaved(true);
             setSelectedChat({ ...selectedChat, ...detailsToUpdate });
+
+            if (detailsToUpdate.chatName) {
+                socketEmit('group name changed', user?._id, selectedChat, detailsToUpdate.chatName)
+            }
+            else if (detailsToUpdate.groupAvatar) {
+                socketEmit('group profile photo changed', user?._id, selectedChat, detailsToUpdate.groupAvatar)
+            }
 
             // if the group to update is archived then update the archived chats
             setArchivedChats(json.chats.filter(c => c.archivedBy.includes(user?._id)))
@@ -236,14 +243,8 @@ function ProfileDrawer({ width, align = "right" }) {
         let avatar = await handleFileUpload(e, setAvatarLoading, showToast);
 
         if (avatar) {
-            if (profile?._id === user._id) {
-                setProfile({ ...profile, avatar });
-                updateUserProfile({ avatar });
-            }
-            else {
-                setProfile({ ...profile, avatar })
-                updateGrpProfile({ groupAvatar: avatar })
-            }
+            setProfile({ ...profile, avatar });
+            profile?._id === user._id ? updateUserProfile({ avatar }) : updateGrpProfile({ groupAvatar: avatar })
         }
         else setSaved(true)
     }
@@ -341,20 +342,19 @@ function ProfileDrawer({ width, align = "right" }) {
                                 onMouseLeave={() => setOnHover(false)}
                                 onClick={(e) => {
                                     e.stopPropagation()
-                                    // console.log(getSender(selectedChat, user)?.avatar);
                                     !profile.isGrpProfile && profile._id === user._id
                                         ?
                                         profile.avatar !== defaultPic
                                             ?
                                             !isedit && setProfilePhoto(profile.avatar)
                                             :
-                                            !isedit && showAlert()
+                                            !isedit && showAlert("No profile photo added")
                                         :
-                                        getSender(selectedChat, user)?.avatar !== defaultPic
+                                        getSender(selectedChat, user)?.avatar !== defaultGrpPic
                                             ?
                                             !isedit && setProfilePhoto(getSender(selectedChat, user)?.avatar)
                                             :
-                                            !isedit && showAlert()
+                                            !isedit && showAlert("Group profile photo not added")
                                 }}
                                 // onClick={() => !isedit && setProfilePhoto(profile?.avatar !== defaultPic ? profile.avatar : null)}
                                 cursor={"pointer"} src={profile?.avatar || defaultPic} width="11rem" height={"11rem"} position="relative" >

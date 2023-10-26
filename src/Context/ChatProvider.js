@@ -335,13 +335,13 @@ const ChatProvider = ({ children }) => {
     const handleLeaveGrp = async (chat, onClose, setLoading) => {
         if (chat?.groupAdmin.map(u => u._id).includes(user._id) && chat?.groupAdmin.length === 1) {
             onClose()
-            return showToast("Error", "Plz first add some one as GroupAdmin if you wish to leave this group.!", "error", 3000)
+            return showToast("Alert", "Plz first add some one as GroupAdmin if you wish to leave this group.!", "error", 3000)
         }
 
         try {
             setLoading({ btn1: true })
             setIsClosable(false)
-            let message = `${user?.name.split(' ')[0]} left ${selectedChat.chatName}`
+            let message = `${user?.name.split(' ')[0]} left`
             let config = {
                 method: 'POST',
                 headers: {
@@ -615,7 +615,7 @@ const ChatProvider = ({ children }) => {
                         // console.log("reacted!", MessagesCompare, chatMessagesCompare, chats, reactedMsg);
                         let updatedmessages;
                         if (MessagesCompare.length > 0 && MessagesCompare[0].chat._id === reactedMsg.chat._id) {
-                            reactedMsg.seenBy = reactedMsg.seenBy.filter(u => u !== user?._id)
+                            // reactedMsg.seenBy = reactedMsg.seenBy.filter(u => u !== user?._id)
                             updatedmessages = MessagesCompare?.map(m => {
                                 m = m._id === reactedMsg._id ? reactedMsg : m
                                 return m
@@ -650,12 +650,58 @@ const ChatProvider = ({ children }) => {
                     }, 10);
                 }
             })
+            socket.on('group photo updated', (chatId, newPhotoURL) => {
+                if (socketActiveCount < 1) {
+                    if (chats && selectedChat) {
+                        socketActiveCount += 1
+                        setChats(chats.map(c => {
+                            if (c._id === chatId) {
+                                c.groupAvatar = newPhotoURL
+                            }
+                            return c
+                        }))
+                        if (selectedChat?._id === chatId) {
+                            let selectedChatClone = structuredClone(selectedChat)
+                            selectedChatClone.groupAvatar = newPhotoURL
+                            setSelectedChat(selectedChatClone)
+                        }
+                        setTimeout(() => {
+                            socketActiveCount = 0
+                        }, 10);
+                    }
+                }
+            })
+            socket.on('group name updated', (chatId, newName) => {
+                if (socketActiveCount < 1) {
+                    if (chats && selectedChat) {
+                        socketActiveCount += 1
+                        setChats(chats.map(c => {
+                            if (c._id === chatId) {
+                                c.chatName = newName
+                            }
+                            return c
+                        }))
+                        if (selectedChat?._id === chatId) {
+                            let selectedChatClone = structuredClone(selectedChat)
+                            selectedChatClone.chatName = newName
+                            setSelectedChat(selectedChatClone)
+                        }
+                        setTimeout(() => {
+                            socketActiveCount = 0
+                        }, 10);
+                    }
+                }
+            })
         }
         // eslint-disable-next-line
-    }, [socket, user, chats, chatMessages, messages])
+    }, [socket, user, chats, chatMessages, messages, selectedChat])
+
+    function socketEmit(socketName, ...socketParams) {
+        socket?.emit(socketName, ...socketParams)
+    }
 
     return (
-        <ChatContext.Provider value={{ isMessagesUpdated, setIsMessagesUpdated, getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, profilePhoto, setProfilePhoto, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, isFetchMessagesAgain, setIsFetchMessagesAgain, updateMessagesAndChatMessages, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg, reactToMessage }}>
+        <ChatContext.Provider value={{ isMessagesUpdated, setIsMessagesUpdated, getPinnedChats, getUnPinnedChats, messages, setMessages, isClosable, setIsClosable, isChatCreating, refreshChats, CreateChat, chatsLoading, setChatsLoading, chats, setChats, chatMessages, setChatMessages, profile, setProfile, profilePhoto, setProfilePhoto, user, showToast, setUser, getUser, selectedChat, setSelectedChat, isfetchChats, setIsfetchChats, seenMessages, handlePinOrUnpinChat, socket, socketConneted, notifications, setNotifications, onlineUsers, setOnlineUsers, isTyping, setIsTyping, typingInfo, setTypingInfo, archivedChats, setArchivedChats, viewArchivedChats, setViewArchivedChats, hanldeArchiveChatAction, isFetchMessagesAgain, setIsFetchMessagesAgain, updateMessagesAndChatMessages, handleLeaveGrp, handleDeleteChat, sendPic, setSendPic, alertInfo, setAlertInfo, sendInfoMsg, reactToMessage, socketEmit }}>
             {children}
         </ChatContext.Provider>
     )

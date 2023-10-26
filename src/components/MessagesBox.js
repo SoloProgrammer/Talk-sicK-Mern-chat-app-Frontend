@@ -12,13 +12,22 @@ import AvatarBox from './Materials/AvatarBox'
 import ProfileDrawer from './Materials/ProfileDrawer'
 import MessageImageViewBox from './MessageImageViewBox'
 import Linkify from 'react-linkify'
-import MessageActions from './MessageActionMenu/MessageActions'
+import MessageActions, { EVERYONE, MYSELF } from './MessageActionMenu/MessageActions'
 import MessageDeletedText from './Materials/MessageDeletedText'
 import MessageReactions from './Materials/MessageReactions'
 import { isMobile } from '../pages/Chatpage'
 import { isMessageSeenByAll } from './ChatsBox'
 
-var selectedChatCompare, isFetchMoreMessages, chatMessagesCompare, skipFromCompare, isObservred, messageBoxPrevScrollHeight, TopMsgDateElm, TopMessageObserver, seenCount = 0;
+var selectedChatCompare,
+  isFetchMoreMessages,
+  chatsCompare,
+  chatMessagesCompare,
+  skipFromCompare,
+  isObservred,
+  messageBoxPrevScrollHeight,
+  TopMsgDateElm,
+  TopMessageObserver,
+  seenCount = 0;
 
 export const getProperInfoMsg = (message, user) => {
 
@@ -50,7 +59,12 @@ export const getProperInfoMsg = (message, user) => {
 }
 
 export const isMsgDeletedBySender = (message, user) => {
-  return message?.deleted?.value && ((message?.deleted?.for === 'myself' && message.sender._id === user?._id) || (message?.deleted?.for === 'everyone'))
+  return message?.deleted?.value && ((message?.deleted?.for === MYSELF && message.sender._id === user?._id) || (message?.deleted?.for === EVERYONE))
+}
+export function fakeWaitBtwn01s(executedFunction) {
+  setTimeout(() => {
+    executedFunction()
+  }, Math.floor(Math.random(10) * 1000));
 }
 
 function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
@@ -59,6 +73,8 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     { profile, chatMessages, setChatMessages, archivedChats, user, selectedChat, setSelectedChat, showToast, setProfile, CreateChat, chats, socket, seenMessages, messages, setMessages, setChats, isMessagesUpdated, setIsMessagesUpdated, isFetchMessagesAgain } = ChatState();
 
   const navigate = useNavigate();
+
+  let messagesLimit = 30
 
   const loadMessages = async (chatId, skip, limit) => {
     skip = skip || 0
@@ -69,8 +85,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       }
     }
     let res = await fetch(`${server.URL.local}/api/message/fetchmessages/${chatId}?skip=${skip}&limit=${limit}`, config)
-
-    messagesLimit = 15
 
     if (res.status === 401) HandleLogout()
 
@@ -105,7 +119,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   const getMessagesContainer = () => document.querySelector('#messagesDisplay')
 
-  let messagesLimit = 15
   const [skipFrom, setSkipFrom] = useState()
 
   // Intersection Observer useEffect....
@@ -149,13 +162,13 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   const [loading, setLoading] = useState(false)
   const fetchMoreMessages = async () => {
     try {
-
+      
       let messgesContainer = getMessagesContainer();
       messageBoxPrevScrollHeight = messgesContainer?.scrollHeight
-
+      
       setIsFirstLoadOfMsgs(false)
       isFetchMoreMessages = true
-
+      
       let chatMsgs = getSelectedChatDownloadedMsgs()
 
       let totalMessages = getTotalMessagesOfSelectedChat(selectedChatCompare)
@@ -170,13 +183,12 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
           setSkipFrom(skipFromCompare)
         }
       }
-
+      
       let remainingMessages = totalMessages - chatMsgs.length
 
-      if (remainingMessages < messagesLimit) messagesLimit = remainingMessages
+      if (remainingMessages <= messagesLimit) messagesLimit = remainingMessages
 
       setLoading(true)
-      console.log("here is it");
       const messages = await loadMessages(selectedChatCompare?._id, skipFromCompare, messagesLimit)
 
       // This line fixes the unexpected bug/error which says:- loadMessages is not a function()--which is really wired bcz by adding this line of code that error vanishes!
@@ -343,6 +355,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   }, [selectedChat])
 
   useEffect(() => {
+    chatsCompare = chats
     if (selectedChatCompare || selectedChat) {
 
       let chatId = selectedChatCompare._id;
@@ -425,9 +438,9 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       // this function will hide all the visible avatar boxs open by users and setting avatarBoxloading to true..!
       hideAvatarBoxs();
 
-      setTimeout(() => {
+      fakeWaitBtwn01s(() => {
         setAvatarBoxLoading(false)
-      }, Math.floor(Math.random(10) * 1000));
+      });
 
       // and then only that avatar box will be visible on which user has clicked..!
       avatarBox.style.display = "flex"
@@ -510,8 +523,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
         if (seenCount < 1 && updatedChat?.latestMessage?.sender?._id === user?._id) {
           !seenCount && seenCount++
-
-          setChats(chats.map(chat => {
+          setChats(chatsCompare.map(chat => {
             if (chat._id === updatedChat._id) chat = updatedChat
             return chat
           }))
@@ -560,7 +572,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
       })
     }
     // eslint-disable-next-line
-  }, [user]);
+  }, [user, chats]);
   // console.log(skipFromCompare, selectedChatCompare?.totalMessages);
 
   // console.log(chatMessagesCompare);
@@ -586,6 +598,16 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     hideEmojiBoxs()
     hidemessageActionMenu()
   })
+
+  function getMinWidthOfMsgTextBox(m) {
+    return m?.reactions?.length
+      ?
+      ((m?.reactions?.length === 1 && '110px')
+        ||
+        (m?.reactions?.length === 2 && '120px')
+        ||
+        (m?.reactions?.length >= 3 && '140px')) : '80px'
+  }
 
   return (
     <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && isMobile() ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
@@ -712,7 +734,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                               maxW={m.sender._id !== user?._id && isMobile() ? "85%" : "75%"}>
 
                               {
-                                ((!m?.deleted?.value) || ((m?.deleted.value && m?.deleted.for === 'myself') && m.sender._id !== user._id))
+                                ((!m?.deleted?.value) || ((m?.deleted.value && m?.deleted.for === MYSELF) && m.sender._id !== user._id))
                                 &&
                                 !isUserRemovedFromChat(selectedChat, user)
                                 &&
@@ -763,13 +785,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                 position="relative"
                                 borderBottomRightRadius={(m.sender._id !== user?._id || (!islastMsgOfSender(messages, i, m.sender._id) && !isLastMsgOfTheDay(m.createdAt, messages, i))) && ".5rem"}
                                 transition={'.3s min-width cubic-bezier(0.475, 0.885, 0.32, 1.375)'}
-                                minW={m?.reactions?.length
-                                  ?
-                                  ((m?.reactions?.length === 1 && '110px')
-                                    ||
-                                    (m?.reactions?.length === 2 && '120px')
-                                    ||
-                                    (m?.reactions?.length >= 3 && '140px')) : '80px'}
+                                minW={getMinWidthOfMsgTextBox(m)}
 
                                 marginLeft=
                                 {window.innerWidth > 770
@@ -795,7 +811,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                   (
                                     !m.deleted.value
                                     ||
-                                    (m.deleted.value && (m.deleted.for === 'myself' && m.sender._id !== user?._id))
+                                    (m.deleted.value && (m.deleted.for === MYSELF && m.sender._id !== user?._id))
                                   )
                                   &&
                                   <MessageReactions m={m} hideEmojiDetailBoxs={hideEmojiDetailBoxs} />
@@ -816,7 +832,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                 }
                                 <Box paddingLeft={(m.sender._id !== user?._id && islastMsgOfSender(messages, i, m.sender._id)) && ".0rem"}>
                                   {
-                                    (m?.deleted?.value && m?.deleted?.for === 'everyone') || (m?.deleted?.value && m?.deleted?.for === 'myself' && m.sender._id === user?._id)
+                                    (m?.deleted?.value && m?.deleted?.for === EVERYONE) || (m?.deleted?.value && m?.deleted?.for === MYSELF && m.sender._id === user?._id)
                                       ?
                                       <MessageDeletedText flexDir={m.sender._id === user?._id ? 'row-reverse' : 'row'} iconSize={4} message={m} />
                                       :

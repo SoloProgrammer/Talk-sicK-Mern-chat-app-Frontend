@@ -7,16 +7,22 @@ import MessageBox from '../components/MessageBox';
 import { server } from '../configs/serverURl';
 import { HandleLogout } from '../configs/userConfigs';
 import ProfilePhotoView from '../components/ProfilePhotoView/ProfilePhotoView';
+var selectedChatCompare;
 
 export const isMobile = () => {
   return window.innerWidth < 770
 }
 
 function Chatpage() {
-  const { getPinnedChats, getUnPinnedChats, getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, profilePhoto, user, setNotifications, Notifications, setSelectedChat, setSendPic } = ChatState();
+  const { getPinnedChats, getUnPinnedChats, getUser, setUser, archivedChats, setArchivedChats, setViewArchivedChats, showToast, setChatsLoading, setChats, chats, setProfile, isfetchChats, setIsfetchChats, profile, profilePhoto, user, setNotifications, notifications, setSelectedChat, selectedChat, setSendPic } = ChatState();
 
   const navigate = useNavigate();
   const locaObj = useLocation();
+
+  useEffect(() => {
+    selectedChatCompare = selectedChat
+    // eslint-disable-next-line
+  }, [selectedChat?._id])
 
   let params = useParams();
   let { chatId } = params
@@ -81,32 +87,27 @@ function Chatpage() {
 
   useEffect(() => {
 
+    if(!chats?.length) return
+
+    if(!archivedChats?.length && locaObj.pathname === "/chats/archived" ) navigate('/chats')
+
     if (locaObj.pathname === "/chats" || chats?.map(c => c._id).includes(chatId)) {
       setViewArchivedChats(false)
     }
-    else if ((locaObj.pathname === "/chats/archived" || archivedChats.map(c => c._id).includes(chatId)) && archivedChats.length > 0) setViewArchivedChats(true)
+    else if (archivedChats.length > 0 && (locaObj.pathname === "/chats/archived" || archivedChats.map(c => c._id).includes(chatId))) setViewArchivedChats(true)
 
-    // else if (archivedChats.length < 1) navigate('/chats')
-
-    if (params && !(chats?.map(chat => chat._id).includes(chatId)) && !archivedChats?.map(c => c._id).includes(chatId)) {
-      // If params are there and the chatId aslo there in the params so we will first fetch the user and after fetching the user we will be fetching the chats and then after fetching the chats we will select/open the chat based on the chatId provided in the paramaters!
-      // GetuserInfo()
+    if (archivedChats?.map(c => c._id).includes(chatId)) {
+      setSelectedChat(archivedChats?.filter(chat => chat._id === chatId)[0])
     }
     else {
-
-      if (archivedChats?.map(c => c._id).includes(chatId)) {
-        setSelectedChat(archivedChats?.filter(chat => chat._id === chatId)[0])
-      }
-      else {
-        setSelectedChat(chats?.filter(chat => chat._id === chatId)[0])
-      }
-      setProfile(null);
+      setSelectedChat(chats?.filter(chat => chat._id === chatId)[0])
     }
+    setProfile(null);
 
     chats && setTimeout(() => document.querySelector('.allchats')?.classList.remove('hidetop'), 10)
 
     // eslint-disable-next-line
-  }, [locaObj])
+  }, [locaObj, archivedChats.length, chats?.length])
 
   const GetuserInfo = async () => {
     let res = await getUser();
@@ -132,6 +133,7 @@ function Chatpage() {
 
   useEffect(() => {
     setTimeout(() => document.querySelector('.profileDrawer')?.classList.remove('translateXFull-'), 0);
+    // eslint-disable-next-line
   }, [profile])
 
   useEffect(() => {
@@ -150,6 +152,7 @@ function Chatpage() {
       chats?.forEach(chat => {
         if (user
           && chat.latestMessage
+          && chat._id !== selectedChatCompare?._id
           && !chat.archivedBy.includes(user._id)
           && !chat.mutedNotificationBy.includes(user?._id)
           && chat.unseenMsgsCountBy[user?._id] !== 0
@@ -157,18 +160,20 @@ function Chatpage() {
           UnseenMsgnotifications.push(chat.latestMessage)
         }
       })
-      !Notifications?.length ? setNotifications(UnseenMsgnotifications) : Notifications.length < UnseenMsgnotifications && setNotifications(UnseenMsgnotifications)
+      !notifications?.length ? setNotifications(UnseenMsgnotifications) : notifications.length < UnseenMsgnotifications && setNotifications(UnseenMsgnotifications)
     }
 
+    let elms = document.querySelectorAll('.chat_menu');
+    const handleCloseChatMenu = () => {
+      elms.forEach(item => {
+        item.classList.remove('menu_open');
+      })
+    }
+    document.addEventListener('click', handleCloseChatMenu)
+    return () => document.removeEventListener('click', handleCloseChatMenu)
     // eslint-disable-next-line
-  }, [chats, Notifications])
+  }, [chats])
 
-  let elms = document.querySelectorAll('.chat_menu');
-  document.addEventListener('click', () => {
-    elms.forEach(item => {
-      item.classList.remove('menu_open');
-    })
-  })
 
   return (
     <Box className={`mainChatBox hideleft`} width="100%" display="flex" justifyContent={"center"} alignItems="center" transition={".5s"}>
@@ -179,6 +184,7 @@ function Chatpage() {
         {/* Position absolute */}
         {profilePhoto && <ProfilePhotoView />}
         {/* {<ProfilePhotoView />} */}
+
       </Box>
     </Box>
   )
