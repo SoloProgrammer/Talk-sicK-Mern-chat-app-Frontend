@@ -13,10 +13,11 @@ function App() {
         <Alert />
         <Routes>
           <Route exact path='/' element={<Homepage />} />
-          <Route exact path='/chats' element={<Chatpage />} />
-          <Route exact path='/chats/archived' element={<Chatpage />} />
-          <Route exact path='/chats/chat/:chatId' element={<Chatpage />} />
-          <Route exact path='/chats/chat/:chatId/view/:senderId/image' element={<Chatpage />} />
+          <Route exact path='/chats' element={<Chatpage />} >
+            <Route path='/chats/archived' element={<Chatpage />} />
+            <Route path='/chats/chat/:chatId' element={<Chatpage />} />
+            <Route path='/chats/chat/:chatId/view/:senderId/image' element={<Chatpage />} />
+          </Route>
           <Route exact path='*' element={<Chatpage />} />
         </Routes>
       </div>

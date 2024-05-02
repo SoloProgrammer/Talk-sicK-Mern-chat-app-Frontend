@@ -41,7 +41,7 @@ function ChatMenuBox({ chat, i }) {
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState({ btn1: false });
 
     const handleNotificationAction = async (e, chat) => {
 

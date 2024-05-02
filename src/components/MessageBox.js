@@ -334,7 +334,7 @@ function MessageBox() {
             </Box>
           </Box>
           :
-          <Box width={"100%"} pos="relative">
+          <Box width={"100%"} pos="relative" display={'flex'} flexDirection={'column'}>
 
             <MessagesBoxTopbar />
 
@@ -344,11 +344,10 @@ function MessageBox() {
               zIndex={3}
               marginLeft={{ base: "0rem", md: ".2rem" }}
               background={"white"}
-              pos={"absolute"}
               bottom="0"
               className='messageTextbox'
               width={"100%"}
-              minHeight="57px !important"
+              flexGrow={'0'}
               boxShadow="0 -4px 4px -4px rgba(0,0,0,.3)">
               <Box pos={"relative"} height={"100%"} padding=".3rem" className={`messageInputBox ${isUserRemovedFromChat(selectedChat, user) && 'disabled'}`}>
                 {

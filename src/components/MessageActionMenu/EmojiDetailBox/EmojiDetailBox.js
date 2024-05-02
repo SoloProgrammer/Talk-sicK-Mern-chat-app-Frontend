@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import './style.css'
 import { Box, Image, Text } from '@chakra-ui/react'
 import { ChatState } from '../../../Context/ChatProvider'
 import { getClickEventOptions } from '../../../configs/eventConfig'
 import { useRipple } from 'react-use-ripple';
-import { useRef } from 'react';
 import { isUserRemovedFromChat } from '../../../configs/userConfigs'
 
 var emojiUsers;

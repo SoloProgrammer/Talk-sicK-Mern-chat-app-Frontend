@@ -9,6 +9,7 @@ export const ChatContext = createContext();
 var socketActiveCount = 0;
 var chatMessagesCompare;
 var MessagesCompare;
+var selectedChatCompare;
 
 const ChatProvider = ({ children }) => {
 
@@ -546,11 +547,18 @@ const ChatProvider = ({ children }) => {
 
     useEffect(() => {
         chatMessagesCompare = chatMessages
+        // eslint-disable-next-line
     }, [chatMessages])
 
     useEffect(() => {
         MessagesCompare = messages
+        // eslint-disable-next-line
     }, [messages])
+
+    useEffect(() => {
+        selectedChatCompare = selectedChat
+        // eslint-disable-next-line
+    }, [selectedChat])
 
     // Socket/Effect for typing... funcionality
     useEffect(() => {
@@ -673,7 +681,7 @@ const ChatProvider = ({ children }) => {
             })
             socket.on('group name updated', (chatId, newName) => {
                 if (socketActiveCount < 1) {
-                    if (chats && selectedChat) {
+                    if (chats) {
                         socketActiveCount += 1
                         setChats(chats.map(c => {
                             if (c._id === chatId) {
@@ -681,8 +689,8 @@ const ChatProvider = ({ children }) => {
                             }
                             return c
                         }))
-                        if (selectedChat?._id === chatId) {
-                            let selectedChatClone = structuredClone(selectedChat)
+                        if (selectedChatCompare && selectedChatCompare?._id === chatId) {
+                            let selectedChatClone = structuredClone(selectedChatCompare)
                             selectedChatClone.chatName = newName
                             setSelectedChat(selectedChatClone)
                         }

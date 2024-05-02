@@ -342,7 +342,7 @@ function ProfileDrawer({ width, align = "right" }) {
                                 onMouseLeave={() => setOnHover(false)}
                                 onClick={(e) => {
                                     e.stopPropagation()
-                                    !profile.isGrpProfile && profile._id === user._id
+                                    !profile.isGrpProfile
                                         ?
                                         profile.avatar !== defaultPic
                                             ?

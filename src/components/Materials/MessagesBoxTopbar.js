@@ -26,7 +26,6 @@ function MessagesBoxTopbar() {
 
             <Box
                 pos={"relative"}
-                height={"5rem"}
                 maxWidth="100%"
                 background={"#27aea4"}
                 marginLeft=".1rem"
@@ -34,9 +33,10 @@ function MessagesBoxTopbar() {
                 display={"flex"}
                 zIndex="3"
                 justifyContent="space-between"
+                minH={"5rem"}
                 alignItems={"center"}
-                onClick={() => setProfile(sender)}
                 cursor={"pointer"}
+                onClick={() => setProfile(sender)}
                 padding="0 .9rem">
 
                 <Box display={"flex"} color="white" gap="1.2rem" className='msgleftTop' alignItems={"center"} >
@@ -116,6 +116,8 @@ function MessagesBoxTopbar() {
                         display="flex"
                         justifyContent={"space-between"}
                         width="100%"
+                        padding={'25px 0'}
+                        boxShadow={'0 0 2px rgba(0,0,0,.3)'}
                         className='backTochatsBtn'>
 
                         <Box onClick={handleBack}

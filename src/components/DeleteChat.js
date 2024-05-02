@@ -20,7 +20,6 @@ function DeleteChat() {
                 handleFunc={() => handleDeleteChat(selectedChat, onClose, setLoading)}
                 isOpen={isOpen}
                 onClose={onClose}
-                // modalDetail={{ chat: selectedChat, subtext: "Are you Sure You want to Delete Chat with", btnCopy: "Delete" }} 
                 modalDetail={
                     {
                         chat: selectedChat,
@@ -30,7 +29,7 @@ function DeleteChat() {
                     }
                 }
                 showCloseBtn={true}
-                loading={loading}>
+                loading={{ btn1: loading }}>
                 <Box
                     _hover={{ bg: "gray.200", boxShadow: "0 0 2px rgba(0,0,0,.2)" }}
                     transition=".4s all"

@@ -180,7 +180,6 @@ function Chatpage() {
       <Box width={"95%"} height={{ base: "98vh", md: "97vh" }} background={"white"} display="flex" overflow={"hidden"}>
         <ChatsBox />
         <MessageBox />
-
         {/* Position absolute */}
         {profilePhoto && <ProfilePhotoView />}
         {/* {<ProfilePhotoView />} */}

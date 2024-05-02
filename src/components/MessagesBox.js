@@ -162,13 +162,13 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   const [loading, setLoading] = useState(false)
   const fetchMoreMessages = async () => {
     try {
-      
+
       let messgesContainer = getMessagesContainer();
       messageBoxPrevScrollHeight = messgesContainer?.scrollHeight
-      
+
       setIsFirstLoadOfMsgs(false)
       isFetchMoreMessages = true
-      
+
       let chatMsgs = getSelectedChatDownloadedMsgs()
 
       let totalMessages = getTotalMessagesOfSelectedChat(selectedChatCompare)
@@ -183,7 +183,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
           setSkipFrom(skipFromCompare)
         }
       }
-      
+
       let remainingMessages = totalMessages - chatMsgs.length
 
       if (remainingMessages <= messagesLimit) messagesLimit = remainingMessages
@@ -461,6 +461,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   messagesContainer?.addEventListener('scroll', () => {
     hidemessageActionMenu()
     hideEmojiBoxs()
+    hideEmojiDetailBoxs()
     const currScroll = messagesContainer?.scrollTop;
 
     // if the user is at the top of messagesContainer then set scrolltotop to false as now user will able to scroll down!
@@ -610,7 +611,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   }
 
   return (
-    <Box pos={"relative"} className='MessagesBox' height={selectedChat?.isGroupchat && isMobile() ? "calc(100% - 11rem) !important;" : "calc(100% - 8.6rem) !important;"} display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" paddingBottom={"2.5rem"}>
+    <Box pos={"relative"} className='MessagesBox' display={"flex"} flexDir="column" justifyContent={"flex-end"} gap={".3rem"} overflowX="hidden" flexGrow={'1'}>
 
       {
         msgImg?.img && window.location.pathname === `/chats/chat/${selectedChat?._id}/view/${msgImg.senderId}/image`
@@ -771,7 +772,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
                                 </Box>
                               }
                               <Box
-                                padding={m.content.img ? ".3rem" : ".5rem"}
+                                padding={m.content.img && !m.deleted.value ? ".3rem" : ".5rem"}
                                 fontSize={"1rem"}
                                 backgroundColor={m.sender._id !== user?._id ? "#effbff" : "#ffffdd"}
                                 key={i} pos="relative"
