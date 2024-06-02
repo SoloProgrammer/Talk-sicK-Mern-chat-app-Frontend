@@ -554,28 +554,6 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   let lastScrollvalue = 0;
 
-  messagesContainer?.addEventListener("scroll", () => {
-    hidemessageActionMenu();
-    hideEmojiBoxs();
-    hideEmojiDetailBoxs();
-    const currScroll = messagesContainer?.scrollTop;
-
-    // if the user is at the top of messagesContainer then set scrolltotop to false as now user will able to scroll down!
-    if (currScroll === 0) return setScrollToTop(false);
-    // else if the user is at the extreme bottom of messagesContainer then set scrolltotop to true as now user will able to scroll up!
-    else if (currScroll >= messagesContainer?.scrollHeight - 800)
-      return setScrollToTop(true);
-
-    //  user scrolls up show up arrow!
-    if (lastScrollvalue < currScroll) {
-      setScrollToTop(false);
-    }
-    // else if show down arrow to go down!
-    else setScrollToTop(true);
-    // setLastScrollvalue(currScroll);
-    lastScrollvalue = currScroll;
-  });
-
   const [msgImg, setMsgImg] = useState(null);
 
   function handleImgActionCLick(action, src) {
@@ -707,10 +685,43 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
     EmojiDetailBoxs.forEach((box) => box.classList.remove("active"));
   }
 
-  messagesContainer?.addEventListener("click", () => {
-    hideEmojiBoxs();
+  const handleMessageContainerScroll = () => {
     hidemessageActionMenu();
-  });
+    hideEmojiBoxs();
+    hideEmojiDetailBoxs();
+    const currScroll = messagesContainer?.scrollTop;
+
+    // if the user is at the top of messagesContainer then set scrolltotop to false as now user will able to scroll down!
+    if (currScroll === 0) return setScrollToTop(false);
+    // else if the user is at the extreme bottom of messagesContainer then set scrolltotop to true as now user will able to scroll up!
+    else if (currScroll >= messagesContainer?.scrollHeight - 800)
+      return setScrollToTop(true);
+
+    //  user scrolls up show up arrow!
+    if (lastScrollvalue < currScroll) {
+      setScrollToTop(false);
+    }
+    // else if show down arrow to go down!
+    else setScrollToTop(true);
+    // setLastScrollvalue(currScroll);
+    lastScrollvalue = currScroll;
+  };
+
+  useEffect(() => {
+    const handler = () => {
+      hideEmojiBoxs();
+      hidemessageActionMenu();
+    };
+    messagesContainer?.addEventListener("click", handler);
+    messagesContainer?.addEventListener("scroll", handleMessageContainerScroll);
+    return () => {
+      messagesContainer.removeEventListener("click", handler);
+      messagesContainer?.removeEventListener(
+        "scroll",
+        handleMessageContainerScroll
+      );
+    };
+  }, []);
 
   function getMinWidthOfMsgTextBox(m) {
     return m?.reactions?.length
