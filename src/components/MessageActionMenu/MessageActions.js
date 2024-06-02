@@ -1,5 +1,5 @@
 import { Box, useDisclosure } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./style.css";
 import ActionItem from "./ActionItem";
 import ConfirmBoxModal from "../Materials/Modals/ConfirmBoxModal";
@@ -8,9 +8,15 @@ import { server } from "../../configs/serverURl";
 import { HandleLogout } from "../../configs/userConfigs";
 import EmojiMenu from "./EmojiPicker/EmojiPicker";
 import { REACTION } from "../../configs/messageConfigs";
-export const EVERYONE = "everyone", MYSELF = "myself";
+export const EVERYONE = "everyone",
+  MYSELF = "myself";
 
-const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs }) => {
+const MessageActions = ({
+  message,
+  user,
+  hidemessageActionMenu,
+  hideEmojiBoxs,
+}) => {
   const {
     selectedChat,
     setIsClosable,
@@ -31,7 +37,6 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
   const [loading, setLoading] = useState(initailLoading);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
 
   const deleteMessage = async (e) => {
     setLoading({
@@ -77,24 +82,31 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
       );
 
       function getLastRegularMsg() {
-        let regularMsgs = updatedmessages.filter(m => m.msgType !== REACTION)
-        return regularMsgs[regularMsgs.length - 1]
+        let regularMsgs = updatedmessages.filter((m) => m.msgType !== REACTION);
+        return regularMsgs[regularMsgs.length - 1];
       }
       chats?.forEach((chat) => {
-        if ((chat?.latestMessage?._id === msg?._id) || (chat?.latestMessage?.msgType === REACTION && chat?.latestMessage?.content?.reactedToMsg?._id === msg?._id)) {
+        if (
+          chat?.latestMessage?._id === msg?._id ||
+          (chat?.latestMessage?.msgType === REACTION &&
+            chat?.latestMessage?.content?.reactedToMsg?._id === msg?._id)
+        ) {
           setChats(
             chats.map((c) => {
               c.latestMessage =
-                (c?.latestMessage &&
-                  c?._id === msg.chat._id &&
-                  c?.latestMessage?._id === msg._id)
+                c?.latestMessage &&
+                c?._id === msg.chat._id &&
+                c?.latestMessage?._id === msg._id
                   ? msg
-                  : (c?.latestMessage?.msgType === REACTION && chat?.latestMessage?.content?.reactedToMsg?._id === msg?._id) ? getLastRegularMsg() : c.latestMessage
+                  : c?.latestMessage?.msgType === REACTION &&
+                    chat?.latestMessage?.content?.reactedToMsg?._id === msg?._id
+                  ? getLastRegularMsg()
+                  : c.latestMessage;
               return c;
             })
           );
         }
-      })
+      });
 
       setLoading(initailLoading);
       setIsClosable(true);
@@ -107,33 +119,34 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
   };
 
   const handleEmojiIconClick = (e) => {
-
-    e.stopPropagation()
+    e.stopPropagation();
     let EmojiBox = document?.querySelector(`#EmojiBox${message._id}`);
     let messageStrip = document?.querySelector(`#messageStrip${message._id}`);
 
     // If window size is less than 770px then go inside the if!
     if (window.innerWidth <= 770) {
-      // This condition for when senders message width is reaching at the end then we will translate the Emojis box to -20% from the right 
+      // This condition for when senders message width is reaching at the end then we will translate the Emojis box to -20% from the right
       if (e.clientX < 130) {
-        EmojiBox.style.transformOrigin = 'left bottom'
-        EmojiBox.style.translate = '-20% 0%'
-
+        EmojiBox.style.transformOrigin = "left bottom";
+        EmojiBox.style.translate = "-20% 0%";
       }
       // This condition for when senders message width is reaching at the end then we will translate the Emojis box to -90% from the right
       else if (e.clientX > 240) {
-        EmojiBox.style.transformOrigin = 'right bottom'
-        EmojiBox.style.translate = '-90% 0%'
+        EmojiBox.style.transformOrigin = "right bottom";
+        EmojiBox.style.translate = "-90% 0%";
       }
     }
 
-    hideEmojiBoxs()
-    hidemessageActionMenu()
-    messageStrip.classList.add('active')
-    EmojiBox?.classList.add('active')
-  }
+    hideEmojiBoxs();
+    hidemessageActionMenu();
+    messageStrip.classList.add("active");
+    EmojiBox?.classList.add("active");
+  };
 
-  window.addEventListener('click', hideEmojiBoxs)
+  useEffect(() => {
+    window.addEventListener("click", hideEmojiBoxs);
+    return () => window.removeEventListener("click", hideEmojiBoxs);
+  }, []);
 
   return (
     <Box
@@ -182,8 +195,12 @@ const MessageActions = ({ message, user, hidemessageActionMenu, hideEmojiBoxs })
         handleFunc={handleEmojiIconClick}
         itemImgSrc={"https://cdn-icons-png.flaticon.com/512/1023/1023656.png"}
       >
-
-        <EmojiMenu message={message} key={message._id} hideEmojiBoxs={hideEmojiBoxs} user={user} />
+        <EmojiMenu
+          message={message}
+          key={message._id}
+          hideEmojiBoxs={hideEmojiBoxs}
+          user={user}
+        />
       </ActionItem>
     </Box>
   );
