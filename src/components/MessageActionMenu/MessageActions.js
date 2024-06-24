@@ -146,7 +146,7 @@ const MessageActions = ({
   useEffect(() => {
     window.addEventListener("click", hideEmojiBoxs);
     return () => window.removeEventListener("click", hideEmojiBoxs);
-  }, []);
+  }, [hideEmojiBoxs]);
 
   return (
     <Box

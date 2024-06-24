@@ -1,5 +1,5 @@
 import { Avatar, Box, Image, Spinner, Text, Tooltip } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   downloadImage,
@@ -472,12 +472,12 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
 
   let avatarBoxs = document.querySelectorAll(".avatarBox");
 
-  function hideAvatarBoxs() {
+  const hideAvatarBoxs = useCallback(() => {
     if (!avatarBoxLoading) {
       setAvatarBoxLoading(true);
       avatarBoxs.forEach((elm) => (elm.style.display = "none"));
     }
-  }
+  });
 
   function startaChat(avatarUser) {
     // this else part will only run for the Group chat because in Group chat after click onto user avatar a chat will start with him other wise in personal chat we will se profile of the user avatar click
@@ -520,7 +520,7 @@ function MessagesBox({ isFirstLoadOfMsgs, setIsFirstLoadOfMsgs }) {
   useEffect(() => {
     window.addEventListener("click", hideAvatarBoxs);
     return () => window.removeEventListener("click", hideAvatarBoxs);
-  }, []);
+  }, [hideAvatarBoxs]);
 
   const handleMessageAvatarClick = (avatarUser, i, e) => {
     // if user click on his own avatar and if the chat is not a group chat then display his or that user avatar click profile other then else start a chat with that user avatar click!

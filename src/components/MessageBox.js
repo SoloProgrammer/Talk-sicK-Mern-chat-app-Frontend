@@ -94,13 +94,13 @@ function MessageBox() {
 
   const [isEmojiPick, setIsEmojiPick] = useState(false);
 
+  const handler = useCallback(() => {
+    isEmojiPick && setIsEmojiPick(false);
+  });
   useEffect(() => {
-    const handler = () => {
-      isEmojiPick && setIsEmojiPick(false);
-    };
-    window.addEventListener("click", handler);
-    return () => window.removeEventListener("click", handler);
-  }, []);
+    window?.addEventListener("click", handler);
+    return () => window?.removeEventListener("click", handler);
+  }, [handler]);
 
   useEffect(() => {
     setMessageText("");
